@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="2015年12月4日，苹果正式开放了 Swift 的源代码，Swift 也从此开启了走向了各个平台的征程。苹果首先对 Linux 提供了支持，至于 Windows 嘛…(对于Windows平台的支持）在Swift开源的初版中，这并不是我们所首要考虑的问题--费德里希反正这件事自然有人会去做的。这篇文章对在 Ubuntu 上部署 Swift 开发环境进行描述（实际上就是翻译啦）。 本文原文:http">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Linux平台上配置Swift开发环境">
+<meta property="og:url" content="https://ufolux.github.io/2015/12/09/Swift/%E5%9C%A8Linux%E5%B9%B3%E5%8F%B0%E4%B8%8A%E9%85%8D%E7%BD%AESwift%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="2015年12月4日，苹果正式开放了 Swift 的源代码，Swift 也从此开启了走向了各个平台的征程。苹果首先对 Linux 提供了支持，至于 Windows 嘛…(对于Windows平台的支持）在Swift开源的初版中，这并不是我们所首要考虑的问题--费德里希反正这件事自然有人会去做的。这篇文章对在 Ubuntu 上部署 Swift 开发环境进行描述（实际上就是翻译啦）。 本文原文:http">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-12-09T12:12:44.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.109Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="学习">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2015/12/09/Swift/%E5%9C%A8Linux%E5%B9%B3%E5%8F%B0%E4%B8%8A%E9%85%8D%E7%BD%AESwift%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>在Linux平台上配置Swift开发环境 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8-Linux-%E5%B9%B3%E5%8F%B0%E4%B8%8A%E9%85%8D%E7%BD%AE-Swift-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83"><span class="nav-number">1.</span> <span class="nav-text">在 Linux 平台上配置 Swift 开发环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%A0%E9%9C%80%E8%A6%81%EF%BC%88%E4%BB%A5%E4%B8%8B%E5%8F%AA%E6%98%AF%E9%80%9A%E8%BF%87%E6%B5%8B%E8%AF%95%E7%9A%84%E7%8E%AF%E5%A2%83%EF%BC%8C%E5%B9%B6%E4%B8%8D%E5%B1%80%E9%99%90%E4%BA%8E%E8%BF%99%E5%87%A0%E4%B8%AA-Linux-%E5%8F%91%E8%A1%8C%E7%89%88%E6%9C%AC%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">你需要（以下只是通过测试的环境，并不局限于这几个 Linux 发行版本）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%AF%E6%8C%81%E7%9A%84%E7%9B%AE%E6%A0%87%E5%B9%B3%E5%8F%B0"><span class="nav-number">1.2.</span> <span class="nav-text">支持的目标平台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.3.</span> <span class="nav-text">安装</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2015/12/09/Swift/%E5%9C%A8Linux%E5%B9%B3%E5%8F%B0%E4%B8%8A%E9%85%8D%E7%BD%AESwift%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在Linux平台上配置Swift开发环境
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2015-12-09 20:12:44" itemprop="dateCreated datePublished" datetime="2015-12-09T20:12:44+08:00">2015-12-09</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>2015年12月4日，苹果正式开放了 Swift 的源代码，Swift 也从此开启了走向了各个平台的征程。苹果首先对 Linux 提供了支持，至于 Windows 嘛…<br><code>(对于Windows平台的支持）在Swift开源的初版中，这并不是我们所首要考虑的问题--费德里希</code><br>反正这件事自然有人会去做的。这篇文章对在 Ubuntu 上部署 Swift 开发环境进行描述（实际上就是翻译啦）。</p>
+<p>本文原文:<a target="_blank" rel="noopener" href="https://swift.org/download/#linux">https://swift.org/download/#linux</a></p>
+<span id="more"></span>
+
+<h2 id="在-Linux-平台上配置-Swift-开发环境"><a href="#在-Linux-平台上配置-Swift-开发环境" class="headerlink" title="在 Linux 平台上配置 Swift 开发环境"></a>在 Linux 平台上配置 Swift 开发环境</h2><p>这份面向 Linux 的开发包以 <code>tar</code> 包的形式提供给公众，里面含有一个 Swift 编译器的副本，lldb 和一些相关的工具。你可以在任何可以解压这个包的地方安装它们。</p>
+<p><strong>请注意</strong>：并没有任何东西阻碍 Swift 被部署到除下面提到的其他 Linux 发行版本上。我们只是在这里提到的几个版本上构建并测试了这些程序。</p>
+<h3 id="你需要（以下只是通过测试的环境，并不局限于这几个-Linux-发行版本）"><a href="#你需要（以下只是通过测试的环境，并不局限于这几个-Linux-发行版本）" class="headerlink" title="你需要（以下只是通过测试的环境，并不局限于这几个 Linux 发行版本）"></a>你需要（以下只是通过测试的环境，并不局限于这几个 Linux 发行版本）</h3><ul>
+<li>Ubuntu 14.04 或者 15.10（64位）</li>
+</ul>
+<h3 id="支持的目标平台"><a href="#支持的目标平台" class="headerlink" title="支持的目标平台"></a>支持的目标平台</h3><ul>
+<li>Ubuntu 14.04 或者 15.10（64位）</li>
+</ul>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ol>
+<li>安装所需的依赖：</li>
+</ol>
+<p><code>$ sudo apt-get install clang libicu-dev</code></p>
+<ol start="2">
+<li>下载对应平台的 <code>tar</code> 包，地址如下：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="left">Platform</th>
+<th align="left">Download</th>
+<th align="left">Date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Linux</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://swift.org/builds/ubuntu1510/swift-2.2-SNAPSHOT-2015-12-01-b/swift-2.2-SNAPSHOT-2015-12-01-b-ubuntu15.10.tar.gz">Ubuntu 15.10 Swift 2.2 Snapshot</a><a target="_blank" rel="noopener" href="https://swift.org/builds/ubuntu1510/swift-2.2-SNAPSHOT-2015-12-01-b/swift-2.2-SNAPSHOT-2015-12-01-b-ubuntu15.10.tar.gz.sig">(Signature)</a></td>
+<td align="left">December 1, 2015</td>
+</tr>
+<tr>
+<td align="left">Linux</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://swift.org/builds/ubuntu1404/swift-2.2-SNAPSHOT-2015-12-01-b/swift-2.2-SNAPSHOT-2015-12-01-b-ubuntu14.04.tar.gz">Ubuntu 14.04 Swift 2.2 Snapshot</a><a target="_blank" rel="noopener" href="https://swift.org/builds/ubuntu1404/swift-2.2-SNAPSHOT-2015-12-01-b/swift-2.2-SNAPSHOT-2015-12-01-b-ubuntu14.04.tar.gz.sig">(Signature)</a></td>
+<td align="left">December 1, 2015</td>
+</tr>
+</tbody></table>
+<p>表格中 <code>swift-&lt;VERSION&gt;-&lt;PLATFORM&gt;.tar.gz</code> 文件是工具链自身。<code>.sig</code> 文件是 tar 包对应的数字签名。</p>
+<p>If you are downloading Swift packages for the first time, import the PGP keys into your keyring:</p>
+<p>如果你是第一次下载 Swift 包，使用如下方法在你的钥匙串中引入 PGP keys 来验证 PGP 签名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ gpg --keyserver hkp:&#x2F;&#x2F;pool.sks-keyservers.net \ </span><br><span class="line">--recv-keys \ </span><br><span class="line">&#39;7463 A81A 4B2E EA1B 551F FBCF D441 C977 412B 37AD&#39; \ </span><br><span class="line">&#39;1BE1 E29A 084C B305 F397 D62A 9F59 7F4D 21A5 6D5F&#39;</span><br></pre></td></tr></table></figure>
+<p>或者:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ wget -q -O - https:&#x2F;&#x2F;swift.org&#x2F;keys&#x2F;all-keys.asc | gpg --import - </span><br><span class="line">Skip this step if you have imported the keys in the past.</span><br></pre></td></tr></table></figure>
+
+<p>这些 Linux 平台的 .tar.gz 包使用 GnuPG 签名，密钥包含在在 Swift 开源项目中。我们强烈建议所有使用这个包的人都应该验证数字签名。</p>
+<p>首先，刷新密钥来下载新的密钥撤销证书（key revocation certificates）如果有的话。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ gpg --keyserver hkp:&#x2F;&#x2F;pool.sks-keyservers.net --refresh-keys Swift </span><br><span class="line">Then, use the signature file to verify that the archive is intact:</span><br><span class="line"></span><br><span class="line">$ gpg --verify swift-&lt;VERSION&gt;-&lt;PLATFORM&gt;.tar.gz.sig ... gpg: Good signature from &quot;Swift Automatic Signing Key #1 &lt;swift-infrastructure@swift.org&gt;&quot; </span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag"># 学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/12/05/Server/fastSshConnect/" rel="prev" title="快速ssh连接">
+                  <i class="fa fa-chevron-left"></i> 快速ssh连接
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/12/11/iOS/iOS%E6%9C%AD%E8%AE%B0/NSDictionary%E7%9A%84setValue-forKey%E4%B8%8EsetObject-forKey%E3%80%81objectForKey%E4%B8%8EvalueForKey%E7%9A%84%E5%B7%AE%E5%BC%82/" rel="next" title="[转]NSDictionary的setValue:forKey与setObject:forKey、objectForKey与valueForKey的差异">
+                  [转]NSDictionary的setValue:forKey与setObject:forKey、objectForKey与valueForKey的差异 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

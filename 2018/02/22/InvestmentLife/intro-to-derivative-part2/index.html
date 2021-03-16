@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="牛熊证（CBBCs）牛熊证（合约），全称为 可收回牛&#x2F;熊证（合约）（Callable Bull&#x2F;Bear Contracts&#x2F;Certificates）。牛熊证和窝轮很相似，是一种具有期权性质的金融衍生工具，属于结构化金融产品的一种，它的价格和标的资产的价格挂钩。 牛熊证最早于 2001 年产生于欧洲和澳大利亚的金融市场，香港联交所于 2006 引入了这种新型的投资产品，之后牛熊证在香港证券市场的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="金融衍生工具介绍（二） 牛熊证">
+<meta property="og:url" content="https://ufolux.github.io/2018/02/22/InvestmentLife/intro-to-derivative-part2/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="牛熊证（CBBCs）牛熊证（合约），全称为 可收回牛&#x2F;熊证（合约）（Callable Bull&#x2F;Bear Contracts&#x2F;Certificates）。牛熊证和窝轮很相似，是一种具有期权性质的金融衍生工具，属于结构化金融产品的一种，它的价格和标的资产的价格挂钩。 牛熊证最早于 2001 年产生于欧洲和澳大利亚的金融市场，香港联交所于 2006 引入了这种新型的投资产品，之后牛熊证在香港证券市场的">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-02-22T14:44:03.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.103Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="衍生品学习">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2018/02/22/InvestmentLife/intro-to-derivative-part2/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>金融衍生工具介绍（二） 牛熊证 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%9B%E7%86%8A%E8%AF%81%EF%BC%88CBBCs%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">牛熊证（CBBCs）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%9B%E7%86%8A%E8%AF%81%E7%9A%84%E8%BF%90%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">牛熊证的运作方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%9B%E7%86%8A%E8%AF%81%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%A6%81%E7%B4%A0"><span class="nav-number">3.</span> <span class="nav-text">牛熊证的基本要素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E8%A1%8C%E4%BA%BA"><span class="nav-number">3.1.</span> <span class="nav-text">发行人</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9C%8B%E6%B6%A8%E7%9C%8B%E8%B7%8C%E6%96%B9%E5%90%91"><span class="nav-number">3.2.</span> <span class="nav-text">看涨看跌方向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%B0%E6%9C%9F%E6%97%A5"><span class="nav-number">3.3.</span> <span class="nav-text">到期日</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E5%89%B2%E6%96%B9%E5%BC%8F"><span class="nav-number">3.4.</span> <span class="nav-text">交割方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%8C%E6%9D%83%E4%BB%B7"><span class="nav-number">3.5.</span> <span class="nav-text">行权价</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E6%94%B6%E4%BB%B7"><span class="nav-number">3.6.</span> <span class="nav-text">回收价</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%83%E8%AF%81%E4%BB%B7%E6%A0%BC"><span class="nav-number">3.7.</span> <span class="nav-text">权证价格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%A2%E8%82%A1%E6%AF%94%E7%8E%87-%E8%AE%A4%E8%B4%AD%E6%AF%94%E7%8E%87"><span class="nav-number">3.8.</span> <span class="nav-text">换股比率&#x2F;认购比率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%A0%E6%9D%86%E6%AF%94%E7%8E%87%EF%BC%88Leverage-ratio%EF%BC%89"><span class="nav-number">3.9.</span> <span class="nav-text">杠杆比率（Leverage ratio）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E%E6%9D%83%E8%AF%81%E7%9A%84%E5%BC%82%E5%90%8C"><span class="nav-number">4.</span> <span class="nav-text">与权证的异同</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%9B%E7%86%8A%E8%AF%81%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">5.</span> <span class="nav-text">牛熊证的类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#N-%E7%B1%BB%E7%89%9B%E7%86%8A%E8%AF%81"><span class="nav-number">5.1.</span> <span class="nav-text">N 类牛熊证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#R-%E7%B1%BB%E7%89%9B%E7%86%8A%E8%AF%81"><span class="nav-number">5.2.</span> <span class="nav-text">R 类牛熊证</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%82%E5%AF%9F%E6%9C%9F"><span class="nav-number">5.2.1.</span> <span class="nav-text">观察期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E7%AE%97%E4%BB%B7"><span class="nav-number">5.2.2.</span> <span class="nav-text">结算价</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%A9%E4%BD%99%E4%BB%B7%E5%80%BC%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-number">5.2.3.</span> <span class="nav-text">剩余价值的计算</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E7%9C%8B%E4%B8%80%E5%8F%AA%E7%89%9B%E7%86%8A%E8%AF%81"><span class="nav-number">6.</span> <span class="nav-text">如何看一只牛熊证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%9B%E7%86%8A%E8%AF%81%E7%9A%84%E9%A3%8E%E9%99%A9"><span class="nav-number">7.</span> <span class="nav-text">牛熊证的风险</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2018/02/22/InvestmentLife/intro-to-derivative-part2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          金融衍生工具介绍（二） 牛熊证
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-02-22 22:44:03" itemprop="dateCreated datePublished" datetime="2018-02-22T22:44:03+08:00">2018-02-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%95%E8%B5%84/" itemprop="url" rel="index"><span itemprop="name">投资</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="牛熊证（CBBCs）"><a href="#牛熊证（CBBCs）" class="headerlink" title="牛熊证（CBBCs）"></a>牛熊证（CBBCs）</h2><p>牛熊证（合约），全称为 <strong>可收回牛/熊证（合约）</strong>（Callable Bull/Bear Contracts/Certificates）。牛熊证和窝轮很相似，是一种具有期权性质的金融衍生工具，属于结构化金融产品的一种，它的价格和标的资产的价格挂钩。</p>
+<p>牛熊证最早于 2001 年产生于欧洲和澳大利亚的金融市场，香港联交所于 2006 引入了这种新型的投资产品，之后牛熊证在香港证券市场的成交量迅速上升，形成了与窝轮分庭抗礼的局面。目前牛熊证在欧洲和香港的交易十分活跃，受到投资者的热烈追捧。</p>
+<center>
+![63943](https://ws3.sinaimg.cn/bmiddle/006tNc79ly1fmnmkd14omj30ja0sktel.jpg)
+
+<p>一只香港联交所上市的牛证</p>
+</center>
+
+<span id="more"></span>
+
+
+<h2 id="牛熊证的运作方式"><a href="#牛熊证的运作方式" class="headerlink" title="牛熊证的运作方式"></a>牛熊证的运作方式</h2><p>牛熊证（合约），看名字就可以知道有两种类型的合约，一种是牛证（Bull Contract），另一种是熊证（Bear Contract），我们知道在投资市场上 “牛” 是上涨看多的代名词，而 “熊” 恰恰相反，它是下跌看空的代名词。牛证可以类比上一篇文章讲到的认购证，当标的资产价格上涨时，牛证的价格会随之上涨，而熊证的价格会下跌，反之则反。而上涨和下跌的幅度大小和牛熊证的杠杆比率正相关。和权证不同的是，在牛熊证的最后交易日之前，一旦标的资产的价格或者指数触及牛熊证的回收价，牛熊证将被立即收回（平仓）。投资者也将损失全部，或者几乎全部的投资金额。</p>
+<h2 id="牛熊证的基本要素"><a href="#牛熊证的基本要素" class="headerlink" title="牛熊证的基本要素"></a>牛熊证的基本要素</h2><h3 id="发行人"><a href="#发行人" class="headerlink" title="发行人"></a>发行人</h3><p>牛熊证一般由第三人发行，绝大多数情况下是由投资银行或者券商发行的。标的资产的上市主体或者交易所都不能发行牛熊证，这一点和权证有些区别。</p>
+<h3 id="看涨看跌方向"><a href="#看涨看跌方向" class="headerlink" title="看涨看跌方向"></a>看涨看跌方向</h3><p>和权证类似，牛证对应看涨，熊证则对应看跌方向。</p>
+<h3 id="到期日"><a href="#到期日" class="headerlink" title="到期日"></a>到期日</h3><p>对于牛熊证来说，到期日是其最后结算的日期，最终会根据当时的标的物价值和以及牛熊证的行使价以现金结算。</p>
+<h3 id="交割方式"><a href="#交割方式" class="headerlink" title="交割方式"></a>交割方式</h3><p>交割方式为现金交割，指投资者在行使权利时，由发行人向投资者支付市价高于执行价的差额。</p>
+<h3 id="行权价"><a href="#行权价" class="headerlink" title="行权价"></a>行权价</h3><p>认股价是发行人在发行权证时所订下的价格，到期发行商将根据这个价格来支付当时价格与其的差额</p>
+<h3 id="回收价"><a href="#回收价" class="headerlink" title="回收价"></a>回收价</h3><p>与权证不同的是，牛熊证的标的资产价格一旦触及回收价，牛熊证既被回收，这个行为又被戏称为 “打靶” 或者 “爆仓”，牛熊证一旦被回收，投资者当即便会损失绝大多数甚至全部的资金（R 类牛熊证会根据观察期内标的的价格来确定牛熊证的剩余价值）。</p>
+<h3 id="权证价格"><a href="#权证价格" class="headerlink" title="权证价格"></a>权证价格</h3><p>牛熊证的时间递耗可以忽略不计，其价格可以直接看作其内在价值。对于牛证而言，当正股股价（指标的证券市场价格）高于行使价时，内在价值为两者之差；而当正股股价触及回收价时，牛证虽然还有内在价值，但是也已经处于被收回无法交易的阶段，如果是 R 型牛证，还会根据观察期内正股的价格来确定其价格从而确定剩余价值。</p>
+<h3 id="换股比率-认购比率"><a href="#换股比率-认购比率" class="headerlink" title="换股比率/认购比率"></a>换股比率/认购比率</h3><p>可以和权证的换股比率等同，指的是是认购或者认沽 1 股标的资产需要的认股证数量，如换股比率为 100，就表示每 100 张权证可认购或者认沽 1 股标的资产。认购、认沽比率表示的是每张权证可以认购的标的资产数量，所以 认购、认沽比率 = 1 / 换股比率。</p>
+<h3 id="杠杆比率（Leverage-ratio）"><a href="#杠杆比率（Leverage-ratio）" class="headerlink" title="杠杆比率（Leverage ratio）"></a>杠杆比率（Leverage ratio）</h3><p>杠杆比率是正股市价与购入一股正股所需权证的市价之比，即：杠杆比率＝正股股价 /（权证价格÷认购比率）。杠杆比率可用来衡量“以小博大”的放大倍数，杠杆比率越高，投资者盈利率也越高，当然，其可能承担的亏损风险也越大。</p>
+<h2 id="与权证的异同"><a href="#与权证的异同" class="headerlink" title="与权证的异同"></a>与权证的异同</h2><p>可以看到牛熊证在很多特性上与权证类似，简单来讲可以看做是可以被回收的且没有时间价值损耗的认股权证。关于这些异同点，我们对比着来看一下这两种衍生工具。</p>
+<ol>
+<li><p>相同/相似点</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">权证/牛熊证</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">方向</td>
+<td align="left">可多可空（牛/购，熊/沽）</td>
+</tr>
+<tr>
+<td align="left">到期</td>
+<td align="left">到期行权或结算</td>
+</tr>
+<tr>
+<td align="left">杠杆</td>
+<td align="left">有</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>不同点</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">权证</th>
+<th align="left">牛熊证</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">时间损耗</td>
+<td align="left">有</td>
+<td align="left">没有</td>
+</tr>
+<tr>
+<td align="left">到价是否会被回收</td>
+<td align="left">不会</td>
+<td align="left">会</td>
+</tr>
+<tr>
+<td align="left">发行人</td>
+<td align="left">上市主体或者其他第三方机构</td>
+<td align="left">上市主体自己不能发行，第三方机构发行</td>
+</tr>
+<tr>
+<td align="left">价内价外</td>
+<td align="left">存在</td>
+<td align="left">不存在</td>
+</tr>
+<tr>
+<td align="left">杠杆</td>
+<td align="left">名义杠杆≠实际杠杆</td>
+<td align="left">名义杠杆=实际杠杆</td>
+</tr>
+<tr>
+<td align="left">引伸波幅</td>
+<td align="left">有</td>
+<td align="left">无</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+<h2 id="牛熊证的类型"><a href="#牛熊证的类型" class="headerlink" title="牛熊证的类型"></a>牛熊证的类型</h2><h3 id="N-类牛熊证"><a href="#N-类牛熊证" class="headerlink" title="N 类牛熊证"></a>N 类牛熊证</h3><p>N = (N)o residual value 意即没有剩余价值，N 类牛熊证的回收价和行使价相同，标的资产价格触及回收价就会被收回，与此同时牛熊证也就失去了一切的价值。所以 N 类牛熊证被回收之后，投资者将立即损失全部本金。</p>
+<h3 id="R-类牛熊证"><a href="#R-类牛熊证" class="headerlink" title="R 类牛熊证"></a>R 类牛熊证</h3><p>R = With (r)esidual value 意即有剩余价值的牛熊证，R 类牛熊证的回收价会高于行使价，资产价格达到回收价格当即被強制收回停止交易，然后进入观察期，在观察期期间会按照牛熊证的发行章程来决定牛熊证的剩余价值，一般来讲只要在观察期内，标的资产价格没有触及行使价，一般还会有少许剩余价值留下，但也是微乎其微。</p>
+<h4 id="观察期"><a href="#观察期" class="headerlink" title="观察期"></a>观察期</h4><p>牛熊证被强制收回后，至下一个交易时段结束(上午、下午分别为各一个交易时段) 为观察期。</p>
+<center>
+![观察期](https://ws3.sinaimg.cn/large/006tNbRwgy1fopk8ljb52g30ci08cwec.gif)
+
+<p>观察期</p>
+</center>
+如图所示，上午被收回的牛熊证观察期持续到下午收市为止，下午被收回的牛熊证观察期持续到第二日中午收市为止。
+
+<h4 id="结算价"><a href="#结算价" class="headerlink" title="结算价"></a>结算价</h4><p>说道剩余价值，这里还要阐述一个结算价的概念，这里以牛证为例</p>
+<center>
+![结算价](https://ws4.sinaimg.cn/large/006tNbRwgy1fopk1wulnsg30ci08cdfq.gif)
+
+<p>恒指牛证结算</p>
+</center>
+
+<p>从图中我们可以看到，当回收事件发生之后（图中即恒指点位跌到 20000 点时）牛证进入了观察期，观察期内恒指没有跌到行使价 19500 点，这时牛熊证还有剩余价值可以兑现。牛证的结算价就是整个观察期内价格的最低位，而熊证相反，则是观察期内价格的最高位，也就是说取观察期内最少的价值作为牛熊证的剩余价值。</p>
+<h4 id="剩余价值的计算"><a href="#剩余价值的计算" class="headerlink" title="剩余价值的计算"></a>剩余价值的计算</h4><p>现实在香港联交所上市交易的牛熊证皆属于 R 类牛熊证，以上图中所示的香港上市的恒指牛证为例，剩余价值的计算方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">牛证剩余价值 &#x3D; (牛证结算价 -行使价) &#x2F; 兑换比率</span><br><span class="line">熊证剩余价值 &#x3D; (行使价 - 熊证结算价) &#x2F; 兑换比率</span><br></pre></td></tr></table></figure>
+
+<p>例如上面图中的牛证，假设换股比例为 10000，结算价格为 19900 则剩余价值为 （19900 - 19500） / 10000 = 0.04 港元</p>
+<h2 id="如何看一只牛熊证"><a href="#如何看一只牛熊证" class="headerlink" title="如何看一只牛熊证"></a>如何看一只牛熊证</h2><center>
+![63943](https://ws3.sinaimg.cn/bmiddle/006tNc79ly1fmnmkd14omj30ja0sktel.jpg)
+
+<p>舜光海通八三牛B.C</p>
+</center>
+
+<p>下面我们来看一只港交所挂牌的牛证，结合以上讲到的内容来分析一下从这个权证的信息中我们可以知道什么：</p>
+<p>以这个认购证为例，我们从它的名称中可以得到一些信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">舜光             海通                 八三牛             B.                       C</span><br><span class="line">^^               ^^                  ^^                ^                        ^</span><br><span class="line">正股是舜宇光学科技  发行人是海通国际证券   到期日是2018年3月   海通国际行的第2只八三牛     牛证(看多 call）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>溢价：表示当前这个牛证的名义价格高于牛证的实际价格 0.40%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">牛证溢价率&#x3D;（行权价+牛证价格 x 换股比率-正股价）&#x2F;正股价 x 100% </span><br><span class="line">熊证溢价率&#x3D;（正股价+熊证价格 x 换股比率-行使价）&#x2F;正股价 x 100% </span><br></pre></td></tr></table></figure>
+<p>eg. ((88.800 + 0.124 x 100 - 100.800)  / 100.800) x 100% = 0.40%</p>
+</li>
+<li><p>杠杆比率：由于牛熊证的<strong>对冲值都是1</strong>（对冲值对实际的影响<a target="_blank" rel="noopener" href="http://skyfly.xyz/2017/11/26/InvestmentLife/intro-to-derivative-part1/">参见</a>），这里的杠杆比率就是牛熊证的实际杠杆。表示的是相关资产价格高于牛证价格（权利金）的倍数。计算方式为： <code>杠杆比率=正股股价/权证价格  x 换股比率</code>。</p>
+</li>
+<li><p>换股比率：既每 100 张牛证可以换取到期购买 1 股舜宇光学科技股票的权利（实际上只会使用现金结算）</p>
+</li>
+<li><p>行权价：表示权证到期时持有人将可以用 100 张该权证以 88.800 港元的价格购买 1 股舜宇光学科技的股票。</p>
+</li>
+<li><p>街货占比：假如该投行发行了1亿张该牛证，街货占比 31.80% 表示当前已经有占总发行量 31.80% 的权证也就是 3180 万张牛证在当日收盘后留在了投资者的手中。街货占比小的权证做市商对价格的控制能力就越强，街货占比大的权证价格容易被市场供需，做市商操守和投资者情绪所影响导致 “不跟价” 的情况出现。</p>
+</li>
+<li><p>打和点：因为该权证行使认购股票的权力（其实只有现金结算）时需要支付 <code>0.124 x 100 = 12.4</code> 港元的牛证的权利费用。所以只有股价达到 <code>88.800（行使价）+ 12.40（权利费）= 101.20</code> 港元时，这个牛证才能真正获利。打和点表示的就是行权时盈亏的平衡点。</p>
+</li>
+<li><p>换股价：<code>0.124（牛证价格）x 100（换股比率）= 12.40</code></p>
+</li>
+</ul>
+<h2 id="牛熊证的风险"><a href="#牛熊证的风险" class="headerlink" title="牛熊证的风险"></a>牛熊证的风险</h2><p>牛熊证和认股证一样属于权证类型的结构化产品，这类产品的共同特点是损失有限（全部本金），收益无限。利用这个特性，他们都可以作为对冲风险的有力工具。作为投机手段来讲，相较于权证（认股证），牛熊证没有时间递耗和引伸波幅这两个恼人的属性，价格更加的透明，方便判断和操作，但是牛熊证由于其可被回收的特性，可能会让投资者一瞬间损失全部本金，对于风险承受能力有限的投资/投机者而言可能不是一个好的选择。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://warrants-hk.credit-suisse.com/home/html/tutorial/cbbc/cbbc_tutorial_6r_c.html">瑞信牛熊证教室</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Callable_bull/bear_contract">WikiPedia CBBCs</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.hkex.com.hk/Products/Securities/Callable-Bull-Bear-Contracts?sc_lang=en">HKEX CBBCs</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%A1%8D%E7%94%9F%E5%93%81%E5%AD%A6%E4%B9%A0/" rel="tag"># 衍生品学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/11/29/Front_End/front-end-engineering/use-babel-and-mocha-for-testing/" rel="prev" title="使用 mocha 和 babel 来测试你的 es6 代码">
+                  <i class="fa fa-chevron-left"></i> 使用 mocha 和 babel 来测试你的 es6 代码
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/05/03/Front_End/css/intro-css-1/" rel="next" title="CSS 入门（一）">
+                  CSS 入门（一） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

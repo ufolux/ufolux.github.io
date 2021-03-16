@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="0x00 前言最近刷 leetcode，又回去回顾了很多数据结构的知识。刷题时经常会碰到使用 HashMap 来实现 O(1) 时间内的元素快速查找，以空间换时间。Hash 表的基本原理就是对 key 进行哈希运算得出 HasCode，然后通过对 HashCode 进行变换得到数组的 index。最后将 value 插入到该 index 位置上。但实际上，并不存在完美的散列算法能使得对于每个不同的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探究 Java HashMap get 操作的时间复杂度">
+<meta property="og:url" content="https://ufolux.github.io/2020/02/25/Java/HashMapTimeComplexity/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="0x00 前言最近刷 leetcode，又回去回顾了很多数据结构的知识。刷题时经常会碰到使用 HashMap 来实现 O(1) 时间内的元素快速查找，以空间换时间。Hash 表的基本原理就是对 key 进行哈希运算得出 HasCode，然后通过对 HashCode 进行变换得到数组的 index。最后将 value 插入到该 index 位置上。但实际上，并不存在完美的散列算法能使得对于每个不同的">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ufolux.github.io/2020/02/25/Java/HashMapTimeComplexity/getflow.png">
+<meta property="og:image" content="https://ufolux.github.io/2020/02/25/Java/HashMapTimeComplexity/string_equals.png">
+<meta property="og:image" content="https://ufolux.github.io/2020/02/25/Java/HashMapTimeComplexity/stringlatin_equals.png">
+<meta property="article:published_time" content="2020-02-25T10:15:51.000Z">
+<meta property="article:modified_time" content="2021-03-16T10:36:38.749Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ufolux.github.io/2020/02/25/Java/HashMapTimeComplexity/getflow.png">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2020/02/25/Java/HashMapTimeComplexity/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>探究 Java HashMap get 操作的时间复杂度 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-Java-%E7%9A%84-HashMap-%E6%98%AF%E5%A6%82%E4%BD%95-get-%E5%88%B0%E7%9B%AE%E6%A0%87%E5%80%BC%E7%9A%84"><span class="nav-number">2.</span> <span class="nav-text">0x01 Java 的 HashMap 是如何 get 到目标值的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E8%80%97%E6%97%B6%E7%82%B9%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">0x02 耗时点分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E9%AA%8C%E8%AF%81"><span class="nav-number">4.</span> <span class="nav-text">0x03 验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">5.</span> <span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2020/02/25/Java/HashMapTimeComplexity/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          探究 Java HashMap get 操作的时间复杂度
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-02-25 18:15:51" itemprop="dateCreated datePublished" datetime="2020-02-25T18:15:51+08:00">2020-02-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-16 18:36:38" itemprop="dateModified" datetime="2021-03-16T18:36:38+08:00">2021-03-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>最近刷 leetcode，又回去回顾了很多数据结构的知识。刷题时经常会碰到使用 <code>HashMap</code> 来实现 <code>O(1)</code> 时间内的元素快速查找，以空间换时间。Hash 表的基本原理就是对 key 进行哈希运算得出 HasCode，然后通过对 HashCode 进行变换得到数组的 index。最后将 value 插入到该 index 位置上。但实际上，并不存在完美的散列算法能使得对于每个不同的输入值都能得到独一无二的 HashCode。这也就意味着对于不同的输入值可能会产生相同的 index，这也就是哈希碰撞。对于哈希碰撞大体上有两种解决方案：按照一定规则寻找数组中其他空余的位置，将 value 插入该位置；在 index 位置上使用链表来保存相同 HashCode 的 key 对应的 value。Java 选择了后者的实现方式。那么问题就来了，在对 <code>HashMap</code> 进行 <code>get</code> 操作的时候，势必要进行 key 值的比较。如果 Key 的长度很大的话，<code>HashMap</code> 的 <code>get</code> 操作耗时应该会显著增加，那么是不是这样呢？ 今天研究了一下这个问题。</p>
+<span id="more"></span>
+
+<h2 id="0x01-Java-的-HashMap-是如何-get-到目标值的"><a href="#0x01-Java-的-HashMap-是如何-get-到目标值的" class="headerlink" title="0x01 Java 的 HashMap 是如何 get 到目标值的"></a>0x01 Java 的 HashMap 是如何 get 到目标值的</h2><p>如上面所说的，为了解决哈希碰撞问题，在对 <code>HashMap</code> 进行 <code>put</code> 操作的时候，有几率会在同一个 index 的位置上挂载多个 value，那么 <code>get</code> 操作想要获得正确的值就必须可以将查询时输入的 <code>key</code> 和 <code>put</code> 时保存在 <code>HashMap</code> 中的 <code>key</code> 值进行比较，相同时才返回 <code>value</code>，否则就继续向后遍历链表。流程如下面流程图所示：</p>
+<p><img src="/2020/02/25/Java/HashMapTimeComplexity/getflow.png" alt="get 的流程"></p>
+<h2 id="0x02-耗时点分析"><a href="#0x02-耗时点分析" class="headerlink" title="0x02 耗时点分析"></a>0x02 耗时点分析</h2><p>由上面的流程可以知道， <code>get</code> 操作涉及了一步 <code>value.key.equals(key)</code> 的比较操作，如果 <code>key</code> 是 <code>String</code> 类型的话，那我们看下 <code>String</code> 是如何实现 <code>equals</code> 方法的：</p>
+<p><img src="/2020/02/25/Java/HashMapTimeComplexity/string_equals.png" alt></p>
+<p>可以看到，在判断是否相同的时候会先比较字符串的 <code>coder</code> 是否相同，从coder方法中可以得知这个标志位是用来区分字符串是否是 Compact String 的，如果两个字符串的 <code>coder</code> 标志位不同也就说明两个字符串的类型有区别，那么就一定不同。如果相同，我们看到又继续执行了 <code>StringLatin</code> 或者 <code>StringUTF16</code> 的 <code>equals</code> 方法。这两个方法的实现很类似，我们以 <code>StringLatin.equals</code> 的实现为例来看：</p>
+<p><img src="/2020/02/25/Java/HashMapTimeComplexity/stringlatin_equals.png" alt></p>
+<p>看到这里是使用了一个 <code>for</code> 循环来遍历两个字符串，逐字符比较两个字符串是否相同，那么这里的时间复杂度是 <code>O(n)</code>。</p>
+<h2 id="0x03-验证"><a href="#0x03-验证" class="headerlink" title="0x03 验证"></a>0x03 验证</h2><p>通过以上的分析可知，<code>HashMap.get</code> 的真正时间复杂度其实是和 <code>key</code> 的判等速度有关的，并不是严格意义上的 <code>O(1)</code>。可见，在字符串作为 <code>Key</code> 的例子下如果使用很长字符串作为 <code>Key</code>，那么 <code>HashMap.get</code> 会耗费大量的时间来进行字符串的判等。下面做一个实验来检验一下这个结论：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public class Solotion &#123;</span><br><span class="line">    &#x2F;&#x2F; 生成 len 长度的字符串</span><br><span class="line">    String lsGen(int len) &#123;</span><br><span class="line">        String s &#x3D; &quot;&quot;;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; len; i++) &#123;</span><br><span class="line">            char c &#x3D; (char) (0x4e00 + (int) (Math.random() * (0x9fa5 - 0x4e00 + 1)));</span><br><span class="line">            s +&#x3D; c;</span><br><span class="line">        &#125;</span><br><span class="line">        return s;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 测试函数</span><br><span class="line">    void test (String s) &#123;</span><br><span class="line">        Map&lt;String, Integer&gt; m &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 10000; i++) &#123;</span><br><span class="line">            String str &#x3D; s + i;</span><br><span class="line">            m.put(str, i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Long bf &#x3D; System.currentTimeMillis();</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 10000; i++) &#123;</span><br><span class="line">            m.get(s + i);</span><br><span class="line">        &#125;</span><br><span class="line">        Long af &#x3D; System.currentTimeMillis();</span><br><span class="line">        System.out.println(&quot;Length of String: &quot; + s.length() + &quot; Time : &quot; + (af - bf));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Solotion m &#x3D; new Solotion();</span><br><span class="line">        String lstr &#x3D; m.lsGen(100000); &#x2F;&#x2F; 长字符串作为 key</span><br><span class="line">        String sstr &#x3D; m.lsGen(100); &#x2F;&#x2F; 短字符串作为 key</span><br><span class="line">        lstr.equals(sstr);</span><br><span class="line">        m.test(lstr);</span><br><span class="line">        m.test(sstr);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行得到以下输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Connected to the target VM, address: &#39;127.0.0.1:51865&#39;, transport: &#39;socket&#39;</span><br><span class="line">Length of String: 100000 Time : 1354</span><br><span class="line">Length of String: 100 Time : 2</span><br><span class="line">Disconnected from the target VM, address: &#39;127.0.0.1:51865&#39;, transport: &#39;socket&#39;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到产生了三个数量级的差距，这个差距还会随着 key 增长和元素增多而拉大。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>Key 的长度会影响到 <code>HashMap.get</code> 的效率，过多判等比较耗时的 Key 会导致 <code>HashMap.get</code> 变得很慢，所以尽量使用判等效率高的 Object 作为 Key 以获得最大的效率。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/26/Casual/onePasswordTheory/" rel="prev" title="OnePassword 原理">
+                  <i class="fa fa-chevron-left"></i> OnePassword 原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/09/C++/different-getopt-behavior/" rel="next" title="Different Behavior on getopt">
+                  Different Behavior on getopt <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

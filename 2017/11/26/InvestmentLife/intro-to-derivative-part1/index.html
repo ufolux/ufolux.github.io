@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="金融衍生工具（Derivative）是一种特殊类别买卖的金融工具统称。这种买卖的回报率是根据一些其他金融要素的表现情况衍生出来的。比如资产（商品，股票或债券），利率，汇率，或者各种指数（股票指数，消費者物價指數，以及天气指数）等。这些要素的表现将会决定一个衍生工具的回报率和回报时间。衍生工具的主要类型有期货，期权，权证，远期合约，掉期交易等，這些期货，期权合約都能在市場上買賣。 对此类金融工具进行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="金融衍生工具介绍（一） 权证">
+<meta property="og:url" content="https://ufolux.github.io/2017/11/26/InvestmentLife/intro-to-derivative-part1/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="金融衍生工具（Derivative）是一种特殊类别买卖的金融工具统称。这种买卖的回报率是根据一些其他金融要素的表现情况衍生出来的。比如资产（商品，股票或债券），利率，汇率，或者各种指数（股票指数，消費者物價指數，以及天气指数）等。这些要素的表现将会决定一个衍生工具的回报率和回报时间。衍生工具的主要类型有期货，期权，权证，远期合约，掉期交易等，這些期货，期权合約都能在市場上買賣。 对此类金融工具进行">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79gy1flvtb8j360j30s00eqaao.jpg">
+<meta property="og:image" content="https://ws3.sinaimg.cn/large/006tNc79gy1flvurkmajrj30li0eh0tt.jpg">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79gy1flvusurhrgj30li0e2dgr.jpg">
+<meta property="article:published_time" content="2017-11-26T14:31:12.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.103Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="衍生品学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ws2.sinaimg.cn/large/006tNc79gy1flvtb8j360j30s00eqaao.jpg">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2017/11/26/InvestmentLife/intro-to-derivative-part1/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>金融衍生工具介绍（一） 权证 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E9%80%94"><span class="nav-number">1.</span> <span class="nav-text">用途</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E5%86%B2%EF%BC%88Hedge%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">对冲（Hedge）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%95%E6%9C%BA%E5%92%8C%E5%A5%97%E5%88%A9"><span class="nav-number">1.2.</span> <span class="nav-text">投机和套利</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8D%E7%94%9F%E5%B7%A5%E5%85%B7%E7%9A%84%E7%A7%8D%E7%B1%BB"><span class="nav-number">2.</span> <span class="nav-text">衍生工具的种类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%BA%E5%A4%96%E4%BA%A4%E6%98%93%E8%A1%8D%E7%94%9F%E5%B7%A5%E5%85%B7"><span class="nav-number">2.1.</span> <span class="nav-text">场外交易衍生工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E6%98%93%E6%89%80%E4%B9%B0%E5%8D%96%E4%B9%8B%E8%A1%8D%E7%94%9F%E5%B7%A5%E5%85%B7%EF%BC%88ETD%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">交易所买卖之衍生工具（ETD）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E8%A1%8D%E7%94%9F%E5%B7%A5%E5%85%B7%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="nav-number">3.</span> <span class="nav-text">一些衍生工具的简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%83%E8%AF%81%EF%BC%88Warrant%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">权证（Warrant）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">3.1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E8%AF%81%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">3.1.2.</span> <span class="nav-text">权证的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%89%E7%85%A7%E8%A1%8C%E6%9D%83%E6%9C%9F%E9%99%90%E5%88%86%E7%B1%BB"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">按照行权期限分类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%89%E7%85%A7%E4%B9%B0%E5%8D%96%E7%9A%84%E6%96%B9%E5%90%91%E5%88%86%E7%B1%BB"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">按照买卖的方向分类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%89%E7%85%A7%E5%8F%91%E8%A1%8C%E4%BA%BA%E5%88%86%E7%B1%BB"><span class="nav-number">3.1.2.3.</span> <span class="nav-text">按照发行人分类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%89%E7%85%A7%E6%9D%83%E8%AF%81%E8%A1%8C%E4%BD%BF%E4%BB%B7%E5%88%86%E7%B1%BB"><span class="nav-number">3.1.2.4.</span> <span class="nav-text">按照权证行使价分类</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E8%AF%81%E7%9A%84%E5%8F%91%E5%B1%95%E8%BF%87%E7%A8%8B"><span class="nav-number">3.1.3.</span> <span class="nav-text">权证的发展过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E8%AF%81%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%A6%81%E7%B4%A0"><span class="nav-number">3.1.4.</span> <span class="nav-text">权证的基本要素</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%91%E8%A1%8C%E4%BA%BA"><span class="nav-number">3.1.4.1.</span> <span class="nav-text">发行人</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%9C%8B%E6%B6%A8%E5%92%8C%E7%9C%8B%E8%B7%8C%E6%96%B9%E5%90%91"><span class="nav-number">3.1.4.2.</span> <span class="nav-text">看涨和看跌方向</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%B0%E6%9C%9F%E6%97%A5"><span class="nav-number">3.1.4.3.</span> <span class="nav-text">到期日</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E6%96%B9%E5%BC%8F"><span class="nav-number">3.1.4.4.</span> <span class="nav-text">执行方式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BA%A4%E5%89%B2%E6%96%B9%E5%BC%8F"><span class="nav-number">3.1.4.5.</span> <span class="nav-text">交割方式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A1%8C%E6%9D%83%E4%BB%B7"><span class="nav-number">3.1.4.6.</span> <span class="nav-text">行权价</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9D%83%E8%AF%81%E4%BB%B7%E6%A0%BC"><span class="nav-number">3.1.4.7.</span> <span class="nav-text">权证价格</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8D%A2%E8%82%A1%E6%AF%94%E7%8E%87-%E8%AE%A4%E8%B4%AD%E6%AF%94%E7%8E%87"><span class="nav-number">3.1.4.8.</span> <span class="nav-text">换股比率&#x2F;认购比率</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9D%A0%E6%9D%86%E6%AF%94%E7%8E%87%EF%BC%88Leverage-ratio%EF%BC%89"><span class="nav-number">3.1.4.9.</span> <span class="nav-text">杠杆比率（Leverage ratio）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%B9%E5%86%B2%E5%80%BC%EF%BC%88Delta%EF%BC%89"><span class="nav-number">3.1.4.10.</span> <span class="nav-text">对冲值（Delta）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E9%80%92%E8%80%97%E5%80%BC-Theta"><span class="nav-number">3.1.4.11.</span> <span class="nav-text">时间递耗值(Theta)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BC%95%E4%BC%B8%E6%B3%A2%E5%B9%85%EF%BC%88Implied-volatility%EF%BC%89"><span class="nav-number">3.1.4.12.</span> <span class="nav-text">引伸波幅（Implied volatility）</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E8%AF%81%E7%9A%84%E4%BB%B7%E5%80%BC"><span class="nav-number">3.1.5.</span> <span class="nav-text">权证的价值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E7%9C%8B%E4%B8%80%E5%8F%AA%E6%9D%83%E8%AF%81"><span class="nav-number">3.1.6.</span> <span class="nav-text">如何看一只权证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E8%AF%81%E7%9A%84%E9%A3%8E%E9%99%A9"><span class="nav-number">3.1.7.</span> <span class="nav-text">权证的风险</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number"></span> <span class="nav-text">参考</span></a></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2017/11/26/InvestmentLife/intro-to-derivative-part1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          金融衍生工具介绍（一） 权证
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2017-11-26 22:31:12" itemprop="dateCreated datePublished" datetime="2017-11-26T22:31:12+08:00">2017-11-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%95%E8%B5%84/" itemprop="url" rel="index"><span itemprop="name">投资</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>金融衍生工具（Derivative）是一种特殊类别买卖的金融工具统称。这种买卖的回报率是根据一些其他金融要素的表现情况衍生出来的。比如资产（商品，股票或债券），利率，汇率，或者各种指数（股票指数，消費者物價指數，以及天气指数）等。这些要素的表现将会决定一个衍生工具的回报率和回报时间。衍生工具的主要类型有期货，期权，权证，远期合约，掉期交易等，這些期货，期权合約都能在市場上買賣。</p>
+<p>对此类金融工具进行买卖投资者需要十分谨慎，因为由其引起的损失有可能大于投资者最初投放于其中的资金。同时由于其本身并不代表任何资产，其买卖也不应该被视作投资。</p>
+<span id="more"></span>
+
+<h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><h3 id="对冲（Hedge）"><a href="#对冲（Hedge）" class="headerlink" title="对冲（Hedge）"></a>对冲（Hedge）</h3><p>衍生金融工具其中一项用途，是用来转移风险：采取跟标的资产（underlying asset）相反的立场。例如，小麦农夫和磨坊主人订定期货合约，在未来以现金买小麦。双方因此都能减低风险：小麦农夫能确定价格，而磨坊主人则能确定小麦供应。</p>
+<p>对冲在外汇市场中最为常见，着意避开单线买卖的风险。所谓单线买卖，就是看好某一种货币就做买空，看淡某一种货币，就做沽空。如果判断正确，所获利润自然多；但如果判断错误，损失亦会比没有进行“对冲”时来得大。</p>
+<p>举个具体的例子：<br>1990年初，中东伊拉克战争完结，美国成为战胜国，美元价格亦稳步上升，走势强劲，兑所有外汇都上升，当时只有日元仍是强势货币。当时柏林墙倒下不久，德国刚统一，东德经济差令德国受拖累，经济有隐忧。苏联政局不稳，戈尔巴乔夫地位受到动摇。英国当时经济亦差，不断减息，而保守党又受到工党的挑战，所以英磅亦偏弱。瑞士法郎在战后作为战争避难所的吸引力大减，亦成为弱势货币。</p>
+<p>假如在当时买外汇，长沽英磅、马克、瑞士法郎，同时买入日元，就会赚大钱。当美元升时，所有外币都跌，只有日元跌得最少，其他外币都大跌；当美元回软，其他外币升幅少，日元却会大升。无论如何，只要在当时的市场这样做对冲，都会获利。</p>
+<h3 id="投机和套利"><a href="#投机和套利" class="headerlink" title="投机和套利"></a>投机和套利</h3><p>市场上的炒家除了和其他炒家交易之外，也会和对冲的人交易获取投机利润<br>因为不同衍生工具有相同或极为相似的指定证券，他们的价格可能在短时间内会出现与指定证券或资产的价格背离，所以衍生工具交易也能提供套利机会。<br>炒家除了会投机涨跌（正向反向产品），还会投机波幅，期权和认股证等用作炒波幅（杠杆产品）。</p>
+<blockquote>
+<p>由于金融衍生工具其本身并不代表任何资产，而且相当多的金融衍生工具是建立在对标的物的层层的杠杆化包装之上的，投机衍生品会带来很大的风险。<br>比如在1995年时，衍生金融工具投机得到臭名远播。巴林银行的一名交易员<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%B0%BC%E5%85%8B%C2%B7%E6%9D%8E%E6%A3%AE">尼克·李森</a>，造成14亿美元的损失，损失的金额几乎是巴林银行可交易资金的两倍，这令这家有数百年历史的金融机构瞬间破产。</p>
+</blockquote>
+<h2 id="衍生工具的种类"><a href="#衍生工具的种类" class="headerlink" title="衍生工具的种类"></a>衍生工具的种类</h2><p>按照交易发生的场所来区分，可以分为场外交易和交易所交易衍生工具</p>
+<h3 id="场外交易衍生工具"><a href="#场外交易衍生工具" class="headerlink" title="场外交易衍生工具"></a>场外交易衍生工具</h3><p>场外交易衍生工具，是买卖双方之间（私下协商）直接交易的合约，无须通过交易场或其他中介机构。产品如掉期交易（swap）、远期利率协议以及奇异期权（exotic options）几乎都是用场外交易这种交易方式。</p>
+<h3 id="交易所买卖之衍生工具（ETD）"><a href="#交易所买卖之衍生工具（ETD）" class="headerlink" title="交易所买卖之衍生工具（ETD）"></a>交易所买卖之衍生工具（ETD）</h3><p>交易所买卖之衍生工具（ETD），顾名思义，是通过期货交易所或其他交易所买卖的衍生工具。衍生品交易所是一个中介机构，向交易双方收取孖展（margin 保证金）作为担保。</p>
+<p>这里简单列举一些衍生品的名称：</p>
+<ol>
+<li>权证（Warrant）</li>
+<li>牛熊证/合约（CBBC）</li>
+<li>期权（Option）</li>
+<li>期货（Futures）</li>
+<li>掉期（Swap，也称为互换）如信用违约掉期（CDS）</li>
+<li>资产支撑证券（ABS）以及在证券化资产上的进一步证券化包装</li>
+<li>可转债</li>
+<li>凭证（Obligation）如担保债务凭证（CDO）</li>
+<li>票据<br>等等</li>
+</ol>
+<h2 id="一些衍生工具的简介"><a href="#一些衍生工具的简介" class="headerlink" title="一些衍生工具的简介"></a>一些衍生工具的简介</h2><h3 id="权证（Warrant）"><a href="#权证（Warrant）" class="headerlink" title="权证（Warrant）"></a>权证（Warrant）</h3><center>
+![权证](https://ws2.sinaimg.cn/large/006tNc79gy1flvm69h4yij309i0dxt95.jpg)
+</center>
+
+<p>权证，又称“认股证”或“认股权证”，在香港俗称为“窝轮”。权证是一种金融衍生产品（工具），是依附于标的证券的有价证券，是持有者一种权利（但没有义务）的证明。</p>
+<h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><p>权证（share warrant），是指基础证券发行人或其以外的第三人发行的，约定持有人在规定期间内或特定到期日，有权按约定价格向发行人购买或出售标的证券，或以现金结算方式收取结算差价的有价证券。</p>
+<p>权证实质反映的是发行人与持有人之间的一种契约关系，持有人向权证发行人支付一定数量的价金之后，就从发行人那获取了一个权利。这种权利使得持有人可以在未来某一特定日期或特定期间内，以约定的价格向权证发行人购买/出售一定数量的资产。购买股票的权证称为认购权证，出售股票的权证叫作认售权证（或认沽权证）。</p>
+<p>需要注意的是持有人获取的是一个权利而不是责任，其有权决定是否履行契约，而发行者仅有被执行的义务，因此为获得这项权利，投资者需付出一定的代价(权利金既权证价格)。权证(实际上所有期权)与远期或期货的区别在于前者持有人所获得的不是一种责任，而是一种权利，后者持有人需有责任执行双方签订的买卖合约，即必须以一个指定的价格，在指定的未来时间，交易指定的相关资产，如不愿发生资产的交割，则合约双方需要在期货合约到期前冲销相关的交易。</p>
+<h4 id="权证的分类"><a href="#权证的分类" class="headerlink" title="权证的分类"></a>权证的分类</h4><h5 id="按照行权期限分类"><a href="#按照行权期限分类" class="headerlink" title="按照行权期限分类"></a>按照行权期限分类</h5><p>权证按照行权期限的设置分为 <strong>欧式权证</strong>、<strong>美式权证</strong> 和 <strong>百慕大式权证</strong>。欧式权证是只有到了到期日才能行权的权；美式权证则是一种在到期日之前随时都可以行权的权证；所谓百慕大式权证规定了持有人可在特定的几个日子或约定的到期日有权买卖标的证券。</p>
+<blockquote>
+<p>目前在香港市场上交易的权证都是欧式权证</p>
+</blockquote>
+<h5 id="按照买卖的方向分类"><a href="#按照买卖的方向分类" class="headerlink" title="按照买卖的方向分类"></a>按照买卖的方向分类</h5><p>权证按照买卖方向可以分为 <strong>认购权证</strong> 和 <strong>认沽权证</strong> 认购权证持有人有权按约定价格在特定期限内或到期日向发行人买入标的证券，认沽权证持有人则有权按约定价格卖出标的证券。</p>
+<h5 id="按照发行人分类"><a href="#按照发行人分类" class="headerlink" title="按照发行人分类"></a>按照发行人分类</h5><p>按照发行人不同可以分为 <strong>股本权证</strong> 和 <strong>备兑权证</strong>，股本权证由标的证券对应的上市公司主体发行。而备兑权证一本都是由券商，投行等声誉较佳的金融机构（称为做市商 market maker）发行的。做市商有责任为其发行的权证提供流动性，也就是提供买盘和卖盘的报价和挂单。</p>
+<p>香港市场上交易的权证都属于备兑权证，而备兑权证在香港又称为衍生权证（Derivative Warrant），这一类型的权证不仅发行人都是股本证券上市主体之外的第三方，也就是券商投行这些金融机构，而且这类权证的标的物也并非一定是股本证券，也可以是指数、ETF、外汇汇率，期货等产品。</p>
+<p>备兑的含义指其发行人将权证的指定证券或资产存放在独立的受托人、托管人或存管处，作为其履行责任的抵押，而受托人、托管人或存管处则代表权证持有人的利益。备兑权证的发行人依靠持有或者沽出标的资产仓位来对冲认股证的损益，而不是像股本权证那样靠增发股份来兑付行权的结果。这和中央银行持有储备资产并发行信用货币的行为有些类似。</p>
+<center>
+![南方东英 A50 ETF 认购证](https://ws2.sinaimg.cn/large/006tNc79gy1flvngpu5khj309n0ds0t6.jpg)
+
+<p>南方东英 A50 ETF 认购证</p>
+</center>
+
+<center>
+![期货原油认沽证](https://ws3.sinaimg.cn/large/006tNc79gy1flvnjk0ku9j309n0dxt92.jpg)
+
+<p>期货原油认沽证</p>
+</center>
+
+<center>
+![恒指认购证](https://ws4.sinaimg.cn/large/006tNc79gy1flvnl6qctjj309v0eo0t7.jpg)
+
+<p>恒生指数认购证</p>
+</center>
+
+
+<table>
+<thead>
+<tr>
+<th align="left">区分点</th>
+<th align="left">股本权证</th>
+<th align="left">备兑权证</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">发行人</td>
+<td align="left">标的证券发行人</td>
+<td align="left">标的证券发行人以外的第三方</td>
+</tr>
+<tr>
+<td align="left">标的证券</td>
+<td align="left">需要发行新股</td>
+<td align="left">已在交易所挂牌交易的证券、ETF、指数<br>或者其他可交易的产品</td>
+</tr>
+<tr>
+<td align="left">发行目的</td>
+<td align="left">为筹资或高管人员激励用</td>
+<td align="left">为投资者提供避险、套利工具</td>
+</tr>
+<tr>
+<td align="left">行权结果</td>
+<td align="left">公司股份增加、每股净值稀释</td>
+<td align="left">不造成股本增加或权益稀释</td>
+</tr>
+</tbody></table>
+<center>
+股本权证和备兑权证的区别
+</center>
+
+<h5 id="按照权证行使价分类"><a href="#按照权证行使价分类" class="headerlink" title="按照权证行使价分类"></a>按照权证行使价分类</h5><p>按照行使价分类可以将权证分为价内，价平，价外三类，见下表：</p>
+<table>
+<thead>
+<tr>
+<th align="left">价格关系</th>
+<th align="left">认购权证</th>
+<th align="left">认沽权证</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">行使价格＞标的资产收盘价格</td>
+<td align="left">价外</td>
+<td align="left">价内</td>
+</tr>
+<tr>
+<td align="left">行使价格＝标的证券收盘价格</td>
+<td align="left">价平</td>
+<td align="left">价平</td>
+</tr>
+<tr>
+<td align="left">行使价格＜标的证券收盘价格</td>
+<td align="left">价内</td>
+<td align="left">价外</td>
+</tr>
+</tbody></table>
+<h4 id="权证的发展过程"><a href="#权证的发展过程" class="headerlink" title="权证的发展过程"></a>权证的发展过程</h4><h4 id="权证的基本要素"><a href="#权证的基本要素" class="headerlink" title="权证的基本要素"></a>权证的基本要素</h4><p>从权证的设计和运作来看，包括以下几个要素：</p>
+<h5 id="发行人"><a href="#发行人" class="headerlink" title="发行人"></a>发行人</h5><p>股本权证的发行人为标的上市公司，而衍生权证的发行人为标的公司以外的第三方，一般为大股东或券商。在后一种情况下，发行人往往需要将标的证券存放于独立保管人处，作为其履行责任的担保。</p>
+<h5 id="看涨和看跌方向"><a href="#看涨和看跌方向" class="headerlink" title="看涨和看跌方向"></a>看涨和看跌方向</h5><p>当权证持有人拥有从发行人处购买标的证券的权利时，该权证为看涨权证。反之，当权证持有人拥有向发行人出售标的证券的权利时，该权证为看跌权证。认股权证一般指看涨权证。</p>
+<h5 id="到期日"><a href="#到期日" class="headerlink" title="到期日"></a>到期日</h5><p>到期日是权证持有人可行使认购（或出售）权利的最后日期。该期限过后，权证持有人便不能行使相关权利，权证的价值也变为零。</p>
+<h5 id="执行方式"><a href="#执行方式" class="headerlink" title="执行方式"></a>执行方式</h5><p>在美式执行方式下，持有人在到期日以前的任何时间内均可行使认购权；而在欧式执行方式下，持有人只有在到期日当天才可行使认购</p>
+<h5 id="交割方式"><a href="#交割方式" class="headerlink" title="交割方式"></a>交割方式</h5><p>交割方式包括实物交割和现金交割两种形式，其中，实物交割指投资者行使认股权利时从发行人处购入标的证券，而现金交割指投资者在行使权利时，由发行人向投资者支付市价高于执行价的差额。
+　　</p>
+<h5 id="行权价"><a href="#行权价" class="headerlink" title="行权价"></a>行权价</h5><p>认股价是发行人在发行权证时所订下的价格，持证人在行使权利时以此价格向发行人认购标的股票。</p>
+<h5 id="权证价格"><a href="#权证价格" class="headerlink" title="权证价格"></a>权证价格</h5><p>权证价格由内在价值和时间价值两部分组成。当正股股价（指标的证券市场价格）高于认股价时，内在价值为两者之差；而当正股股价低于认股价时，内在价值为零。但如果权证尚没有到期，正股股价还有机会高于认股价，因此权证仍具有市场价值，这种价值就是时间价值。</p>
+<h5 id="换股比率-认购比率"><a href="#换股比率-认购比率" class="headerlink" title="换股比率/认购比率"></a>换股比率/认购比率</h5><p>换股比率是认购 1 股标的资产需要的认股证数量，如换股比率为 100，就表示每 100 张权证可认购 1 股标的资产。认购比率表示的是每张权证可以认购的标的资产数量，所以 <strong><code>认购比率 = 1 / 换股比率</code></strong>。</p>
+<h5 id="杠杆比率（Leverage-ratio）"><a href="#杠杆比率（Leverage-ratio）" class="headerlink" title="杠杆比率（Leverage ratio）"></a>杠杆比率（Leverage ratio）</h5><p>杠杆比率是正股市价与购入一股正股所需权证的市价之比，即：<strong><code>杠杆比率＝正股股价/（权证价格÷认购比率）</code></strong>。杠杆比率可用来衡量“以小博大”的放大倍数，杠杆比率越高，投资者盈利率也越高，当然，其可能承担的亏损风险也越大。</p>
+<h5 id="对冲值（Delta）"><a href="#对冲值（Delta）" class="headerlink" title="对冲值（Delta）"></a>对冲值（Delta）</h5><p>对冲值，用以量度认股权证理论价格对相关资产价格变动的敏感度。另外，对冲值亦是根据期权理论价格模式，计算投资者在到期日时，行使该认股证的机会率，故其数值只会在0至1之间。而认沽证的对冲值就会在0至-1之间。Delta也显示发行人要对冲一份认股证时，需要买入或沽出的股份数目。举例说：某公司甲认购证的对冲值为 0.45、换股比率为1兑1，意指每当公司甲股票价格变动1.00元时，该认购证的理论价格便变动0.45元。同时，这也表示为了对冲每1000万份已售出的认购证，发行人需要购入450万股公司甲的股份。</p>
+<p>对冲值反映窝轮在到期时成为价内的机会，深入价外窝轮的对冲值接近0，表示窝轮只有接近0的机会于到期时成为价内；贴价窝轮的对冲值接近50％，表示窝轮于到期时成为价内的机会接近50％；深入价内窝轮的对冲值的绝对值接近100％，表示窝轮到期成为价内的机会接近100％。</p>
+<h5 id="时间递耗值-Theta"><a href="#时间递耗值-Theta" class="headerlink" title="时间递耗值(Theta)"></a>时间递耗值(Theta)</h5><p>时间递耗值也就是权证的价值磨损显示衍生权证剩余时间的变动引致衍生权证价格的变动。由于时间递耗值量度时间递耗对衍生权证的影响，其数值必属负数。举例来说，如每日时间递耗值为 -0.0015，即假设其他因素维持不变，权证的价值每日会跌0.0015元。</p>
+<h5 id="引伸波幅（Implied-volatility）"><a href="#引伸波幅（Implied-volatility）" class="headerlink" title="引伸波幅（Implied volatility）"></a>引伸波幅（Implied volatility）</h5><p>引伸波幅是将市场上的权证交易价格代入权证理论价格模型，反推出来的波动率数值，也称为隐含波动率。权证的理论价格采用 <a target="_blank" rel="noopener" href="http://wiki.mbalib.com/wiki/Black%E2%80%94Scholes%E5%85%AC%E5%BC%8F">Black—Scholes 期权定价模型</a> 来计算。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1flvtb8j360j30s00eqaao.jpg" alt="B-S 期权定价模型"></p>
+<p>只要将权证当前的价格带入 C 中，L，S，T，r 均为已知量，这样就可以解出唯一的未知数 σ2，这就是所谓的引伸波幅。</p>
+<p>可以看到所谓的引伸波幅实际上是描述了一个权证对应的标的资产价格的波动率，　一般来说，认股权证正股的隐含波动率普遍比历史波动率要高，两者具有正相关关系。若正股历史波动率高，相关权证的隐含波动率也较高；若正股历史波动率低，相关的权证隐含波动率也相对较低。特别是在发行权证时，发行人会把正股的历史波动率作为依据之一来确定权证的隐含波动率，从而确定权证价格。此外，供求关系也会影响隐含波动率，隐含波动率在某种程度上是权证供求关系的一个反映。当投资者对某只权证需求旺盛，使得权证价格虚高，引申波幅达到了较高的水平，甚至远高于正股的实际波幅。</p>
+<p><strong>以上参数中最重要的是权证当前的价格，换股比率，到期日和行使价，这几个参数构成了一个权证的基本属性。</strong></p>
+<blockquote>
+<p>注意，以上提及的技术性参数不是固定值，它们会根据市场的行情不时改变。</p>
+</blockquote>
+<h4 id="权证的价值"><a href="#权证的价值" class="headerlink" title="权证的价值"></a>权证的价值</h4><p>　　权证价值由两部分组成，一是内在价值，即标的股票与行权价格的差价；二是时间价值，代表持有者对未来股价波动带来的期望与机会。在其他条件相同的情况下，权证的存续期越长，权证的价格越高。
+　　
+　　</p>
+<h4 id="如何看一只权证"><a href="#如何看一只权证" class="headerlink" title="如何看一只权证"></a>如何看一只权证</h4><p>下面我们来看一只港交所挂牌的权证，结合以上讲到的内容来分析一下从这个权证的信息中我们可以知道什么：</p>
+<center>
+![](https://ws1.sinaimg.cn/large/006tNc79gy1flvr7cif0pj309s0ecaap.jpg)
+
+<p>权证示例</p>
+</center>
+
+<p>以11090这个认购证为例，我们从它的名称中可以得到一些信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">腾讯         瑞信               七乙购                I.                       C</span><br><span class="line">^^           ^^                ^^                   ^                        ^</span><br><span class="line">正股是腾讯控股 发行人是瑞士信贷公司 到期日是2017年12月（乙）瑞信发行的第9只七乙购   认购权证（call）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>价内价外：可以看到这个认购证的行使价高于当前正股的价格，所以这是一个价外的权证。</p>
+</li>
+<li><p>溢价：表示当前这个权证的名义价格高于权证的实际价格 4.9%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">认购权证溢价率&#x3D;（行权价+认购权证价格 x 换股比率-正股价）&#x2F;正股价 x 100% </span><br><span class="line">认沽权证溢价率&#x3D;（正股价+认沽权证价格 x 换股比率-行权价）&#x2F;正股价 x 100% </span><br></pre></td></tr></table></figure>
+<p>eg. ((421.08 + 1.51 x 10 - 415.8)  / 415.8) x 100% = 4.90%</p>
+</li>
+<li><p>杠杆比率：这里的杠杆比率描述的是这个权证的名义杠杆。表示的是相关资产价格高于权证价格的倍数。计算方式为： <code>名义杠杆=正股股价/权证价格  x 换股比率</code>。</p>
+</li>
+<li><p>有效杠杆：指的是这个权证的实际杠杆，实际杠杆会将对冲值考虑在内。计算方式为：<code>实际杠杆=名义杠杆 x 对冲值</code>。这个数据表示了这个权证价格随正股的实际波动情况，比如腾讯控股上涨 1%，那么这个权证理论上将会上涨 13.02%。</p>
+</li>
+<li><p>换股比率：既每 10 张认购证可以换取 1 股腾讯控股的股票</p>
+</li>
+<li><p>行权价：表示权证到期时持有人将可以用 10 张该权证以 421.080 港元的价格购买1 股腾讯控股的股票。</p>
+</li>
+<li><p>引伸波幅：这个权证的隐含波动率为 35.108%</p>
+</li>
+<li><p>街货占比：假如该投行发行了1亿张该认股权证，街货占比 41.40% 表示当前已经有占总发行量 41.40% 的权证也就是 4140万张权证在当日收盘后留在了投资者的手中。街货占比小的权证做市商对价格的控制能力就越强，街货占比大的权证价格容易被市场情绪所影响导致“不跟价”的情况出现。</p>
+</li>
+<li><p>打和点：因为该权证行使认购股票的权力时需要支付 <code>1.51 x 10 = 15.10</code> 港元的认购证的权利费用。所以只有股价达到 <code>421.080（行使价）+ 15.10（权利费）= 431.18</code> 港元时，这个认购权证才能真正获利。打和点表示的就是行权时盈亏的界限。</p>
+</li>
+<li><p>换股价：<code>1.51（权证价格）x 10（换股比率）= 15.10</code></p>
+</li>
+<li><p>对冲值：表示了当正股上涨 1 港元时权证价格会上涨 0.473 港元亦表示当投资者购每购买 1 港元该认购证时做市商需要购买 0.473 港元的腾讯控股来做对冲</p>
+</li>
+</ul>
+<p>这样我们就看懂了一个港交所挂牌的权证。</p>
+<h4 id="权证的风险"><a href="#权证的风险" class="headerlink" title="权证的风险"></a>权证的风险</h4><p>权证在用于投机时提升风险，加杠杆使收益的方差扩大；在用于套期保值时，降低风险，使收益的方差降低。</p>
+<blockquote>
+<p>例如<br><img src="https://ws3.sinaimg.cn/large/006tNc79gy1flvurkmajrj30li0eh0tt.jpg" alt="暴涨"></p>
+</blockquote>
+<p>半日之内 17474 权证暴涨 344.44% 后续收盘又回落 30% 收于 240.74% 权证持有者的资产半日内即可翻 3 倍，但是于半日内又可下跌 30%，振幅很大。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1flvusurhrgj30li0e2dgr.jpg" alt="暴跌"></p>
+<p>权证 16122 开盘不久即遭重挫，下跌超过 80%，如果大量仓位持有该权证很可能导致投资者血本无归。</p>
+<p>所以，权证投资有风险，入市交易需谨慎。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%B0%BC%E5%85%8B%C2%B7%E6%9D%8E%E6%A3%AE">尼克.李森</a></li>
+<li><a target="_blank" rel="noopener" href="http://wiki.mbalib.com/wiki/%E6%9D%83%E8%AF%81">权证</a></li>
+<li><a target="_blank" rel="noopener" href="http://wiki.mbalib.com/wiki/%E8%9D%B6%E5%BC%8F%E6%9D%83%E8%AF%81">蝶式权证</a></li>
+<li><a target="_blank" rel="noopener" href="http://wiki.mbalib.com/wiki/%E9%A9%AC%E9%9E%8D%E5%BC%8F%E7%AD%96%E7%95%A5">鞍式权证</a></li>
+<li><a target="_blank" rel="noopener" href="http://wiki.mbalib.com/wiki/Black-Scholes%E6%9C%9F%E6%9D%83%E5%AE%9A%E4%BB%B7%E6%A8%A1%E5%9E%8B">B-S 定价模型</a></li>
+<li><a target="_blank" rel="noopener" href="http://wiki.mbalib.com/wiki/%E5%BC%95%E4%BC%B8%E6%B3%A2%E5%B9%85">引伸波幅</a></li>
+<li><a target="_blank" rel="noopener" href="http://finance.sina.com.cn/stock/hkstock/warrants/20110917/145910497249.shtml">如何用权证对冲风险及实战操作技巧</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%A1%8D%E7%94%9F%E5%93%81%E5%AD%A6%E4%B9%A0/" rel="tag"># 衍生品学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/11/03/iOS/cocoapods-down-highsierra/" rel="prev" title="High Sierra (macOS10.13) 下 CocoaPods 报错的处理方法">
+                  <i class="fa fa-chevron-left"></i> High Sierra (macOS10.13) 下 CocoaPods 报错的处理方法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/11/29/Front_End/front-end-engineering/use-babel-and-mocha-for-testing/" rel="next" title="使用 mocha 和 babel 来测试你的 es6 代码">
+                  使用 mocha 和 babel 来测试你的 es6 代码 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

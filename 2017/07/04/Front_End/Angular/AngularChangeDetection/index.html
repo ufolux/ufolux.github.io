@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="相比 Angular1 而言 Angular2 的变更检查机制更加透明，更加可预测。但是在使用 Angular2 开发的过程中依然存在着一些场景（比如性能优化）需要我们更深入的了解在框架的底层究竟发生了什么。 本文包含如下内容：  变化产生于异步操作 为浏览器打补丁 Zone.js 补丁是如何工作的 Angular2 中 Zone 的应用 自动检查数据变化 可选的变更检查     Angular2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解 Angular2 的变更检查原理">
+<meta property="og:url" content="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="相比 Angular1 而言 Angular2 的变更检查机制更加透明，更加可预测。但是在使用 Angular2 开发的过程中依然存在着一些场景（比如性能优化）需要我们更深入的了解在框架的底层究竟发生了什么。 本文包含如下内容：  变化产生于异步操作 为浏览器打补丁 Zone.js 补丁是如何工作的 Angular2 中 Zone 的应用 自动检查数据变化 可选的变更检查     Angular2">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://www.plantuml.com/plantuml/png/PLDDRzD04BtxL-pHaG9H3tmKBgrQAYg84bMLGDpMpYJTThqsk-DMkL49gKafAeU2K458HQ8S-0Yb4ZGV4dyctePJ_WA37I0kFksyUM_sxSnupY3N60VIGO4Is8DGmULrmwHGm6PchrwvD3Dx_PgJiXnHTt_dMTBfZawExDSZ-xezUliXQRrA-hq2mpLGp6s2AJYClXiPdfQycI4HHt-DLNKO29F7K0IWNGDOyYLmpLOf3cCiicM5e3Uvf5CGG4rmX49EEQz4m564Qhwwp5mD3sCmL8Kh7-I_v9BcmGKXbw2n596PYFYXgWiTv0Ym2GfNkMu0vd2IH2HjBeBnjOWmr4Ms1Pu9_GqWnw6gPWG19gTRaDmOvfPZJ2rLF4Cl0rsy1zuTWV_1IqB22l0QwBplYhSEFh8Qr6b6awkQfLn8DwUAag-16bQY5rIs_jYQyitiYwuzVJuUxANqOV-TFUZOlUsVEq-JpuV3RZivUMCVlHyFMbcXsWANqkF-ndZG_Yiwwu-Ej-tBZjtTpUXsVt_quylvn-FXsQVpmySixMqZrjoZ1RC7NTjwnb37-GNGq126HdrBGa1jdqxTBz-zZHYjPADDC-vKlnShPJRiFHdslnKlK2UBIkq3QO2vAfnivkZxQRBJ8rZLH9sMEumSPuu2-Wz-0G00">
+<meta property="og:image" content="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/0f1b30a7-328a-4b05-a3a3-c96876583ba7.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/af797871-3441-448c-9bce-ac7555dac8b3.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/8b848add-a3f4-423a-a544-ad81f24caa34.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/96ae32a0-a570-432f-addc-9a91d1ff5d4c.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/dc3e2fbc-5699-4286-b7d0-e57bf3202252.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/4777abca-770b-4d8e-88e2-0813c46f813a.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/513fce5b-d017-48e1-acbc-55aad52d5532.png">
+<meta property="og:image" content="http://www.plantuml.com/plantuml/png/FP3BJi9G48RtvodEKZS-G5a8qOqRuzfTWoUbMeifXxW5WwGDnK8QcoeXG4of6xp4ModLf-aCzItiHTtC9VFz_qoctE2Ynfkd2k4oLvXGKQMc8cfqfoQg4gExZBCgb-igoJaY7DPLjdNSe74GufkL-3hStDFAmHv5mqvcNXoqIqJObpACWZu6lmUcKo8QEsCY_qtql2OhZ6x0fmr6d-Pi72pMjns8Bd3XnM4lNhsZuISp4zr76CpXmKHziBr9XCIVWpMaNAwUK7IM-78DKIlROhauUiMx5awyz8AYmEbolUgaNfbr3cIZ57EU4hyBew-i_NY6S1v7Bbpgt-q-N7KB2Kw7XSc_y6zgutXI8amz8kKqfA_x0G00">
+<meta property="article:published_time" content="2017-07-04T03:20:51.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.093Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.plantuml.com/plantuml/png/PLDDRzD04BtxL-pHaG9H3tmKBgrQAYg84bMLGDpMpYJTThqsk-DMkL49gKafAeU2K458HQ8S-0Yb4ZGV4dyctePJ_WA37I0kFksyUM_sxSnupY3N60VIGO4Is8DGmULrmwHGm6PchrwvD3Dx_PgJiXnHTt_dMTBfZawExDSZ-xezUliXQRrA-hq2mpLGp6s2AJYClXiPdfQycI4HHt-DLNKO29F7K0IWNGDOyYLmpLOf3cCiicM5e3Uvf5CGG4rmX49EEQz4m564Qhwwp5mD3sCmL8Kh7-I_v9BcmGKXbw2n596PYFYXgWiTv0Ym2GfNkMu0vd2IH2HjBeBnjOWmr4Ms1Pu9_GqWnw6gPWG19gTRaDmOvfPZJ2rLF4Cl0rsy1zuTWV_1IqB22l0QwBplYhSEFh8Qr6b6awkQfLn8DwUAag-16bQY5rIs_jYQyitiYwuzVJuUxANqOV-TFUZOlUsVEq-JpuV3RZivUMCVlHyFMbcXsWANqkF-ndZG_Yiwwu-Ej-tBZjtTpUXsVt_quylvn-FXsQVpmySixMqZrjoZ1RC7NTjwnb37-GNGq126HdrBGa1jdqxTBz-zZHYjPADDC-vKlnShPJRiFHdslnKlK2UBIkq3QO2vAfnivkZxQRBJ8rZLH9sMEumSPuu2-Wz-0G00">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>详解 Angular2 的变更检查原理 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E5%8C%96%E4%BA%A7%E7%94%9F%E4%BA%8E%E5%BC%82%E6%AD%A5%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">变化产生于异步操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E6%B5%8F%E8%A7%88%E5%99%A8%E6%89%93%E8%A1%A5%E4%B8%81"><span class="nav-number">2.</span> <span class="nav-text">为浏览器打补丁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Zone-js"><span class="nav-number">2.1.</span> <span class="nav-text">Zone.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A5%E4%B8%81%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84"><span class="nav-number">2.2.</span> <span class="nav-text">补丁是如何工作的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Angular2-%E4%B8%AD-Zone-%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">2.3.</span> <span class="nav-text">Angular2 中 Zone 的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E6%A3%80%E6%9F%A5%E6%95%B0%E6%8D%AE%E5%8F%98%E5%8C%96"><span class="nav-number">2.3.1.</span> <span class="nav-text">自动检查数据变化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%E7%9A%84%E5%8F%98%E6%9B%B4%E6%A3%80%E6%9F%A5"><span class="nav-number">2.3.2.</span> <span class="nav-text">可选的变更检查</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Angular2-x-%E5%8F%98%E6%9B%B4%E6%A3%80%E6%9F%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">Angular2.x 变更检查工作原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Angular-%E7%9A%84%E9%BB%98%E8%AE%A4%E5%8F%98%E6%9B%B4%E6%A3%80%E6%9F%A5%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="nav-number">3.1.</span> <span class="nav-text">Angular 的默认变更检查如何工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OnPush-%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">OnPush 模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2017/07/04/Front_End/Angular/AngularChangeDetection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          详解 Angular2 的变更检查原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2017-07-04 11:20:51" itemprop="dateCreated datePublished" datetime="2017-07-04T11:20:51+08:00">2017-07-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>相比 Angular1 而言 Angular2 的变更检查机制更加透明，更加可预测。但是在使用 Angular2 开发的过程中依然存在着一些场景（比如性能优化）需要我们更深入的了解在框架的底层究竟发生了什么。</p>
+<p>本文包含如下内容：</p>
+<ul>
+<li>变化产生于异步操作</li>
+<li>为浏览器打补丁<ul>
+<li>Zone.js</li>
+<li>补丁是如何工作的</li>
+<li>Angular2 中 Zone 的应用<ul>
+<li>自动检查数据变化</li>
+<li>可选的变更检查</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Angular2.x 变更检查工作原理<ul>
+<li>Angular 的默认变更检查如何工作</li>
+<li>OnPush 模式</li>
+</ul>
+</li>
+<li>总结</li>
+<li>参考资料</li>
+</ul>
+<blockquote>
+<p>本文的描述基于 Angular 2.4.9 版本</p>
+</blockquote>
+<span id="more"></span>
+
+<p>众所周知，在 Angular1 中我们需要使用 <code>$apply</code> 或者其他框架提供的方法来触发 <code>$digest</code> 循环来进行脏值检查，但是 Angular2 可以自动检查到组件属性的数据变化，并重新渲染视图来更新数据的展示。那么 Angular2 是怎样自动检查到数据变化的呢（比如页面上任意一个文本框的输入或者 Ajax 请求的响应等）。</p>
+<h2 id="变化产生于异步操作"><a href="#变化产生于异步操作" class="headerlink" title="变化产生于异步操作"></a>变化产生于异步操作</h2><p>在组件初始化之后的<strong>一切</strong>数据变化均是由某个异步事件产生的，注意，这里是变化<strong>仅仅</strong>可能由异步事件来产生。因为初始化是一个同步过程，在 Angular2 框架中，组件的初始化对应的就是组件的构造方法被调用，这个构造过程是一个同步的过程。在构造过程之后就只有异步事件才会导致组件中的数据发生变化。这个事件，我们可以理解为鼠标的点击，ajax 请求，Promise，setTimeout 或者 Websocket 等等。</p>
+<h2 id="为浏览器打补丁"><a href="#为浏览器打补丁" class="headerlink" title="为浏览器打补丁"></a>为浏览器打补丁</h2><h3 id="Zone-js"><a href="#Zone-js" class="headerlink" title="Zone.js"></a>Zone.js</h3><p>为了能在这些事件发生的时候及时的检查变化，在 Angular2 应用启动的时候会为许多浏览器的提供的 API 打补丁，使用代理方法来代理浏览器 API 的调用，代理方法不仅会调用监听事件时提供的回调函数，还会执行变更检查以及刷新界面。</p>
+<p>这种为浏览器打补丁的工作，是由一个叫做 Zone.js 的库来完成的，Zone.js 是 Angular 团队在开发 Angular2 时实现的一个独立的库。Angular2 框架直接依赖 Zone.js 来实现变更检查。</p>
+<p>Zone.js 实际上是一个异步操作的执行上下文，它为一组异步操作提供了一个统一的运行环境，并且为这一组异步过程的生命周期提供了钩子方法，方便在异步事件进行的不同阶段执行一些任务。关于 Zone.js 的详细介绍，可以阅读<a target="_blank" rel="noopener" href="https://www.cnblogs.com/whitewolf/p/zone-js.html">这篇</a>文章。</p>
+<h3 id="补丁是如何工作的"><a href="#补丁是如何工作的" class="headerlink" title="补丁是如何工作的"></a>补丁是如何工作的</h3><p>为了探究 Zone.js 是如何帮助 Angular2 及时发现数据变化这个问题，首先我们深入源码看下，Zone.js 是如何为浏览器打补丁的。</p>
+<blockquote>
+<p>源码为 Zone.js v0.6.0 版本</p>
+</blockquote>
+<p>举一个例子，<code>addEventListener</code> 是浏览器提供的用于监听事件的 API，在 Angular 启动的时候将它替换成了一个新的版本，在 <code>zone.js</code> 文件中可以看到这样的代码：</p>
+<p>Zone.js patchEventTargetMethods</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">patchEventTargetMethods</span>(<span class="params">obj, addFnName, removeFnName, metaCreator</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (addFnName === <span class="keyword">void</span> <span class="number">0</span>) &#123; addFnName = ADD_EVENT_LISTENER; &#125;</span><br><span class="line">    <span class="keyword">if</span> (removeFnName === <span class="keyword">void</span> <span class="number">0</span>) &#123; removeFnName = REMOVE_EVENT_LISTENER; &#125;</span><br><span class="line">    <span class="keyword">if</span> (metaCreator === <span class="keyword">void</span> <span class="number">0</span>) &#123; metaCreator = defaultListenerMetaCreator; &#125;</span><br><span class="line">    <span class="keyword">if</span> (obj &amp;&amp; obj[addFnName]) &#123;</span><br><span class="line">        <span class="comment">// 在这里将 addEventListener 和 removeEventListener 分别替换为 makeZoneAwareAddListener 和 makeZoneAwareRemoveListener</span></span><br><span class="line">        patchMethod(obj, addFnName, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="keyword">return</span> makeZoneAwareAddListener(addFnName, removeFnName, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">false</span>, metaCreator); &#125;);</span><br><span class="line">        patchMethod(obj, removeFnName, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="keyword">return</span> makeZoneAwareRemoveListener(removeFnName, <span class="literal">true</span>, metaCreator); &#125;);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Zone.js 通过在 patchEventTargetMethods 方法中代理了两个事件监听 API。在 patchMethod 方法中，现将原来的 addEventListener 方法保存在 <code>__zone_symbol__addEventListener</code> 属性中，并将 <code>addEventListener</code> 替换为 <code>makeZoneAwareAddListener</code> 方法返回的 <code>zoneAwareAddListener</code> 方法。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">patchMethod</span>(<span class="params">target, name, patchFn</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> proto = target;</span><br><span class="line">    <span class="comment">// 省略了一些代码</span></span><br><span class="line">    (...)</span><br><span class="line">    <span class="comment">// 获取带前缀的方法名</span></span><br><span class="line">    <span class="keyword">var</span> delegateName = zoneSymbol(name);</span><br><span class="line">    <span class="keyword">var</span> delegate;</span><br><span class="line">    <span class="comment">// 检查是否已经 patch 过</span></span><br><span class="line">    <span class="keyword">if</span> (proto &amp;&amp; !(delegate = proto[delegateName])) &#123;</span><br><span class="line">        delegate = proto[delegateName] = proto[name];</span><br><span class="line">        <span class="comment">// 获取代理方法</span></span><br><span class="line">        <span class="keyword">var</span> patchDelegate_1 = patchFn(delegate, delegateName, name);</span><br><span class="line">        <span class="comment">// 将代理方法赋给对象的 addEventListener 属性</span></span><br><span class="line">        proto[name] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> patchDelegate_1(<span class="built_in">this</span>, <span class="built_in">arguments</span>);</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">// 将原来的方法实现作为属性添加到 proto[name] 上面</span></span><br><span class="line">        attachOriginToPatched(proto[name], delegate);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 返回原方法</span></span><br><span class="line">    <span class="keyword">return</span> delegate;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>下面来看下 <code>makeZoneAwareAddListener</code> 方法都做了些什么</p>
+<p>Zone.js makeZoneAwareAddListener</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">makeZoneAwareAddListener</span>(<span class="params">addFnName, removeFnName, useCapturingParam, allowDuplicates, isPrepend, metaCreator</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 省略了一些代码</span></span><br><span class="line">    (...)</span><br><span class="line">    <span class="comment">// 调度事件的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">scheduleEventListener</span>(<span class="params">eventTask</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> meta = eventTask.data;</span><br><span class="line">        attachRegisteredEvent(meta.target, eventTask, isPrepend);</span><br><span class="line">        <span class="keyword">return</span> meta.invokeAddFunc(addFnSymbol, eventTask);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 取消事件监听的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">cancelEventListener</span>(<span class="params">eventTask</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> meta = eventTask.data;</span><br><span class="line">        findExistingRegisteredTask(meta.target, eventTask.invoke, meta.eventName, meta.useCapturing, <span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">return</span> meta.invokeRemoveFunc(removeFnSymbol, eventTask);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// self 是被监听的对象， args 是监听的事件，包括事件名称和 callback</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">zoneAwareAddListener</span>(<span class="params">self, args</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 根据事件的名称和回调方法创建封装 ZoneTask 的 data 对象</span></span><br><span class="line">        <span class="keyword">var</span> data = metaCreator(self, args);</span><br><span class="line">        <span class="comment">// 省略了一些代码</span></span><br><span class="line">        (...)</span><br><span class="line">        <span class="comment">// 获取当前的 Zone</span></span><br><span class="line">        <span class="keyword">var</span> zone = Zone.current;</span><br><span class="line">        <span class="keyword">var</span> source = data.target.constructor[<span class="string">&#x27;name&#x27;</span>] + <span class="string">&#x27;.&#x27;</span> + addFnName + <span class="string">&#x27;:&#x27;</span> + data.eventName;</span><br><span class="line">        <span class="comment">// 创建 ZoneTask 并开始调度这个 Task</span></span><br><span class="line">        zone.scheduleEventTask(source, delegate, data, scheduleEventListener, cancelEventListener);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在方法返回的 <code>zoneAwareAddListener</code> 方法中我们会看到这一句代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zone.scheduleEventTask(source, delegate, data, scheduleEventListener, cancelEventListener)</span><br></pre></td></tr></table></figure>
+<p>它会创建 ZoneTask 并调用 <code>scheduleEventListener</code> 方法。这个方法中又调用了 <code>invokeAddFunc</code> 方法，方法中有如下的语句：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.target[addFnSymbol](<span class="built_in">this</span>.eventName, delegate.invoke, <span class="built_in">this</span>.useCapturing);</span><br></pre></td></tr></table></figure>
+
+<p>target 是被监听的对象，target[addFnSymbol] 是浏览器提供的原始的 addEventListener 方法，在这里，Zone.js 才真正地将 Task 的 invoke 方法与事件绑定在一起。当事件被触发时候，便会调用 Task.invoke 在 invoke 中响应事件执行操作。</p>
+<p>当事件发生的时候，就会直接调用 invoke 方法来执行用户提供的 callback 以及其他的操作。</p>
+<p>至此也就完成了给 <code>addEventListener</code> 打补丁的工作，Zone.js 在加载的时候便会为浏览器上几乎全部的异步 api 打补丁，流程如下图所示：</p>
+<p><img src="http://www.plantuml.com/plantuml/png/PLDDRzD04BtxL-pHaG9H3tmKBgrQAYg84bMLGDpMpYJTThqsk-DMkL49gKafAeU2K458HQ8S-0Yb4ZGV4dyctePJ_WA37I0kFksyUM_sxSnupY3N60VIGO4Is8DGmULrmwHGm6PchrwvD3Dx_PgJiXnHTt_dMTBfZawExDSZ-xezUliXQRrA-hq2mpLGp6s2AJYClXiPdfQycI4HHt-DLNKO29F7K0IWNGDOyYLmpLOf3cCiicM5e3Uvf5CGG4rmX49EEQz4m564Qhwwp5mD3sCmL8Kh7-I_v9BcmGKXbw2n596PYFYXgWiTv0Ym2GfNkMu0vd2IH2HjBeBnjOWmr4Ms1Pu9_GqWnw6gPWG19gTRaDmOvfPZJ2rLF4Cl0rsy1zuTWV_1IqB22l0QwBplYhSEFh8Qr6b6awkQfLn8DwUAag-16bQY5rIs_jYQyitiYwuzVJuUxANqOV-TFUZOlUsVEq-JpuV3RZivUMCVlHyFMbcXsWANqkF-ndZG_Yiwwu-Ej-tBZjtTpUXsVt_quylvn-FXsQVpmySixMqZrjoZ1RC7NTjwnb37-GNGq126HdrBGa1jdqxTBz-zZHYjPADDC-vKlnShPJRiFHdslnKlK2UBIkq3QO2vAfnivkZxQRBJ8rZLH9sMEumSPuu2-Wz-0G00" alt="Zone.js line 1965-1987|center" title="Zone.js line 1965-1987"></p>
+<p>经过以上的探究，我们发现 Zone 为异步事件的处理提供了代理方法，在所有的异步事件被触发的时候都会先经过 Zone 的代理方法，这样一来，凡是在 Zone 内执行的异步事件的执行过程都在 Zone 的掌控之下，Zone 也就可以知道这一组异步事件在什么时候执行完成。而数据的变化是且仅可能是由于异步事件而产生的，那么 Angular 也就可以通过监听 Zone 的生命周期事件来得知什么时候应该进行变更检查了。</p>
+<h3 id="Angular2-中-Zone-的应用"><a href="#Angular2-中-Zone-的应用" class="headerlink" title="Angular2 中 Zone 的应用"></a>Angular2 中 Zone 的应用</h3><h4 id="自动检查数据变化"><a href="#自动检查数据变化" class="headerlink" title="自动检查数据变化"></a>自动检查数据变化</h4><p>在 ng_zone.js 中可以看到：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">NgZone.prototype.onEnter = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>._nesting++;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">this</span>._isStable) &#123;</span><br><span class="line">        <span class="built_in">this</span>._isStable = <span class="literal">false</span>;</span><br><span class="line">        <span class="built_in">this</span>._onUnstable.emit(<span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">NgZone.prototype.onLeave = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>._nesting--;</span><br><span class="line">    <span class="built_in">this</span>.checkStable();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">NgZone.prototype.setHasMicrotask = <span class="function"><span class="keyword">function</span> (<span class="params">hasMicrotasks</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>._hasPendingMicrotasks = hasMicrotasks;</span><br><span class="line">    <span class="built_in">this</span>.checkStable();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">NgZone.prototype.setHasMacrotask = <span class="function"><span class="keyword">function</span> (<span class="params">hasMacrotasks</span>) </span>&#123; <span class="built_in">this</span>._hasPendingMacrotasks = hasMacrotasks; &#125;;</span><br><span class="line"></span><br><span class="line">NgZone.prototype.triggerError = <span class="function"><span class="keyword">function</span> (<span class="params">error</span>) </span>&#123; <span class="built_in">this</span>._onErrorEvents.emit(error); &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>Zone.js 暴露了一个 Zone 对象 生命周期中各阶段的钩子方法。这里列出了Angular2 所监听的事件，这些方法都会在 Zone 的各个生命周期钩子中被调用。当 NgZone run 之后，Angular 便会实例化一个叫做 <code>ApplicationRef</code> 的类，关键代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只写出了关键的步骤</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApplicationRef</span> </span>&#123;</span><br><span class="line">    _views:<span class="built_in">Array</span> = [];</span><br><span class="line">    <span class="function"><span class="title">constructor</span>(<span class="params">private zone: NgZone</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.zone.onMicrotaskEmpty.subscribe(<span class="function">() =&gt;</span> <span class="built_in">this</span>.zone.run(<span class="function">() =&gt;</span> <span class="built_in">this</span>.tick());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">tick</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>._runningTick = <span class="literal">true</span>;</span><br><span class="line">        <span class="built_in">this</span>._views.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">view</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span>  view.ref.detectChanges();</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>onMicrotaskEmpty</code> 事件会在当前 Zone 中的异步过程都已经完成的时候触发，当监听到这个事件后就去遍历 View 并且调用每个 view 的 <code>detectChanges</code> 方法来进行变更检查。</p>
+<p>基于以上原理，在 Angular2 中我们只要使用标准的浏览器 API 发起异步过程就可以在合适的时机触发变更检查。这避免了像 Angular1.x 中那样需要调用框架提供的方法来触发 <code>$digest</code> 的问题，与此同时也移除了开发者对 <code>$scope</code> 对象的感知。</p>
+<h4 id="可选的变更检查"><a href="#可选的变更检查" class="headerlink" title="可选的变更检查"></a>可选的变更检查</h4><p>并不是所有的异步操作都有必要触发变更检查，比如我们点了一下鼠标，但这个动作并不会引发数据变化，这时我们是不希望变更检查被触发的。由于 Angular2 应用运行在 NgZone 之中，所有在 NgZone 之中的异步操作都会通知框架进行变更检查。针对这个情况，NgZone 提供了一个 <code>runOutsideAngular</code> 方法，只要让我们的方法在 NgZone 之外运行，就不会触发 Angular2 的变更检查了。</p>
+<p><a target="_blank" rel="noopener" href="http://plnkr.co/edit/j9W2op4lGezi8eexwHg6?p=preview">这里</a>的代码演示了这个特性。</p>
+<p>当代码不在 NgZone 中运行的时候，异步事件是不会触发变更检查的，所以即使数值更新了，但是界面的显示仍然不变。</p>
+<h2 id="Angular2-x-变更检查工作原理"><a href="#Angular2-x-变更检查工作原理" class="headerlink" title="Angular2.x 变更检查工作原理"></a>Angular2.x 变更检查工作原理</h2><p>上面的的内容解释了 Angular2 的变更检查机制是如何被触发的，那么 Angular2 的变更检查机制是如何检查变更的呢？</p>
+<blockquote>
+<p>以下内容基于 Angular2.4.9</p>
+</blockquote>
+<h3 id="Angular-的默认变更检查如何工作"><a href="#Angular-的默认变更检查如何工作" class="headerlink" title="Angular 的默认变更检查如何工作"></a>Angular 的默认变更检查如何工作</h3><p>非 AOT 模式下 Angular2 将在运行时利用 JIT 机制创建组件的包装类，框架将会为每个组件生成相应的包装类，也就是说，对于每一个组件来讲，Angular 会为其生成至少两个类型 <code>View_ClassName_App</code> 和 <code>Wrapper_ClassName_App</code>，根组件还会生成一个 <code>View_ClassNameApp_Host</code>。 作为应用组件的入口，变更检查也是从这个地方开始的。</p>
+<p><code>View_ClassName_App</code> 类主要做了下面5件事：</p>
+<ol>
+<li>注入依赖</li>
+<li>创建组件中的 DOM 元素渲染页面</li>
+<li>响应绑定的事件</li>
+<li>利用变更检查器执行变更检查</li>
+<li>提供 debug 信息</li>
+</ol>
+<p><code>Wrapper_ClassName_App</code> 类主要是提供了组件的生命周期钩子。</p>
+<p>一个Angular2的应用是由组件组成的树，每个组件又有自己的变更检查器，于是变更检查器们也组成了一颗变更检查器树。无论当哪一个组件的变更检查被触发时 Angular2 都 会采用深度优先遍历的方式从根节点遍历整个变更检查器树，每个组件中都会包含一个类型为 <code>changeDetectorRef</code> 的变更检查器，在 JIT 模式下，这些变更检查器会被编译成为 <code>View_ClassName_App</code> 中的<br><code>detectChangesInternal</code> 方法，在这个方法中组件会对自己内部的数据绑定进行检查，调用自己的 ngOnChanges 生命周期方法，如果有子组件的话还会调用子组件的 <code>internalDetectChanges</code> 方法，将检查沿着树枝的方向进行下去，如下图所示：</p>
+<p><img src="/2017/07/04/Front_End/Angular/AngularChangeDetection/0f1b30a7-328a-4b05-a3a3-c96876583ba7.png" alt="Alt text | center"></p>
+<p>这个树也可以描述 Angular2 中组件的数据流，数据之所以是从上到下流动的，原因是变更检查也是从上到下的，每时每刻，每个组件中数据都是按照这个方向流动，这与 Angular1.x 不同，Angular2 的单向数据流让程序的行为更加可预测。</p>
+<p><img src="/2017/07/04/Front_End/Angular/AngularChangeDetection/af797871-3441-448c-9bce-ac7555dac8b3.png" alt="Alt text|center"></p>
+<p>在上图中我们可以看到，当我们往文本框中输入文字的时候，马上就会触发组件的变更检查，这时调用了 <code>View_InventoryApp0.detectChangesInternal</code> 方法，在方法中找到设置文本框内容的代码如下：<br><img src="/2017/07/04/Front_End/Angular/AngularChangeDetection/8b848add-a3f4-423a-a544-ad81f24caa34.png" alt="Alt text|center"><br>这时会比较新旧两个值是否相同，<code>jit_checkBinding25</code> 方法是框架编译生成的方法，在运行时找到实际上调用的是 <code>view_utils.checkBinding</code> 方法：<br><img src="/2017/07/04/Front_End/Angular/AngularChangeDetection/96ae32a0-a570-432f-addc-9a91d1ff5d4c.png" alt="Alt text|center"><br><code>throwOnChange</code> 的值是 false，所以这里会使用 <code>looseIdentical</code> 来进行新旧值的比较。这个方法存在于 <code>lang.js</code> 中实现如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">looseIdentical</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a === b || <span class="keyword">typeof</span> a === <span class="string">&#x27;number&#x27;</span> &amp;&amp; <span class="keyword">typeof</span> b === <span class="string">&#x27;number&#x27;</span> &amp;&amp; <span class="built_in">isNaN</span>(a) &amp;&amp; <span class="built_in">isNaN</span>(b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>只是简单比较了引用或者值是否相同，并没有做深度比较。所以数组或者对象等集合类型内部的值发生变化，Angular 并不能检查到。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (jit_checkBinding24(throwOnChange,self._expr_32,currVal_32)) &#123;</span><br><span class="line">    self.renderer.setText(self._text_5,currVal_32);</span><br><span class="line">    self._expr_32 = currVal_32;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的图中我们还看到了这样的代码，Angular 在检查变更之后立即更新了视图。</p>
+<p><img src="/2017/07/04/Front_End/Angular/AngularChangeDetection/dc3e2fbc-5699-4286-b7d0-e57bf3202252.png" alt="Alt text|center"><br>然后当当前组件所有的变更检查执行完成之后，开始检查子组件的变更，然后变更检查器会按照深度优先的规则遍历整个组件树，直到所有节点的变更检查都完成为止。</p>
+<p>由于单向数据流的原因，变更检查只需要执行一遍就可以稳定下来，如果在第一次检查中产生副作用使得已经检查过的节点发生了变化，Angular 会抛出异常。</p>
+<h3 id="OnPush-模式"><a href="#OnPush-模式" class="headerlink" title="OnPush 模式"></a>OnPush 模式</h3><p>在 Default 模式下，每一组异步操作结束之后都会触发对整个组件树的变更检查，在一些场景下，某些组件是不需要每次都被检查的，可以将它们标记为不可变对象，不可变对象给我们提供的保障是对象不会改变，即当其内部的属性发生变化时，我们将会用新的对象来替代旧的对象。它仅仅依赖初始化时的属性，也就是初始化时候属性没有改变（没有改变即没有产生一份新的引用），Angular将跳过对该组件的全部变化监测，直到有属性的引用发生变化为止。如果需要在Angular2中使用不可变对象，我们需要做的就是设置 <code>changeDetection: ChangeDetectionStrategy.OnPush</code>（如下所示） 启用 OnPush 模式来避免不必要的变更检查以提升程序的性能。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Component(&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  changeDetection: ChangeDetectionStrategy.OnPush</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">InventoryApp</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看一个<a target="_blank" rel="noopener" href="https://plnkr.co/edit/zGNlvnYsPSKbQPv7HxX3?p=preview">例子</a></p>
+<p><img src="/2017/07/04/Front_End/Angular/AngularChangeDetection/4777abca-770b-4d8e-88e2-0813c46f813a.png" alt="Alt text|center"><br>黄色部分是父组件，灰色的部分是子组件，子组件开启了 OnPush 模式。当我们点击黄色部分的时候，虽然改变了 <code>this.person.name</code> 的值，但是这个变化并不能被框架检测到，也就不能反映在视图上。使用了 OnPush 模式的组件，它的变更检查器将会被关闭，它与它的子节点都无法再检查到父组件带来的变更。</p>
+<p>要注意的是，由节点内部产生的变化依然会触发变更检查，还看上面的例子：<br><img src="/2017/07/04/Front_End/Angular/AngularChangeDetection/513fce5b-d017-48e1-acbc-55aad52d5532.png" alt="Alt text|center"><br>点击灰色的部分，也就是被设置为 OnPush 模式的子组件，这时触发了子组件中的 onclick 方法，改变了 <code>this.person.name</code> 的值，由于这个变更是由子组件内部事件导致的，这时将会触发变更检查，视图上的文字也会被更新。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>最后来总结一下 Angular 变更检查的整个过程</p>
+<ol>
+<li>Zone.js 为浏览器 API 打补丁</li>
+<li>NgZone 初始化，监听当前 Zone 中的异步事件执行是否完成</li>
+<li>异步事件执行结束后出发 tick 方法开始变更检查</li>
+<li>变更检查由根组件开始按照深度优先遍历变更检查器树</li>
+<li>在每个数据绑定的检查结束之后，立即更新视图</li>
+<li>在继续检查子组件直到所有组件检查完成</li>
+</ol>
+<p><img src="http://www.plantuml.com/plantuml/png/FP3BJi9G48RtvodEKZS-G5a8qOqRuzfTWoUbMeifXxW5WwGDnK8QcoeXG4of6xp4ModLf-aCzItiHTtC9VFz_qoctE2Ynfkd2k4oLvXGKQMc8cfqfoQg4gExZBCgb-igoJaY7DPLjdNSe74GufkL-3hStDFAmHv5mqvcNXoqIqJObpACWZu6lmUcKo8QEsCY_qtql2OhZ6x0fmr6d-Pi72pMjns8Bd3XnM4lNhsZuISp4zr76CpXmKHziBr9XCIVWpMaNAwUK7IM-78DKIlROhauUiMx5awyz8AYmEbolUgaNfbr3cIZ57EU4hyBew-i_NY6S1v7Bbpgt-q-N7KB2Kw7XSc_y6zgutXI8amz8kKqfA_x0G00" alt="changeDetect@1-14|center" title="changeDetect@1-14"></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://blog.thoughtram.io/angular/2016/01/22/understanding-zones.html#creating-forking-and-extending-zones">Understanding Zones</a><br><a target="_blank" rel="noopener" href="https://blog.thoughtram.io/angular/2016/02/22/angular-2-change-detection-explained.html#whats-change-detection-anyways">ANGULAR CHANGE DETECTION EXPLAINED</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/whitewolf/p/zone-js.html">Zone.js - 暴力之美</a><br><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/setImmediate">setImmediate</a><br><a target="_blank" rel="noopener" href="https://github.com/angular/zone.js/blob/master/dist/zone.js.d.ts">Zone.js API</a><br><a target="_blank" rel="noopener" href="https://juejin.im/entry/58636f198d6d81006500ae27">Angular 2 中的编译器与预编译（AoT）优化</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/" rel="prev" title="使用RxJS来构建响应式应用">
+                  <i class="fa fa-chevron-left"></i> 使用RxJS来构建响应式应用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/07/05/Front_End/ReactNative/remote-debug-thoery-of-reactnative/" rel="next" title="ReactNative 的远程调试原理">
+                  ReactNative 的远程调试原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

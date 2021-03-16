@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="了解 JavaScript 的内存泄露和解决方式！ 在这篇文章中我们将要探索客户端 JavaScript 代码中常见的一些内存泄漏的情况，并且学习如何使用 Chrome 的开发工具来发现他们。我们继续这个旅程！ 介绍内存泄露是每个开发者最终都不得不面对的问题。即便使用自动内存管理的语言，你还是会碰到一些内存泄漏的情况。内存泄露往往是其他一票问题的元凶，比如：运行缓慢，崩溃，高延迟，甚至一些与其他应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript 中4种常见的内存泄露陷阱">
+<meta property="og:url" content="https://ufolux.github.io/2016/05/19/Front_End/js-fondation/four-memory-leak-situation-in-js-code/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="了解 JavaScript 的内存泄露和解决方式！ 在这篇文章中我们将要探索客户端 JavaScript 代码中常见的一些内存泄漏的情况，并且学习如何使用 Chrome 的开发工具来发现他们。我们继续这个旅程！ 介绍内存泄露是每个开发者最终都不得不面对的问题。即便使用自动内存管理的语言，你还是会碰到一些内存泄漏的情况。内存泄露往往是其他一票问题的元凶，比如：运行缓慢，崩溃，高延迟，甚至一些与其他应">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://skyfly.xyz/images/4TypesLeakInJS/timeline.png">
+<meta property="og:image" content="http://skyfly.xyz/images/4TypesLeakInJS/profiles.png">
+<meta property="og:image" content="http://skyfly.xyz/images/4TypesLeakInJS/example-timeline.png">
+<meta property="og:image" content="http://skyfly.xyz/images/4TypesLeakInJS/example-snapshots-1.png">
+<meta property="og:image" content="http://skyfly.xyz/images/4TypesLeakInJS/example-snapshots-2.png">
+<meta property="og:image" content="http://skyfly.xyz/images/4TypesLeakInJS/example-recordedallocs-overview.png">
+<meta property="og:image" content="http://skyfly.xyz/images/4TypesLeakInJS/example-recordedallocs-selected.png">
+<meta property="og:image" content="http://skyfly.xyz/images/4TypesLeakInJS/example-recordedallocs-list.png">
+<meta property="article:published_time" content="2016-05-19T07:01:59.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.096Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://skyfly.xyz/images/4TypesLeakInJS/timeline.png">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2016/05/19/Front_End/js-fondation/four-memory-leak-situation-in-js-code/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>JavaScript 中4种常见的内存泄露陷阱 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">什么是内存泄漏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Javascript-%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">Javascript 的内存管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Javascript-%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">4.</span> <span class="nav-text">Javascript 中的内存泄露</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mark-and-sweep"><span class="nav-number">4.1.</span> <span class="nav-text">Mark-and-sweep</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84-Javascript-%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">5.</span> <span class="nav-text">3 种常见的 Javascript 内存泄露</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%84%8F%E5%A4%96%E7%9A%84%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F"><span class="nav-number">5.1.</span> <span class="nav-text">1: 意外的全局变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A2%AB%E9%81%97%E5%BF%98%E7%9A%84-timer-%E5%92%8C%E5%9B%9E%E8%B0%83"><span class="nav-number">5.2.</span> <span class="nav-text">2: 被遗忘的 timer 和回调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-DOM-%E4%B9%8B%E5%A4%96%E7%9A%84%E5%BC%95%E7%94%A8"><span class="nav-number">5.3.</span> <span class="nav-text">3: DOM 之外的引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%97%AD%E5%8C%85"><span class="nav-number">5.4.</span> <span class="nav-text">4: 闭包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E7%9A%84%E7%9B%B4%E8%A7%82%E8%A1%8C%E4%B8%BA"><span class="nav-number">6.</span> <span class="nav-text">垃圾收集器的直观行为</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Chrome-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E7%AE%80%E4%BB%8B"><span class="nav-number">7.</span> <span class="nav-text">Chrome 内存分析工具简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Timeline-view"><span class="nav-number">7.1.</span> <span class="nav-text">Timeline view</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Profiles-%E8%A7%86%E5%9B%BE"><span class="nav-number">7.2.</span> <span class="nav-text">Profiles 视图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%97%E5%AD%90-%E4%BD%BF%E7%94%A8-Chrome-%E6%9D%A5%E5%8F%91%E7%8E%B0%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">8.</span> <span class="nav-text">栗子: 使用 Chrome 来发现内存泄露</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%86%85%E5%AD%98%E6%98%AF%E5%90%A6%E5%91%A8%E6%9C%9F%E6%80%A7%E5%A2%9E%E9%95%BF"><span class="nav-number">8.1.</span> <span class="nav-text">查看内存是否周期性增长</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%8D%E4%B8%A4%E4%B8%AA%E5%BF%AB%E7%85%A7"><span class="nav-number">8.2.</span> <span class="nav-text">拍两个快照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E8%AE%B0%E5%BD%95%E5%A0%86%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%9D%A5%E5%8F%91%E7%8E%B0%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">8.3.</span> <span class="nav-text">通过记录堆内存分配来发现内存泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%9C%89%E7%94%A8%E7%9A%84%E7%89%B9%E6%80%A7"><span class="nav-number">8.4.</span> <span class="nav-text">其他有用的特性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">9.</span> <span class="nav-text">延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">10.</span> <span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2016/05/19/Front_End/js-fondation/four-memory-leak-situation-in-js-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript 中4种常见的内存泄露陷阱
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-05-19 15:01:59" itemprop="dateCreated datePublished" datetime="2016-05-19T15:01:59+08:00">2016-05-19</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>了解 JavaScript 的内存泄露和解决方式！</p>
+<p>在这篇文章中我们将要探索客户端 JavaScript 代码中常见的一些内存泄漏的情况，并且学习如何使用 Chrome 的开发工具来发现他们。我们继续这个旅程！</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>内存泄露是每个开发者最终都不得不面对的问题。即便使用自动内存管理的语言，你还是会碰到一些内存泄漏的情况。内存泄露往往是其他一票问题的元凶，比如：运行缓慢，崩溃，高延迟，甚至一些与其他应用相关的问题。</p>
+<span id="more"></span>
+
+<h2 id="什么是内存泄漏"><a href="#什么是内存泄漏" class="headerlink" title="什么是内存泄漏"></a>什么是内存泄漏</h2><p>本质上来讲，内存泄露是当一块内存不再被应用使用的时候，出于某种原因，这块内存没有返还给操作系统或者被送入可用内存池中的现象。编程语言使用不同的方式来管理内存。这些方式可能可以减少内存泄露的机会。然而，判断某一块具体的内存是否被使用实际上是一个不可判定问题（undecidable problem）。换句话说，只有开发者可以搞清楚一块内存是否应该被操作系统回收。某些编程语言提供了帮助开发者来处理这件事情的特性。维基百科上有几篇写的不错的讲述<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Manual_memory_management">手动
+</a>和<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Manual_memory_management">自动</a>内存管理的文章。</p>
+<h2 id="Javascript-的内存管理"><a href="#Javascript-的内存管理" class="headerlink" title="Javascript 的内存管理"></a>Javascript 的内存管理</h2><p>Javascript 是那些被称作垃圾收集语言当中的一员。垃圾收集语言通过周期性地检查那些之前被分配出去的内存是否可以从应用的其他部分到达来帮助开发者管理内存。换句话说，垃圾收集语言将内存管理的问题从“什么样的内存是仍然被使用的？”简化成为“什么样的内存时仍然可以从应用的其他部分到达的？”。两者的区别是细微的，但是很重要：开发者只需要知道一块已分配的内存是否会在将来被使用，而不可达的内存可以通过算法确定并标记以便返还给操作系统。</p>
+<blockquote>
+<p>非垃圾收集的语言通常使用其他的技术来管理内存，包括：显式内存管理，程序员显式地告诉编译器在何时不再需要某块内存；引用计数，一个计数器关联着每个内存块（当计数器的计数变为0的时候，这块内存就被操作系统回收）。这些技术都有它们的折中考虑（也就是说都有潜在的内存泄漏风险）。</p>
+</blockquote>
+<h2 id="Javascript-中的内存泄露"><a href="#Javascript-中的内存泄露" class="headerlink" title="Javascript 中的内存泄露"></a>Javascript 中的内存泄露</h2><p>引起垃圾收集语言内存泄露的主要原因是不需要的引用。想要理解什么是不需要的引用，首先我们需要理解一个垃圾收集器是怎样决定一块内存是否可达的。</p>
+<h3 id="Mark-and-sweep"><a href="#Mark-and-sweep" class="headerlink" title="Mark-and-sweep"></a>Mark-and-sweep</h3><p>大多数的垃圾收集器使用一个叫做 mark-and-sweep 的算法。这个算法由以下的几个步骤组成：</p>
+<p>垃圾收集器建立了一个“根节点”列表。根节点通常是那些引用被保留在代码中的全局变量。对于 Javascript 而言，“Window” 对象就是一个能作为根节点的全局变量例子。window 对象是一直都存在的（即：不是垃圾）。所有根节点都是检查过的并且被标记为活动的（即：不是垃圾）。所有的孩子节点也都被递归地检查过。每块可以从根节点到达的内存都不会被视为垃圾。<br>所有没有被标记为垃圾的内存现在可以被当做垃圾，而垃圾收集器也可以释放这些内存并将它们返还给操作系统。现代垃圾收集器使用不同的方式来改进这些算法，但是它们都有相同的本质：可以到达的内存块被标记为非垃圾而其余的就被视为垃圾。</p>
+<p>不需要的引用是那些程序员知道不再需要这块内存了，但是出于某种原因这块内存依然存在于活跃的根节点发出的节点树中。对于 Javascript 来讲，不需要的引用是那些被某些不再会被使用的代码持有的变量。这些变量指向了一块内存，否则就会被释放。一些人认为这是程序员的失误。</p>
+<p>所以想要理解什么是 Javascript 中最常见的内存泄露，我们需要知道在什么情况下引用会被忘记。</p>
+<h2 id="3-种常见的-Javascript-内存泄露"><a href="#3-种常见的-Javascript-内存泄露" class="headerlink" title="3 种常见的 Javascript 内存泄露"></a>3 种常见的 Javascript 内存泄露</h2><h3 id="1-意外的全局变量"><a href="#1-意外的全局变量" class="headerlink" title="1: 意外的全局变量"></a>1: 意外的全局变量</h3><p>Javascript 语言的设计目标之一是开发一种类似于 Java 但是对初学者十分友好的语言。体现 JavaScript 宽容性的一点表现在它处理未声明变量的方式上：一个未声明变量的引用会在全局对象中创建一个新的变量。在浏览器的环境下，全局对象就是 window，也就是说：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function foo(arg) &#123;</span><br><span class="line">    bar &#x3D; &quot;this is a hidden global variable&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际上是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function foo(arg) &#123;</span><br><span class="line">    window.bar &#x3D; &quot;this is an explicit global variable&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>如果 bar 是一个应该指向 foo 函数作用域内变量的引用，但是你忘记使用 var 来声明这个变量，这时一个全局变量就会被创建出来。在这个例子中，泄露一个简单的字符串不会造成很大的害处，但这无疑是错误的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function foo() &#123;</span><br><span class="line">    this.variable &#x3D; &quot;potential accidental global&quot;;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; Foo called on its own, this points to the global object (window)</span><br><span class="line">&#x2F;&#x2F; rather than being undefined.</span><br><span class="line">&#x2F;&#x2F; 函数自身发生了调用，this 指向全局对象（window），（译者注：这时候会为全局对象 window 添加一个 variable 属性）而不是 undefined。</span><br><span class="line"></span><br><span class="line">foo();</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>为了防止这种错误的发生，可以在你的 JavaScript 文件开头添加 <code>&#39;use strict&#39;;</code> 语句。这个语句实际上开启了解释 JavaScript 代码的严格模式，这种模式可以避免创建意外的全局变量。</p>
+</blockquote>
+<p><strong>全局变量的注意事项</strong></p>
+<p>尽管我们在讨论那些隐蔽的全局变量，但是也有很多被显式的全局变量污染的代码的例子。按照定义来讲，这些都是不会被回收的变量（除非置 null 或者被重新赋值）。特别需要注意的是那些被用来临时存储和处理一些大量的信息的全局变量。如果你必须使用全局变量来存储很多的数据，请确保在使用过后将它置为 null 或者将它重新赋值。常见的和全局变量相关的引发内存消耗增长的原因就是缓存。缓存存储着可复用的数据。为了让这种做法更高效，必须为缓存的容量规定一个上界。由于缓存不能被及时回收的缘故，缓存无限制地增长会导致很高的内存消耗。</p>
+<h3 id="2-被遗忘的-timer-和回调"><a href="#2-被遗忘的-timer-和回调" class="headerlink" title="2: 被遗忘的 timer 和回调"></a>2: 被遗忘的 timer 和回调</h3><p>在 JavaScript 中 setInterval 的使用十分常见。其他的库也经常会提供观察者和其他需要回调的功能。这些库中的绝大部分都会关注一点，就是当它们本身的实例被销毁之前销毁所有指向回调的引用。在 setInterval 这种情况下，一般情况下的代码是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var someResource &#x3D; getData();</span><br><span class="line">setInterval(function() &#123;</span><br><span class="line">    var node &#x3D; document.getElementById(&#39;Node&#39;);</span><br><span class="line">    if(node) &#123;</span><br><span class="line">        &#x2F;&#x2F; Do stuff with node and someResource.</span><br><span class="line">        node.innerHTML &#x3D; JSON.stringify(someResource));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, 1000);</span><br></pre></td></tr></table></figure>
+
+<p>这个例子说明了悬垂的 timer 会让这里发生什么：保留了节点或者数据的引用的 timer 失效了，那些节点表示的对象在将来会被移除掉。所以将整个代码块放在 interval 的处理函数中并不是必要的。然而，由于 interval 仍然没有失效，处理函数并不会被回收（只有 interval 停止运行之后才会开始回收内存）。如果 interval 的处理函数不能被回收，它的依赖们也同样无法被回收。这意味着一些资源，也许是一些相当大的数据都也无法被回收。</p>
+<p>下面举一个观察者的例子，当它们不再被需要的时候（或者关联对象将要失效的时候）显式地将他们移除是十分重要的。在以前，尤其是对于某些浏览器（IE6 你懂得）是一个至关重要的步骤，因为它们不能很好地管理循环引用（下面的代码描述了更多的细节）。现在，当观察者对象失效的时候便会被回收，即便 listener 没有被显式的移除，绝大多数的浏览器可以或者将会支持这个特性。尽管如此，在对象被销毁之前移除观察者依然是一个好的实践。示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var element &#x3D; document.getElementById(&#39;button&#39;);</span><br><span class="line"></span><br><span class="line">function onClick(event) &#123;</span><br><span class="line">    element.innerHtml &#x3D; &#39;text&#39;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">element.addEventListener(&#39;click&#39;, onClick);</span><br><span class="line">&#x2F;&#x2F; Do stuff</span><br><span class="line">element.removeEventListener(&#39;click&#39;, onClick);</span><br><span class="line">element.parentNode.removeChild(element);</span><br><span class="line">&#x2F;&#x2F; Now when element goes out of scope,</span><br><span class="line">&#x2F;&#x2F; both element and onClick will be collected even in old browsers that don&#39;t</span><br><span class="line">&#x2F;&#x2F; handle cycles well.</span><br></pre></td></tr></table></figure>
+
+<p><strong>对象观察者和循环引用中一些需要注意的点</strong></p>
+<p>观察者和循环引用常常会让 JavaScript 开发者踩坑。以前在 IE 浏览器的垃圾回收器上会导致一个 bug（或者说是浏览器设计上的问题）。旧版本的 IE 浏览器不会发现 DOM 节点和 JavaScript 代码之间的循环引用。这是一种观察者的典型情况，观察者通常保留着一个被观察者的引用（正如上述例子中描述的那样）。换句话说，在 IE 浏览器中，每当一个观察者被添加到一个节点上时，就会发生一次内存泄漏。这也就是开发者在节点或者空的引用被添加到观察者中之前显式移除处理方法的原因。目前，现代的浏览器（包括 IE 和 Microsoft Edge）都使用了可以发现这些循环引用并正确的处理它们的现代化垃圾回收算法。换言之，严格地讲，在废弃一个节点之前调用 removeEventListener 不再是必要的操作。</p>
+<p>像是 jQuery 这样的框架和库（当使用一些特定的 API 时候）都在废弃一个结点之前都做将了监听者移除的操作。它们在内部就已经处理了这些事情，并且保证不会产生内存泄露，即便程序运行在那些问题很多的浏览器中，比如老版本的 IE。</p>
+<h3 id="3-DOM-之外的引用"><a href="#3-DOM-之外的引用" class="headerlink" title="3: DOM 之外的引用"></a>3: DOM 之外的引用</h3><p>有些情况下将 DOM 结点存储到数据结构中会十分有用。假设你想要快速地更新一个表格中的几行，如果你把每一行的引用都存储在一个字典或者数组里面会起到很大作用。如果你这么做了，程序中将会保留同一个结点的两个引用：一个引用存在于 DOM 树中，另一个被保留在字典中。如果在未来的某个时刻你决定要将这些行移除，则需要将所有的引用清除。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">var elements &#x3D; &#123;</span><br><span class="line">    button: document.getElementById(&#39;button&#39;),</span><br><span class="line">    image: document.getElementById(&#39;image&#39;),</span><br><span class="line">    text: document.getElementById(&#39;text&#39;)</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">function doStuff() &#123;</span><br><span class="line">    image.src &#x3D; &#39;http:&#x2F;&#x2F;some.url&#x2F;image&#39;;</span><br><span class="line">    button.click();</span><br><span class="line">    console.log(text.innerHTML);</span><br><span class="line">    &#x2F;&#x2F; Much more logic</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function removeButton() &#123;</span><br><span class="line">    &#x2F;&#x2F; The button is a direct child of body.</span><br><span class="line">    document.body.removeChild(document.getElementById(&#39;button&#39;));</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; At this point, we still have a reference to #button in the global</span><br><span class="line">    &#x2F;&#x2F; elements dictionary. In other words, the button element is still in</span><br><span class="line">    &#x2F;&#x2F; memory and cannot be collected by the GC.</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>之所以要这么做的，还考虑到另一种情况，假设你在 JavaScript 代码中保留了一个表格中特定单元格(一个 <td> 标签)的引用。在将来你决定将这个表格从 DOM 中移除，但是仍旧保留这个单元格的引用。凭直觉，你可能会认为 GC 会回收除了这个单元格之外所有的东西，但是实际上这并不会发生：单元格是表格的一个子节点且所有子节点都保留着它们父节点的引用。换句话说，JavaScript 代码中对单元格的引用导致整个表格被保留在内存中。所以当你想要保留 DOM 元素的引用时，要仔细的考虑清除这一点。</td></p>
+<h3 id="4-闭包"><a href="#4-闭包" class="headerlink" title="4: 闭包"></a>4: 闭包</h3><p>JavaScript 开发中一个重要的内容就是闭包，它是可以捕获父作用域的匿名函数。Meteor 的开发者发现一个特殊的情况下有可能会以一种很微妙的方式产生内存泄漏，这取决于 JavaScript 运行时的实现细节。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">var theThing &#x3D; null;</span><br><span class="line">var replaceThing &#x3D; function () &#123;</span><br><span class="line">  var originalThing &#x3D; theThing;</span><br><span class="line">  var unused &#x3D; function () &#123;</span><br><span class="line">    if (originalThing)</span><br><span class="line">      console.log(&quot;hi&quot;);</span><br><span class="line">  &#125;;</span><br><span class="line">  theThing &#x3D; &#123;</span><br><span class="line">    longStr: new Array(1000000).join(&#39;*&#39;),</span><br><span class="line">    someMethod: function () &#123;</span><br><span class="line">      console.log(someMessage);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br><span class="line">setInterval(replaceThing, 1000);</span><br></pre></td></tr></table></figure>
+
+
+<p>这段代码做了一件事：每次调用 <code>replaceThing</code> 时，<code>theThing</code> 都会得到新的包含一个大数组和新的闭包（<code>someMethod</code>）的对象。同时，没有用到的那个变量持有一个引用了 <code>originalThing</code>（<code>replaceThing</code> 调用之前的 <code>theThing</code>）闭包。哈，是不是已经有点晕了？关键的问题是每当在同一个父作用域下创建闭包作用域的时候，这个作用域是被共享的。在这种情形下，<code>someMethod</code> 的闭包作用域和 <code>unused</code> 的作用域是共享的。<code>unused</code> 持有一个 <code>originalThing</code> 的引用。尽管 <code>unused</code> 从来没有被使用过，<code>someMethod</code> 可以在 <code>theThing</code> 之外被访问。而且 <code>someMethod</code> 和 <code>unused</code> 共享了闭包作用域，即便 <code>unused</code> 从来都没有被使用过，它对 <code>originalThing</code> 的引用还是强制它保持活跃状态（阻止它被回收）。当这段代码重复地运行时，将可以观察到内存消耗稳定地上涨，并且不会因为 GC 的存在而下降。本质上来讲，创建了一个闭包链表（根节点是 <code>theThing</code> 形式的变量），而且每个闭包作用域都持有一个对大数组的间接引用，这导致了一个巨大的内存泄露。</p>
+<blockquote>
+<p>这是一个由人来决定的实现。可以想到一个能够解决这个问题的不同的闭包实现，就像 Metero 的<a target="_blank" rel="noopener" href="http://info.meteor.com/blog/an-interesting-kind-of-javascript-memory-leak">博客</a>里面说的那样。</p>
+</blockquote>
+<h2 id="垃圾收集器的直观行为"><a href="#垃圾收集器的直观行为" class="headerlink" title="垃圾收集器的直观行为"></a>垃圾收集器的直观行为</h2><p>尽管垃圾收集器是便利的，但是使用它们也需要有一些利弊权衡。其中之一就是不确定性。也就是说，GC 的行为是不可预测的。通常情况下都不能确定什么时候会发生垃圾回收。这意味着在一些情形下，程序会使用比实际需要更多的内存。有些的情况下，在很敏感的应用中可以观察到明显的卡顿。尽管不确定性意味着你无法确定什么时候垃圾回收会发生，不过绝大多数的 GC 实现都会在内存分配时遵从通用的垃圾回收过程模式。如果没有内存分配发生，大部分的 GC 都会保持静默。考虑以下的情形：</p>
+<ol>
+<li>大量内存分配发生时。</li>
+<li>大部分（或者全部）的元素都被标记为不可达（假设我们讲一个指向无用缓存的引用置 null 的时候）。</li>
+<li>没有进一步的内存分配发生。</li>
+</ol>
+<p>这个情形下，GC 将不会运行任何进一步的回收过程。也就是说，尽管有不可达的引用可以触发回收，但是收集器并不要求回收它们。严格的说这些不是内存泄露，但仍然导致高于正常情况的内存空间使用。</p>
+<p>Google 在它们的 JavaScript 内存分析文档中提供一个关于这个行为的优秀例子，见<a target="_blank" rel="noopener" href="https://developer.chrome.com/devtools/docs/demos/memory/example2">例子#2</a>.</p>
+<h2 id="Chrome-内存分析工具简介"><a href="#Chrome-内存分析工具简介" class="headerlink" title="Chrome 内存分析工具简介"></a>Chrome 内存分析工具简介</h2><p>Chrome 提供了一套很好的工具用来分析 JavaScript 的内存适用。这里有两个与内存相关的重要视图：timeline 视图和 profiles 视图。</p>
+<h3 id="Timeline-view"><a href="#Timeline-view" class="headerlink" title="Timeline view"></a>Timeline view</h3><p><img src="http://skyfly.xyz/images/4TypesLeakInJS/timeline.png" alt="timeline"></p>
+<p>timeline 视图是我们用于发现不正常内存模式的必要工具。当我们寻找严重的内存泄漏时，内存回收发生后产生的周期性的不会消减的内存跳跃式增长会被一面红旗标记。在这个截图里面我们可以看到，这很像是一个稳定的对象内存泄露。即便最后经历了一个很大的内存回收，它占用的内存依旧比开始时多得多。节点数也比开始要高。这些都是代码中某处 DOM 节点内存泄露的标志。</p>
+<h3 id="Profiles-视图"><a href="#Profiles-视图" class="headerlink" title="Profiles 视图"></a>Profiles 视图</h3><p><img src="http://skyfly.xyz/images/4TypesLeakInJS/profiles.png" alt="Profiles"></p>
+<p>你将会花费大部分的时间在观察这个视图上。profiles 视图让你可以对 JavaScript 代码运行时的内存进行快照，并且可以比较这些内存快照。它还让你可以记录一段时间内的内存分配情况。在每一个结果视图中都可以展示不同类型的列表，但是对我们的任务最有用的是 summary 列表和 comparison 列表。</p>
+<h2 id="栗子-使用-Chrome-来发现内存泄露"><a href="#栗子-使用-Chrome-来发现内存泄露" class="headerlink" title="栗子: 使用 Chrome 来发现内存泄露"></a>栗子: 使用 Chrome 来发现内存泄露</h2><p>有两个重要类型的内存泄露：引起内存周期性增长的泄露和只发生一次且不引起更进一步内存增长的泄露。显而易见的是，寻找周期性的内存泄漏是更简单的。这些也是最麻烦的事情：如果内存会按时增长，泄露最终将导致浏览器变慢或者停止执行脚本。很明显的非周期性大量内存泄露可以很容易的在其他内存分配中被发现。但是实际情况并不如此，往往这些泄露都是不足以引起注意的。这种情况下，小的非周期性内存泄露可以被当做一个优化点。然而那些周期性的内存泄露应该被视为 bug 并且必须被修复。</p>
+<p>为了举例，我们将会使用 Chrome 的文档中提供的一个例子。完整的代码在下面可以找到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">var x &#x3D; [];</span><br><span class="line"></span><br><span class="line">function createSomeNodes() &#123;</span><br><span class="line">    var div,</span><br><span class="line">        i &#x3D; 100,</span><br><span class="line">        frag &#x3D; document.createDocumentFragment();</span><br><span class="line">    for (;i &gt; 0; i--) &#123;</span><br><span class="line">        div &#x3D; document.createElement(&quot;div&quot;);</span><br><span class="line">        div.appendChild(document.createTextNode(i + &quot; - &quot;+ new Date().toTimeString()));</span><br><span class="line">        frag.appendChild(div);</span><br><span class="line">    &#125;</span><br><span class="line">    document.getElementById(&quot;nodes&quot;).appendChild(frag);</span><br><span class="line">&#125;</span><br><span class="line">function grow() &#123;</span><br><span class="line">    x.push(new Array(1000000).join(&#39;x&#39;));</span><br><span class="line">    createSomeNodes();</span><br><span class="line">    setTimeout(grow,1000);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>当调用 grow 的时候，它会开始创建 div 节点并且把他们追加到 DOM 上。它将会分配一个大数组并将它追加到一个全局数组中。这将会导致内存的稳定增长，使用上面提到的工具可以观察到这一点。</p>
+<blockquote>
+<p>垃圾收集语言通常表现出内存用量的抖动。如果代码在一个发生分配的循环中运行时，这是很常见的。我们将要寻找那些在内存分配之后周期性且不会回落的内存增长。</p>
+</blockquote>
+<h3 id="查看内存是否周期性增长"><a href="#查看内存是否周期性增长" class="headerlink" title="查看内存是否周期性增长"></a>查看内存是否周期性增长</h3><p>对于这个问题，timeline 视图最合适不过了。在 Chrome 中运行这个例子，打开开发者工具，定位到 timeline，选择内存并且点击记录按钮。然后去到那个页面点击按钮开始内存泄露。一段时间后停止记录，然后观察结果：</p>
+<p><img src="http://skyfly.xyz/images/4TypesLeakInJS/example-timeline.png" alt="Memory leaks in the timeline view"></p>
+<blockquote>
+<p>这个例子中每秒都会发生一次内存泄露。记录停止后，在 grow 函数中设置一个断点来防止 Chrome 强制关闭这个页面。</p>
+</blockquote>
+<p>在图中有两个明显的标志表明我们正在泄漏内存。节点的图表（绿色的线）和 JS 堆内存（蓝色的线）。节点数稳定地增长并且从不减少。这是一个明显的警告标志。</p>
+<p>JS 堆内存表现出稳定的内存用量增长。由于垃圾回收器的作用，这很难被发现。你能看到一个初始内存的增长的图线，紧接着有一个很大的回落，接着又有一段增长然后出现了一个峰值，接着又是一个回落。这个情况的关键是在于一个事实，即每次内存用量回落时候，堆内存总是比上一次回落后的内存占用量更多。也就是说，尽管垃圾收集器成功地回收了很多的内存，还是有一部分内存周期性的泄露了。</p>
+<p>我们现在确定程序中有一个泄露，让我们一起找到它。</p>
+<h3 id="拍两个快照"><a href="#拍两个快照" class="headerlink" title="拍两个快照"></a>拍两个快照</h3><p>为了找到这个内存泄漏，我们将使用 Chrome 开发者工具红的 profiles 选项卡。为了保证内存的使用在一个可控制的范围内，在做这一步之前刷新一下页面。我们将使用 Take Heap Snapshot 功能。</p>
+<p>刷新页面，在页面加载结束后为堆内存捕获一个快照。我们将要使用这个快照作为我们的基准。然后再次点击按钮，等几秒，然后再拍一个快照。拍完照后，推荐的做法是在脚本中设置一个断点来停止它的运行，防止更多的内存泄露。</p>
+<p><img src="http://skyfly.xyz/images/4TypesLeakInJS/example-snapshots-1.png" alt="Heap Snapshots"></p>
+<p>有两个方法来查看两个快照之间的内存分配情况，其中一种方法需要选择 Summary 然后在右面选取在快照1和快照2之间分配的对象，另一种方法，选择 Comparison 而不是 Summary。两种方法下，我们都将会看到一个列表，列表中展示了在两个快照之间分配的对象。</p>
+<p>本例中，我们很容易就可以找到内存泄露：它们很明显。看一下（string）构造器的 Size Delta。58个对象占用了8 MB 内存。这看起来很可疑：新的对象被创建，但是没有被释放导致了8 MB 的内存消耗。</p>
+<p>如果我们打开（string）构造器分配列表，我们会注意到在很多小内存分配中掺杂着的几个大量的内存分配。这些情况立即引起了我们的注意。如果我们选择它们当中的任意一个，我们将会在下面的 retainer 选项卡中得到一些有趣的结果。</p>
+<p><img src="http://skyfly.xyz/images/4TypesLeakInJS/example-snapshots-2.png" alt="Retainers for selected object"></p>
+<p>我们发现我们选中的内存分配信息是一个数组的一部分。作为回报，数组被变量 x 在全局 window 对象内部引用。这给我们指引了一条从我们的大对象到不会被回收的根节点（window）的完整的路径。我们也就找到了潜在的泄漏点以及它在哪里被引用。</p>
+<p>到现在为止，一切都很不错。但是我们的例子太简单了：像例子中这样大的内存分配并不是很常见。幸运的是我们的例子中还存在着细小的 DOM 节点内存泄漏。使用上面的内存快照可以很容易地找到这些节点，但是在更大的站点中，事情变得复杂起来。最近，新的 Chrome 的版本中提供了一个附加的工具，这个工具十分适合我们的工作，这就是堆内存分配记录（Record Heap Allocations）功能</p>
+<h3 id="通过记录堆内存分配来发现内存泄露"><a href="#通过记录堆内存分配来发现内存泄露" class="headerlink" title="通过记录堆内存分配来发现内存泄露"></a>通过记录堆内存分配来发现内存泄露</h3><p>取消掉你之前设置的断点让脚本继续运行，然后回到开发者工具的 Profiles 选项卡。现在点击 Record Heap Allocations。当工具运行时候你将注意到图表顶部的蓝色突起。这些代表着内存分配。我们的代码导致每秒钟都有一个大的内存分配发生。让它运行几秒然后让程序停止（不要忘记在此设置断点来防止 Chrome 吃掉过多的内存）。</p>
+<p><img src="http://skyfly.xyz/images/4TypesLeakInJS/example-recordedallocs-overview.png" alt="Recorded heap allocations"></p>
+<p>在这张图中你能看到这个工具的杀手锏：选择时间线中的一片来观察在这段时间片中内存分配发生在什么地方。我们将时间片设置的尽量与凸起接近。只有三个构造器在这个列表中显示出来：一个是与我们的大泄露有关的（string），一个是和 DOM 节点的内存分配相关的，另一个是 Text 构造器（DOM 节点中的文本的构造器）。</p>
+<p>从列表中选择一个 HTMLDivElement 构造器然后选择一个内存分配堆栈。</p>
+<p><img src="http://skyfly.xyz/images/4TypesLeakInJS/example-recordedallocs-selected.png" alt="Selected element in heap allocation results"></p>
+<p>啊哈！我们现在知道那些元素在什么地方被分配了（grow -&gt; createSomeNodes）。如果我们集中精神观察图像中的每个凸起，还会注意到 HTMLDivElement 的构造器被调用了很多次。如果我们回到快照比较视图就不难发现这个构造器分配了很多次内存但是没有从未释放它们。也就是说，它不断地分配内存空间，但却没有允许 GC 回收它们。种种迹象表明这是一个泄露，加上我们确切地知道这些对象被分配到了什么地方（createSomeNodes 函数）。现在应该去研究代码，并修复这个泄漏。</p>
+<h3 id="其他有用的特性"><a href="#其他有用的特性" class="headerlink" title="其他有用的特性"></a>其他有用的特性</h3><p>在堆内存分配结果视图中我们可以使用比 Summary 更好的 Allocation 视图。</p>
+<p><img src="http://skyfly.xyz/images/4TypesLeakInJS/example-recordedallocs-list.png" alt="Allocations in heap allocations results"></p>
+<p>这个视图为我们呈现了一个函数的列表，同时也显示了与它们相关的内存分配情况。我们能立即看到 grow 和 createSomeNodes 凸显了出来。当选择 grow 我们看到了与它相关的对象构造器被调用的情况。我们注意到了（string），HTMLDivElement 和 Text 而现在我们已经知道是对象的构造函数被泄露了。</p>
+<p>这些工具的组合对找到泄漏有很大帮助。和它们一起工作。为你的生产环境站点做不同的分析（最好用非最小化或未混淆代码）。看看你能不能找到那些持有了比正常情况更多内存的对象吧（提示：这些很难被找到）。</p>
+<blockquote>
+<p>要使用这个特性，请到Dev Tools -&gt; Settings 然后将 “record heap allocation stack traces” 启用。在记录之前必须要做这一步。</p>
+</blockquote>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management">Memory Management - Mozilla Developer Network</a></li>
+<li><a target="_blank" rel="noopener" href="http://javascript.crockford.com/memory/leak.html">JScript Memory Leaks - Douglas Crockford (old, in relation to Internet Explorer 6 leaks)</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.chrome.com/devtools/docs/javascript-memory-profiling">JavaScript Memory Profiling - Chrome Developer Docs</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/web/tools/chrome-devtools/profile/memory-problems/memory-diagnosis">Memory Diagnosis - Google Developers</a></li>
+<li><a target="_blank" rel="noopener" href="http://info.meteor.com/blog/an-interesting-kind-of-javascript-memory-leak">An Interesting Kind of JavaScript Memory Leak - Meteor blog</a></li>
+<li><a target="_blank" rel="noopener" href="http://mrale.ph/blog/2012/09/23/grokking-v8-closures-for-fun.html">Grokking V8 closures</a></li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>在垃圾回收语言中，如 JavaScript，确实会发生内存泄露。一些情况下我们都不会意识到这些泄露，最终它们将会带来毁灭性的灾难。正是由于这个原因，使用内存分析工具来发现内存泄露是十分重要的。运行分析工具应该成为开发周期中的一部分，特别是对于中型或大型应用来讲。现在就开始这么做，尽可能地为你的用户提供最好的体验。动手吧！</p>
+<p><a target="_blank" rel="noopener" href="https://auth0.com/blog/2016/01/26/four-types-of-leaks-in-your-javascript-code-and-how-to-get-rid-of-them/">查看原文</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/04/25/Front_End/js-fondation/js-dynamic-feature/" rel="prev" title="js动态调用特性">
+                  <i class="fa fa-chevron-left"></i> js动态调用特性
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/08/26/Front_End/tools/introduce-webpack/" rel="next" title="Webpack入门">
+                  Webpack入门 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

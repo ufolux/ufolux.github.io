@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="几个基本的概念![Highchart](..&#x2F;..&#x2F;..&#x2F;images&#x2F;highchart-highchart.png)     名词 描述    Title 图表的标题   Axis 坐标轴   Series 数据列，表现为图表上呈现数据的形状   Tooltip 鼠标悬停在数据点上的时候显示的一个提示框   Legend 图例   Credits 版权信息   Exporting 导出图标的按">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用highchart绘制图表">
+<meta property="og:url" content="https://ufolux.github.io/2016/11/24/Front_End/vendor/make-chart-by-highchart/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="几个基本的概念![Highchart](..&#x2F;..&#x2F;..&#x2F;images&#x2F;highchart-highchart.png)     名词 描述    Title 图表的标题   Axis 坐标轴   Series 数据列，表现为图表上呈现数据的形状   Tooltip 鼠标悬停在数据点上的时候显示的一个提示框   Legend 图例   Credits 版权信息   Exporting 导出图标的按">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-11-24T00:59:15.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.102Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="库">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2016/11/24/Front_End/vendor/make-chart-by-highchart/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>利用highchart绘制图表 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E5%9F%BA%E6%9C%AC%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">几个基本的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B-hack-%E7%9A%84%E6%89%8B%E6%AE%B5"><span class="nav-number">2.</span> <span class="nav-text">一些 hack 的手段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.1.</span> <span class="nav-text">例子</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2016/11/24/Front_End/vendor/make-chart-by-highchart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          利用highchart绘制图表
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-11-24 08:59:15" itemprop="dateCreated datePublished" datetime="2016-11-24T08:59:15+08:00">2016-11-24</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="几个基本的概念"><a href="#几个基本的概念" class="headerlink" title="几个基本的概念"></a>几个基本的概念</h2><center>![Highchart](../../../images/highchart-highchart.png)</center>
+
+<table>
+<thead>
+<tr>
+<th align="left">名词</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Title</td>
+<td align="left">图表的标题</td>
+</tr>
+<tr>
+<td align="left">Axis</td>
+<td align="left">坐标轴</td>
+</tr>
+<tr>
+<td align="left">Series</td>
+<td align="left">数据列，表现为图表上呈现数据的形状</td>
+</tr>
+<tr>
+<td align="left">Tooltip</td>
+<td align="left">鼠标悬停在数据点上的时候显示的一个提示框</td>
+</tr>
+<tr>
+<td align="left">Legend</td>
+<td align="left">图例</td>
+</tr>
+<tr>
+<td align="left">Credits</td>
+<td align="left">版权信息</td>
+</tr>
+<tr>
+<td align="left">Exporting</td>
+<td align="left">导出图标的按钮</td>
+</tr>
+<tr>
+<td align="left">PlotLines</td>
+<td align="left">图表上的辅助线，比如图表背景的网格或者标识出某一点数据的指示线。</td>
+</tr>
+<tr>
+<td align="left">PlotBands</td>
+<td align="left">在某些数据区域上画出的分辨带</td>
+</tr>
+<tr>
+<td align="left">Crosshair</td>
+<td align="left">跟随鼠标在图表上显示的标线，是一个隶属于坐标轴的属性</td>
+</tr>
+<tr>
+<td align="left">Marker</td>
+<td align="left">用于标识数据的点，可以设置普通状态和悬浮状态的样式</td>
+</tr>
+</tbody></table>
+<h2 id="一些-hack-的手段"><a href="#一些-hack-的手段" class="headerlink" title="一些 hack 的手段"></a>一些 hack 的手段</h2><p>在真实工作中，有些设计稿里面描绘的样式不能通过简单的调整 highchart 配置或者直接使用 highchart 的绘图接口进行绘图来实现（比如调整折线图中 crosshair 和 marker 的位置）。<br>通过阅读源代码，我 hook 到了一个十分好用的方法， 这个方法是 <code>chart.tooltip.refresh</code>，每当鼠标移动到图表范围内的时候，这个方法都会被调用，我们只需要 hook 这个方法，然后再其内部对 point 的数据进行更改就可以实现我们大部分的需求了。</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><center>![Highchart](../../../images/highchart-chart.png)</center>
+
+<p>这个是在我们需求中设计的一个图表样式，乍一看像是直方图，但又是个折线图。这里我们使用 area 面积图也就是折线图的样式来进行图表的配置。<br>我们注意到，这个图中 crosshair 和 marker 的位置和标准的 area 图中是有所区别的。标准的 area 图中这两东西都会显示在数据点的位置上，而在我们的图中，它们显示在了两个数据点的中间，这时候，我们 hook <code>refresh</code> 方法，在里面修改 point 的 plotX 值，再hook XAxis 的 drawCrosshair 方法，修改传入 drawCrosshair 中的 point 对象的 plotX 值。最后实现了居中的效果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">var offset &#x3D; chart.plotWidth &#x2F; (chart.pointCount - 1) &#x2F; 2;</span><br><span class="line">var offsetCorsshair &#x3D; function(e, point) &#123;</span><br><span class="line">    if (point) &#123;</span><br><span class="line">        var originX &#x3D; point.plotX;</span><br><span class="line">        point.plotX +&#x3D; offset;</span><br><span class="line">        __drawCrosshair.call(this, e, point);</span><br><span class="line">        point.plotX &#x3D; originX;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">chart.tooltip.refresh &#x3D; function(point, mouseEvent) &#123;</span><br><span class="line">    var __setState;</span><br><span class="line">    if (point.length &gt; 0) &#123;</span><br><span class="line">        var myPoint &#x3D; point[0];</span><br><span class="line">        __setState &#x3D; myPoint.setState;</span><br><span class="line"></span><br><span class="line">        var originX &#x3D; myPoint.plotX;</span><br><span class="line">        if (myPoint.x !&#x3D; 5) &#123;</span><br><span class="line">            myPoint.plotX +&#x3D; offset;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            myPoint.plotX +&#x3D; offset * 2;</span><br><span class="line">        &#125;</span><br><span class="line">        myPoint.setState &#x3D; __setState;</span><br><span class="line">        __refresh.call(this, point, mouseEvent);</span><br><span class="line">        myPoint.plotX &#x3D; originX;</span><br><span class="line">        __xAxis.drawCrosshair &#x3D; offsetCorsshair;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+              <a href="/tags/%E5%BA%93/" rel="tag"># 库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/10/09/Front_End/tools/emmet-zencoding/" rel="prev" title="Emmet代码生成神器">
+                  <i class="fa fa-chevron-left"></i> Emmet代码生成神器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/12/20/Front_End/react/practice-on-react-with-ts/" rel="next" title="TypeScript+React 实践">
+                  TypeScript+React 实践 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

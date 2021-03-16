@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="![Alt text](2a547a9f-4e08-4b9c-8ed7-4af67968591f.png)  OnePassword 解决的问题网站账户太多导致需要记录的账号和密码太多，一般人很难记住很多不同的密码。于是很多人会在不同的网站使用相同的账号密码，但是一旦其中一个网站被拖库，所有网站的密码就都会遭到泄露，这种做法很不安全。OnePassword 就针对这个情况为人们提供了一个安全的生成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OnePassword 原理">
+<meta property="og:url" content="https://ufolux.github.io/2019/07/26/Casual/onePasswordTheory/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="![Alt text](2a547a9f-4e08-4b9c-8ed7-4af67968591f.png)  OnePassword 解决的问题网站账户太多导致需要记录的账号和密码太多，一般人很难记住很多不同的密码。于是很多人会在不同的网站使用相同的账号密码，但是一旦其中一个网站被拖库，所有网站的密码就都会遭到泄露，这种做法很不安全。OnePassword 就针对这个情况为人们提供了一个安全的生成">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ufolux.github.io/2019/07/26/Casual/onePasswordTheory/48a89fba-5487-4fe1-8845-f707a937901d.png">
+<meta property="og:image" content="https://ufolux.github.io/2019/07/26/Casual/onePasswordTheory/48a89fba-5487-4fe1-8845-f707a937901d.png">
+<meta property="og:image" content="https://ufolux.github.io/2019/07/26/Casual/onePasswordTheory/d3001b7a-c0b0-423d-9b1d-c339cf27a9dd.png">
+<meta property="og:image" content="https://ufolux.github.io/2019/07/26/Casual/onePasswordTheory/15a86dcb-cdc2-44a1-ac46-f611b66977cb.png">
+<meta property="article:published_time" content="2019-07-26T09:03:06.000Z">
+<meta property="article:modified_time" content="2021-03-16T10:37:12.517Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="OnePassword">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ufolux.github.io/2019/07/26/Casual/onePasswordTheory/48a89fba-5487-4fe1-8845-f707a937901d.png">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2019/07/26/Casual/onePasswordTheory/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>OnePassword 原理 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#OnePassword-%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">OnePassword 解决的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OnePassword-%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">OnePassword 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="nav-number">2.1.</span> <span class="nav-text">主要功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%86%E7%A0%81%E5%AE%89%E5%85%A8%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text">密码安全性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">2.3.</span> <span class="nav-text">更换客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2019/07/26/Casual/onePasswordTheory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OnePassword 原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2019-07-26 17:03:06" itemprop="dateCreated datePublished" datetime="2019-07-26T17:03:06+08:00">2019-07-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-16 18:37:12" itemprop="dateModified" datetime="2021-03-16T18:37:12+08:00">2021-03-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <center>![Alt text](2a547a9f-4e08-4b9c-8ed7-4af67968591f.png)</center>
+
+<h2 id="OnePassword-解决的问题"><a href="#OnePassword-解决的问题" class="headerlink" title="OnePassword 解决的问题"></a>OnePassword 解决的问题</h2><p>网站账户太多导致需要记录的账号和密码太多，一般人很难记住很多不同的密码。于是很多人会在不同的网站使用相同的账号密码，但是一旦其中一个网站被拖库，所有网站的密码就都会遭到泄露，这种做法很不安全。OnePassword 就针对这个情况为人们提供了一个安全的生成，存储和登录自动填充密码的解决方案。</p>
+<p>那么，OnePassword 是如何解决这个问题的呢？</p>
+<span id="more"></span>
+<h2 id="OnePassword-原理"><a href="#OnePassword-原理" class="headerlink" title="OnePassword 原理"></a>OnePassword 原理</h2><h3 id="主要功能"><a href="#主要功能" class="headerlink" title="主要功能"></a>主要功能</h3><p>首先我们来看一下 OnePassword 的交互时序，为了方便起见，我画了一幅时序图放在下面</p>
+<p><img src="/2019/07/26/Casual/onePasswordTheory/48a89fba-5487-4fe1-8845-f707a937901d.png" alt="Alt text"></p>
+<p>可以看到它在注册和登录两个步骤都起到了关键作用，在注册的时候替用户生成了复杂密码，避免了用户自己思考密码的不便和不安全；在登录时又将之前保存的用户名和密码填充到目标网站或者 App 中，解决了用户记不住密码的问题。那么它又是如何保证安全性的呢？</p>
+<h3 id="密码安全性"><a href="#密码安全性" class="headerlink" title="密码安全性"></a>密码安全性</h3><p><img src="/2019/07/26/Casual/onePasswordTheory/48a89fba-5487-4fe1-8845-f707a937901d.png" alt="Alt text"></p>
+<p>为了实现功能在多个终端都可以方便地使用，OnePassword 设计了一个密码仓库的同步机制，会将设备上的密码密文存储到远端的服务器或者网盘中。当新的设备登录时，密码库将被下载到新的设备中以此来实现随时随地在任意设备上均可使用其功能。</p>
+<p>用户的密码被传到服务器中，会不会出现密码泄露的问题呢？答案是不会的。 OnePassword 在保存密码时会对密码进行多重的 AES256 加密，而密钥只保存在本地不会传输到远端，也就是说用于加解密的密钥只有你自己掌握，加密和解密的工作都只由本地客户端来完成。所以即使有人攻破了 OnePassword 的服务器取得了所有被加密的密码，在不知道密钥的情况下也无法在合理时间内将密码破解出来。</p>
+<p>那么，这个用于登录 OnePassword 账号的密码又会不会被人截获呢？答案也是否定的。为了解释这个问题，首先我们先介绍两个概念，主密码（Master Password）和密钥（Secret Key）</p>
+<ul>
+<li><p>主密码（Master Password）<br>用过 OnePassword 的人们都知道，在你注册 OnePassword 时，需要设置一个你自己记得住的密码，这个密码就是主密码。主密码十分重要，当你需要存取其他密码，或者登录其他设备的时候，OnePassword 都会要求你输入主密码（指纹验证其实也依赖了主密码的校验）。主密码只能依赖个人的记忆，不可找回，这意味着一旦你遗失了主密码，那么 OnePassword 中保存的所有密码信息也就随之化为乌有。</p>
+</li>
+<li><p>密钥（Secret Key）<br>在注册阶段用户输入主密码之后，OnePassword 还会生成一个密钥，这个密钥是一个 ‘A3’ 开头的字符串，长下面这个样子<br><img src="/2019/07/26/Casual/onePasswordTheory/d3001b7a-c0b0-423d-9b1d-c339cf27a9dd.png" alt="Alt text"></p>
+</li>
+</ul>
+<p>这个密钥被存储于用户的客户端本地，基本无法被破解，这个密钥有时也被称为隐藏密钥，因为他不像是你的主密码，可以容易地被人记住。</p>
+<p>上面的连词符号其实并不是个人私钥的一部分，只是为了增强可读性做分割使用的。版本号既不随机也不保密，用户 ID 倒是随机的，可是并不保密，而剩下的部分既是随机的也是保密的。</p>
+<p>介绍了以上两个概念，现在回到我们的问题。OnePassword 之所以可以保证用于登录账户的密码不会泄露，是因为它甚至根本没有在服务器中以任何形式存储这个密码。这里 OnePassword 运用了非对称加密中的一项名为 <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/%E8%BF%AA%E8%8F%B2-%E8%B5%AB%E7%88%BE%E6%9B%BC%E5%AF%86%E9%91%B0%E4%BA%A4%E6%8F%9B">迪菲-赫尔曼密钥交换</a>的技术。具体地说，客户端根据<strong>主密码</strong>和<strong>密钥</strong>以及其他一些东西（比如加入一些随机数），计算出一个数字，我们称为A，在注册阶段，客户端根据 A 计算出一个 B；然后把 B 发送给服务器。注意，B 类似于 hash(A)，具体的方式，可能对 A 做一点其他运算再 hash；不管具体是哪种方案，窃听者都无法通过 B 计算出 A，而且他因为不知道 A，所以也无法做碰撞分析；甚至是，即便窃听者知道了主密码，只要他不知道密钥，他仍无法做碰撞分析。客户端任何时候，都可以根据主密码和密钥计算出 A；同时，server 那边有了一个通过 A 计算出的 B；因为 A 和 B 之间这种特殊的关系，那么此后在登陆阶段：</p>
+<ol>
+<li>客户端可以向服务端证明它有一个和 B 对应的 A</li>
+<li>服务端可以向客户端证明它有一个和 A 对应的 B</li>
+<li>同时让客户端和服务端协定出一个 C 作为后续双方通信信息的加密密钥</li>
+</ol>
+<blockquote>
+<p>这里引用维基百科中的一个一般性描述来说明这个算法<br><img src="/2019/07/26/Casual/onePasswordTheory/15a86dcb-cdc2-44a1-ac46-f611b66977cb.png" alt="Alt text"></p>
+</blockquote>
+<p>具体的数学原理可以参见维基百科的说明，这里不再赘述。总之，通过这个密钥交换协议客户端和 OnePassword 服务端实现了在不传输密码本身的条件下进行通信，以此最大程度上保护密码的安全性。</p>
+<h3 id="更换客户端"><a href="#更换客户端" class="headerlink" title="更换客户端"></a>更换客户端</h3><p>由于主密码和密钥均由客户自行保管，而密码的加密解密完全依赖于主密码和密钥，所以在新的客户端上使用 OnePassword 的时候，需要用户将自己保存的主密码和密钥两者都输入到新设备的客户端中，这样客户端才能进行登录账户和对密码进行加解密操作。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>OnePassword 是一个安全性很高的密码管理工具，它对密码明文的加密和解密工作均在客户端本地完成，且依赖的密钥也都由客户保管，不会在 OnePassword 服务端传输的过程中产生泄露。由此看来，如果不在乎它每年 $279 HKD 的订阅价格，它的确是一个能帮你在摆脱密码焦虑的同时提升你密码安全性的绝佳工具。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p> <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/%E8%BF%AA%E8%8F%B2-%E8%B5%AB%E7%88%BE%E6%9B%BC%E5%AF%86%E9%91%B0%E4%BA%A4%E6%8F%9B">迪菲-赫尔曼密钥交换</a><br> <a target="_blank" rel="noopener" href="https://sspai.com/post/41260">假如你忘了 1Password 的主密码，到底该怎么办？</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OnePassword/" rel="tag"># OnePassword</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/23/iOS/ios-app-signature-theory/" rel="prev" title="iOS App 签名的原理">
+                  <i class="fa fa-chevron-left"></i> iOS App 签名的原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/02/25/Java/HashMapTimeComplexity/" rel="next" title="探究 Java HashMap get 操作的时间复杂度">
+                  探究 Java HashMap get 操作的时间复杂度 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

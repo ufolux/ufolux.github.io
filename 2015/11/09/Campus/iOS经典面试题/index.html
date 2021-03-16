@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="ObjectiveC questions1.What is category? Can you have properties or ivars in a category? 可以，但不能在非匿名类别中使用实例变量。非匿名类别中的属性不会被合成setter&#x2F;getter方法。需要使用关联对象来解决。 2.What is protocol? What is formal and informal p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS经典面试题">
+<meta property="og:url" content="https://ufolux.github.io/2015/11/09/Campus/iOS%E7%BB%8F%E5%85%B8%E9%9D%A2%E8%AF%95%E9%A2%98/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="ObjectiveC questions1.What is category? Can you have properties or ivars in a category? 可以，但不能在非匿名类别中使用实例变量。非匿名类别中的属性不会被合成setter&#x2F;getter方法。需要使用关联对象来解决。 2.What is protocol? What is formal and informal p">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-11-09T08:14:29.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.079Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2015/11/09/Campus/iOS%E7%BB%8F%E5%85%B8%E9%9D%A2%E8%AF%95%E9%A2%98/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>iOS经典面试题 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ObjectiveC-questions"><span class="nav-number">1.</span> <span class="nav-text">ObjectiveC questions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS-questions"><span class="nav-number">2.</span> <span class="nav-text">iOS questions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Few-questions-on-CoreData-which-I-may-ask-in-an-interview-to-some-one-brave-enough-to-venture"><span class="nav-number">3.</span> <span class="nav-text">Few questions on CoreData which I may ask in an interview to some one brave enough to venture :)</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2015/11/09/Campus/iOS%E7%BB%8F%E5%85%B8%E9%9D%A2%E8%AF%95%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS经典面试题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2015-11-09 16:14:29" itemprop="dateCreated datePublished" datetime="2015-11-09T16:14:29+08:00">2015-11-09</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="ObjectiveC-questions"><a href="#ObjectiveC-questions" class="headerlink" title="ObjectiveC questions"></a>ObjectiveC questions</h2><p>1.What is category? Can you have properties or ivars in a category?</p>
+<p>可以，但不能在非匿名类别中使用实例变量。非匿名类别中的属性不会被合成setter/getter方法。需要使用关联对象来解决。</p>
+<p>2.What is protocol? What is formal and informal protocol?</p>
+<p>协议是一种用于实现多态的机制，遵守协议意味着协议中规定的必须方法需要被实现。是对象能力的一种保证。调用方只要知道被调用放遵守了协议即可，无需知道被调用方是什么类型。<br>正式协议是使用 <code>protocol</code> 关键字实现的，非正式协议即NSObject类别。</p>
+<p>3.What is ARC? Is it garbage collection?</p>
+<p>ARC 是自动引用计数，不是垃圾收集。实质上 ARC 还是一种手动的内存管理机制。对象是否释放需要根据引用计数是否为0来判断。引用计数将对对象内存的管理集中在了对象内部。而malloc/free new/delete是在外部的。且release只会减少引用计数，并不会直接收回内存。垃圾收集是全自动的，内存完全由垃圾收集器进行管理。</p>
+<p>4.Difference between atomic and nonatomic properties?</p>
+<p>atomic保证了属性setter/getter方法操作的原子性（加锁），会带来一定的开销。但并不意味着线程安全。因为在当前线程第一次读取到属性的当前值，紧接着另一个线程对属性进行了修改，此时当前线程又读取该属性就会造成数据的不一致。<br>nonatomic是不保证原子性的，开销较少。</p>
+<span id="more"></span>
+
+<p>5.Difference between strong and retain?</p>
+<p>没什么区别，表示强引用，就是说先释放旧的值，再赋值的同时对对象的引用计数加一。</p>
+<p>6.What is unsafe_unretained? Difference between unsafe_unretained, assign and weak?</p>
+<p><code>unsafe_unretain</code> 不会对对象的引用计数加一，对象被释放后也不会将对象置为 <code>nil</code>。</p>
+<p><code>assign</code> 只会对基本类型使用，表示赋值语义，不会对引用计数加一。</p>
+<p><code>weak</code> 表示弱引用，只能针对 <code>Objective-C</code> 对象使用，不会对引用计数加一，在对象被释放时，会自动将对象置为 <code>nil</code>。</p>
+<p>7.What does a copy property do? Is it deep copy or shallow copy?</p>
+<p><code>copy</code> 表示复制语义，在对属性进行复制操作时会将对象复制一份。对于不同类型的对象有着不同的拷贝方法。</p>
+<p>对于<strong>非集合类型</strong>的<strong>不可变</strong>对象copy会进行指针复制（<strong>浅复制</strong>），对<strong>非集合类型</strong>的<strong>可变</strong>对象会进行内容复制（<strong>深复制</strong>），最终产生一个不可变类型的指针。所以，不可以对可变类型的属性使用 <code>copy</code> 修饰，将会导致可变类型属性丧失可变性，在试图对其进行修改时发生错误。</p>
+<p>对于<strong>集合类型</strong>的不可变对象，copy会进行指针复制（<strong>浅复制</strong>）。对于<strong>集合类型</strong>的可变对象仍然只是进行<strong>浅复制</strong>只是产生了一个新的指向<strong>不可变</strong>集合对象的指针，集合对象中的元素并不会被复制（引用的还是原来集合中的对象）。</p>
+<p>Does ObjectiveC have function overloading?</p>
+<p>OC 不支持函数重载</p>
+<p>8.What is messaging? How does the runtime handle message passing? What is message forwarding?</p>
+<p>在 OC 中，调用对象的方法称为向对象发送消息，消息可以理解为是对象的方法。运行时使用objc_msgSend方法发送消息，先在对象的方法缓存中查找相关的方法，没有的话就回去对象的方法列表中去查找方法。找到后直接调用并且将方法缓存到方法缓存中。</p>
+<p>如果对象不能处理消息，则需要启动<strong>动态方法决议</strong>机制，启动前先调用 <code>resolveInstanceMethod:</code> 进行<strong>动态方法解析</strong>。解析失败则进行动态方法决议，首先调用 <code>forwardTargetForSelector:</code> 并根据继承关系查询，如果没有处理，就调用 <code>methodSignatureForSelector:</code> 方法查询方法签名，并根据继承关系查询，如果在此处处理了，就会调用 <code>forwardInvocation:</code> 方法进行最后的处理。默认实现是抛出异常结束程序。</p>
+<p>9.What is ‘id’?</p>
+<p><code>id</code> 是一个动态的类型，可以表示 Objective-C 中的对象。包括 <code>NSObject</code> 和 <code>NSProxy</code> 本类或子类。</p>
+<p>10.What is performSelector:withObject:? What if I have to performSelector:withObject: but pass 3-4 arguments to the method? (Hint: NSInvocationOperation)</p>
+<p><code>performSelector:withObject:</code> 是运行时方法，可以通过 <code>selector</code> 来调用方法并且传递一个参数（其实就是根据字符串调用方法 @selector 不过是个 <code>char*</code>）。<br>使用 <code>NSInvocation</code> 对方法调用进行封装，可以传递任意数量的参数。</p>
+<p>一种实现方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">- (id)performSelector:(SEL)aSelector withObjects:(NSArray *)objects &#123;</span><br><span class="line">    NSMethodSignature *signature &#x3D; [self methodSignatureForSelector:aSelector];</span><br><span class="line">    NSInvocation *invocation &#x3D; [NSInvocation invocationWithMethodSignature:signature];</span><br><span class="line">    [invocation setTarget:self];</span><br><span class="line">    [invocation setSelector:aSelector];</span><br><span class="line">    </span><br><span class="line">    NSUInteger i &#x3D; 1;</span><br><span class="line">    for (id object in objects) &#123;</span><br><span class="line">        [invocation setArgument:&amp;object atIndex:++i];</span><br><span class="line">    &#125;</span><br><span class="line">    [invocation invoke];</span><br><span class="line">    </span><br><span class="line">    if ([signature methodReturnLength]) &#123;</span><br><span class="line">        id data;</span><br><span class="line">        [invocation getReturnValue:&amp;data];</span><br><span class="line">        return data;</span><br><span class="line">    &#125;</span><br><span class="line">    return nil;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>NSInvocationQueue：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">NSInvocation* deleteInvocation &#x3D; [NSInvocation invocationWithMethodSignature:[self methodSignatureForSelector:@selector(deleteDataAtPath:)]];</span><br><span class="line">          [deleteInvocation setTarget:self];</span><br><span class="line">          [deleteInvocation setSelector:@selector(deleteDataAtPath:)];&#x2F;&#x2F;给NSInvocation对象添加对应的动作</span><br><span class="line">    &#x2F;&#x2F; &#x2F;&#x2F; self, _cmd, ... 参数索引必须是2以后</span><br><span class="line">          [deleteInvocation setArgument:&amp;cachePath atIndex:2];</span><br><span class="line">         &#x2F;&#x2F;用NSInvocation对象来初始化一个NSOperation的子类NSInvocationOperation对象</span><br><span class="line">          NSInvocationOperation *operation &#x3D; [[NSInvocationOperation alloc] initWithInvocation:invoction];</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F;初始化一个操作队列</span><br><span class="line">          NSOperationQueue* operationQueue&#x3D;[[NSOperationQueue alloc] init]；</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F;在操作队列中加入操作</span><br><span class="line">          [operationQueue addOperation:operation];</span><br></pre></td></tr></table></figure>
+
+
+<p>11.What is delegate? Can delegates be retained?</p>
+<p>代理是用来在将事情交给另外的对象来做的一种方法。代理对象必须是 weak 的，否则会造成循环引用。如果使用 retain，则要在使用过后进行释放。</p>
+<p>12.What is retain cycle?</p>
+<p>循环引用，不解释。。。</p>
+<p>13.Does ObjectiveC have multiple inheritance? Why not? How to imitate multiple inheritance?</p>
+<p>没有多重继承。会带来交叉继承的复杂性。而且容易造成超大对象。可以使用协议来模拟多重继承。</p>
+<p>14.What is class extension? Why do we require them?</p>
+<p>类的扩展就是写在类的实现文件中用于隐藏类的某些属性，方法声明并可以在里面添加实例变量的结构，下面是一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@interface TestObject ()</span><br><span class="line">&#123;</span><br><span class="line">	int _number;</span><br><span class="line">&#125;  </span><br><span class="line">@property int extensionValue;  </span><br><span class="line">-(void)setExtensionName:(NSString*)name;  </span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<p>15.Who calls dealloc method? Can we implement dealloc in ARC? If yes, what is the need to do that?</p>
+<p>在对象引用计数为0的时候，系统会在一个合适的时机去调用 <code>dealloc</code> 方法。<code>ARC</code> 中可以实现这个方法，如果程序中使用了 <code>CoreFundation</code> 或者 <code>CoreGraphic</code> 等不支持 <code>ARC</code> 的对象时，需要在这里释放内存。另一个情况是要在这里移除 <code>Notification</code> ，否则会造成意外的结果。</p>
+<p>16.Can you write setter method for a retain property?</p>
+<p><code>retain</code> 的属性，就是需要先释放旧值，然后赋新值，并且 <code>retain</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void)setTest:(TestClass *)test</span><br><span class="line">&#123;</span><br><span class="line">    [_test release];</span><br><span class="line">    _test &#x3D; [test retain];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>17.Can you write a singleton class in ObjectiveC?</p>
+<p>自己写吧。。。</p>
+<p>18.What is GCD? What are advantages over NSThread?</p>
+<p><code>GCD</code> 大中枢派发。<code>NSThread</code> 是对 <code>pthread</code> 的一个抽象，每个 <code>NSThread</code> 对象对应一个线程。<code>GCD</code> 相比 <code>NSThread</code> 提供了更加方便的block <code>API</code>，并且提供了更好的封装，不需要自己管理线程的生命周期、线程同步、加锁、睡眠以及唤醒等的复杂的东西。 </p>
+<p>19.What is NSOperation and NSOperationQueue?</p>
+<p><code>NSOperation</code> 是面向对象的多线程技术。相比 <code>GCD</code> 对线程的控制更为灵活，<code>NSOperationQueue</code> 是一个线程队列</p>
+<p>20.How does dispatch_once manages to run only once?</p>
+<p>通过一个静态的 <code>token</code> 来实现，没有发现 token 的时候就执行代码，发现 token 已经存在了就不去执行了。</p>
+<p>21.What are blocks?</p>
+<p>22.What are NSAutoreleasePool? When to use them?</p>
+<p>23.Does a thread created using performSelectorInBackground:withObject: creates its own autorelease<br>pool?</p>
+<p>24.ObjectiveC is dynamic language? True/False, explain.</p>
+<p>是的，完全动态，全部的方法调用都是在运行时决定的，通过 runtime 也可以在运行时进行很多反射的操作。</p>
+<p>25.An NSArray containing Employee model object which has properties like empId, salary, age, designation, rating etc. Write a function that,</p>
+<p>Returns average salary</p>
+<p>Returns minimum age</p>
+<p>Returns maximum rating</p>
+<p>这个考的是 <code>KVC</code> 集合运算符，使用 <code>valueForKeyPath:</code> 方法就可以直接得到了。</p>
+<p><code>valueForKeyPath:@&quot;@max.salary&quot;</code></p>
+<p><code>valueForKeyPath:@&quot;@min.age&quot;</code></p>
+<p><code>valueForKeyPath:@&quot;@avg.rating&quot;</code></p>
+<p>29.Purpose of this question is to know if candidate knows about collection operators: Key-Value Coding Programming Guide</p>
+<h2 id="iOS-questions"><a href="#iOS-questions" class="headerlink" title="iOS questions"></a>iOS questions</h2><p>1.What is the output binary format? Explain .app structure.</p>
+<p>2.What are the CPU architectures supported by iOS devices?</p>
+<p>3.What iOS version onwards ARC can be used?</p>
+<p>4.Can we support same application for iPhone3GS and iPhone5? Why not?</p>
+<p>5.Can I write some C++ function in same .m file? Will it compile? If no, what changes should I do to compile it?</p>
+<p>6.What are the types of iOS binaries you can create using XCode? (.app, .ipa, .a, .framework)</p>
+<p>7.Can a static library (.a) contain resources like images, sound files etc?</p>
+<p>8.What is bundle?</p>
+<p>9.Explain application life cycle.</p>
+<p>10.What is responder chain?</p>
+<p>11.Tell me hierarchy of UIButton.</p>
+<p>12.Why create a custom view?</p>
+<p>13.Why UIControl is provided if we can create custom UIView?</p>
+<p>14.What are lifecycle events of UIViewController?</p>
+<p>15.Difference between viewDidLoad and viewDidAppear?</p>
+<p>16.Is UIKit thread safe?</p>
+<p>17.Why do we override drawRect: method?</p>
+<p>18.What are layers?</p>
+<p>19.What are various singleton instances provided by frameworks? (UIApplication, NSFileManager,<br>NSUserDefaults, etc.)</p>
+<p>20.What is NSUserDefaults? What type of data can we store there?</p>
+<p>21.How do you check if your code has memory leaks?</p>
+<p>22.What does static analyser do?</p>
+<p>23.What are different Instruments Xcode supports for app profiling?</p>
+<p>24.Concepts of notification center, local and remote notifications.</p>
+<p>25.Have you uploaded app on Appstore? What is the process?</p>
+<p>26.Difference between Developer and Enterprise Developer accounts?</p>
+<p>27.Common reasons for app rejection from Appstore review process?</p>
+<p>28.UITableView cell reuse. How to get it working (w/ or w/o XIB)? How would you implement reuse on a<br>UIScrollView?</p>
+<h2 id="Few-questions-on-CoreData-which-I-may-ask-in-an-interview-to-some-one-brave-enough-to-venture"><a href="#Few-questions-on-CoreData-which-I-may-ask-in-an-interview-to-some-one-brave-enough-to-venture" class="headerlink" title="Few questions on CoreData which I may ask in an interview to some one brave enough to venture :)"></a>Few questions on CoreData which I may ask in an interview to some one brave enough to venture :)</h2><p>How do you setup/initialise a core data stack in your application? Is this activity performed on main thread? If not, why?</p>
+<p>What is NSPersistentStoreCoordinator? What duties does it perform?<br>What is NSPersistentStore? Is it thread safe?<br>What is NSManagedObjectContext? What are the different concurrency types? Explain them.<br>Different types of persistent stores? Which all types can we have on iOS?<br>Can my application have multiple models? (Yes)<br>In a single model, can I have few entities in one sqlite db file and remaining  in another sqlite db file? (Yes, Hint: configurations)<br>What are the different store migration options? When are they used? How do they work? What is mapping model?<br>Explain parent-child context setup. How does it work? What are the advantages?<br>What is difference between performBlock: and performBlockAndWait:?<br>Are the NSManagedObjectContext queues serial or concurrent?<br>Can you pass same core data objects between different threads and modify?<br>What performance issues can you face when using CoreData?<br>What is NSFetchedResultsController? How do you turn on content monitoring?<br>How to implement “load more” using NSFetchedResultsController? (Hint: Set fetch offset and fetch limit on the NSFetchRequest of the controller, change the request to fetch more results)<br>What are the different delete rules that a relationship can have? Which one takes ownership?<br>In NSFetchRequest can we fetch only a selective few attributes of an entity? How?<br>Can I have relationship between entities in separate stores (in case of configurations)? (No)<br>What are fetched properties? How do you create a fetched property?<br>What does $FETCH_SOURCE and $FETCHED_PROPERTY in the predicate mean?<br>Why do all model object attributes get marked with @dynamic and not synthesised? What does @dynamic mean?<br>When a NSFetchRequest fetches an entity object from store, does it fetch all of its data at once?</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/11/08/iOS/NSString%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="prev" title="NSString的内存管理">
+                  <i class="fa fa-chevron-left"></i> NSString的内存管理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/12/05/Server/fastSshConnect/" rel="next" title="快速ssh连接">
+                  快速ssh连接 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

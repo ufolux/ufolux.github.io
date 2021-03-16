@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="0x00 目标产品决定技术方案的选择短生命周期和长生命周期产品短生命周期的产品通常要求快速起步并在短时间内出品，目的性极强，技术门槛低、代码随便写、不用考虑任何最佳实践。当它的使命结束时，这些代码会被直接抛弃。比如 项目 Demo，临时活动专用 App。 所以，对于这类产品类似前苏联式的 “快糙猛” 的技术是较好的选择。当然能 “快精猛” 更佳，但在现实的短周期开发中实际上很难做到。 而长生命周期">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从无到有，开发一个 App（二）--- 技术选型以及前期准备">
+<meta property="og:url" content="https://ufolux.github.io/2019/06/17/Experiences/zeroToOneDevApp-2/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="0x00 目标产品决定技术方案的选择短生命周期和长生命周期产品短生命周期的产品通常要求快速起步并在短时间内出品，目的性极强，技术门槛低、代码随便写、不用考虑任何最佳实践。当它的使命结束时，这些代码会被直接抛弃。比如 项目 Demo，临时活动专用 App。 所以，对于这类产品类似前苏联式的 “快糙猛” 的技术是较好的选择。当然能 “快精猛” 更佳，但在现实的短周期开发中实际上很难做到。 而长生命周期">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ufolux.github.io/2019/06/17/Experiences/zeroToOneDevApp-2/dac89d01-888c-45e3-8b16-da6ee8bc7c91.png">
+<meta property="article:published_time" content="2019-06-17T13:01:06.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.090Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="从无到有，开发一个 App">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ufolux.github.io/2019/06/17/Experiences/zeroToOneDevApp-2/dac89d01-888c-45e3-8b16-da6ee8bc7c91.png">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2019/06/17/Experiences/zeroToOneDevApp-2/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>从无到有，开发一个 App（二）--- 技术选型以及前期准备 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E7%9B%AE%E6%A0%87%E4%BA%A7%E5%93%81%E5%86%B3%E5%AE%9A%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-number">1.</span> <span class="nav-text">0x00 目标产品决定技术方案的选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E9%95%BF%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%BA%A7%E5%93%81"><span class="nav-number">1.1.</span> <span class="nav-text">短生命周期和长生命周期产品</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A2%E7%B4%A2%E5%9E%8B%E5%92%8C%E6%88%90%E7%86%9F%E5%9E%8B%E7%9A%84%E4%BA%A7%E5%93%81"><span class="nav-number">1.2.</span> <span class="nav-text">探索型和成熟型的产品</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%B9%E7%BC%98%E4%BA%A7%E5%93%81%E5%92%8C%E7%94%9F%E5%91%BD%E7%BA%BF%E4%BA%A7%E5%93%81"><span class="nav-number">1.3.</span> <span class="nav-text">边缘产品和生命线产品</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">1.4.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81%E7%9A%84%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">0x01 几种主流的客户端技术方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%AF%E5%8E%9F%E7%94%9F-JSPatch"><span class="nav-number">2.1.</span> <span class="nav-text">纯原生 + JSPatch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Xamarin"><span class="nav-number">2.2.</span> <span class="nav-text">Xamarin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReactNative"><span class="nav-number">2.3.</span> <span class="nav-text">ReactNative</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Flutter"><span class="nav-number">2.4.</span> <span class="nav-text">Flutter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Webview-%E6%96%B9%E6%A1%88"><span class="nav-number">2.5.</span> <span class="nav-text">Webview 方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">0x02 架构设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84"><span class="nav-number">3.1.</span> <span class="nav-text">系统结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UI-%E6%A1%86%E6%9E%B6"><span class="nav-number">3.2.</span> <span class="nav-text">UI 框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%B5%81%E7%AE%A1%E7%90%86"><span class="nav-number">3.3.</span> <span class="nav-text">数据流管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E5%87%86%E5%A4%87%E8%84%9A%E6%89%8B%E6%9E%B6"><span class="nav-number">4.</span> <span class="nav-text">0x03 准备脚手架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">4.1.</span> <span class="nav-text">代码生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E6%96%B9%E6%A1%88"><span class="nav-number">4.2.</span> <span class="nav-text">构建方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#shell-%E8%84%9A%E6%9C%AC"><span class="nav-number">4.2.1.</span> <span class="nav-text">shell 脚本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fastlane"><span class="nav-number">4.2.2.</span> <span class="nav-text">fastlane</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E5%8F%82%E8%A7%81"><span class="nav-number">5.</span> <span class="nav-text">0x04 参见</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2019/06/17/Experiences/zeroToOneDevApp-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从无到有，开发一个 App（二）--- 技术选型以及前期准备
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2019-06-17 21:01:06" itemprop="dateCreated datePublished" datetime="2019-06-17T21:01:06+08:00">2019-06-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%8F%E9%AA%8C/" itemprop="url" rel="index"><span itemprop="name">经验</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="0x00-目标产品决定技术方案的选择"><a href="#0x00-目标产品决定技术方案的选择" class="headerlink" title="0x00 目标产品决定技术方案的选择"></a>0x00 目标产品决定技术方案的选择</h2><h3 id="短生命周期和长生命周期产品"><a href="#短生命周期和长生命周期产品" class="headerlink" title="短生命周期和长生命周期产品"></a>短生命周期和长生命周期产品</h3><p>短生命周期的产品通常要求快速起步并在短时间内出品，目的性极强，技术门槛低、代码随便写、不用考虑任何最佳实践。当它的使命结束时，这些代码会被直接抛弃。比如 项目 Demo，临时活动专用 App。 所以，对于这类产品类似前苏联式的 “快糙猛” 的技术是较好的选择。当然能 “快精猛” 更佳，但在现实的短周期开发中实际上很难做到。</p>
+<p>而长生命周期的产品则会对可维护性和可扩展性要求十分强烈，因为它们在相当长的时间内都是无法报废的。甚至对于一些关键的生命线产品，连项目重写都会要求在重写期间线上系统要万无一失地平稳度过，完全平滑地迁移到新技术。这种高水平的要求对团队的工程化能力是个极端的考验。如果工程以及项目管理能力有限，其代价不比用新技术重新写一个功能相同的系统更低。</p>
+<span id="more"></span>
+
+<h3 id="探索型和成熟型的产品"><a href="#探索型和成熟型的产品" class="headerlink" title="探索型和成熟型的产品"></a>探索型和成熟型的产品</h3><p>探索型产品往往也是短周期产品，但这类项目与上面所说的用后即丢的产品有着显著区别，为了尽快打开或者占领市场它要求开发速度尽可能快，但往往同时也会对质量有高要求。因为探索型的产品的可行性如果得到肯定，那么它很有可能会转型为一个长生命周期项目。</p>
+<p>在我看来对于这种项目的最理想实践应该是由一个资深的架构师设计一个可扩展性和可维护性都很强的核心系统架构，其他功能点的开发完全基于这个高度灵活可维护的架构。这一点其实很多客户端和前端开发框架（尤其是前端框架）可以帮我们做到。</p>
+<p>另一个方面是进行这样的开发时，我们需要一套随项目演进的单元测试以及自动化回归测试系统来保证项目在未来演进时的可靠性。因为探索性的项目一旦如期转换为一个长周期项目，那么对项目的可靠性和可维护性要求会变高。由于先前开发十分迅速，代码质量以及模块结构的设计可能并不能适应日益变化的需求，这就需要大量的重构和重写的工作，但是在项目蒸蒸日上的阶段这样的工作很可能上导致严重的 BUG，那么自动化的质量控制甚至自动化的重构工具都是可以提升软件质量的途径。</p>
+<p>不过，也可以采取十分激进的“快糙猛”的战术，但这要求团队要做好项目中期维护成本上升，维护难度变大的心理准备，更严重的是可能不得不面临全部重写的局面。</p>
+<p>而对成熟型产品的选型则会侧重于与团队现有技术栈的相似程度和与现有项目无缝整合的能力。如果整合的过程中有很大的侵入性，或者所用技术需要大量 hack，那么很可能这种技术方案对项目来说是一个大坑。</p>
+<p>在引入新技术的过程中，也应该尽可能符合现有的开发流程、基础设施和开发的习惯。如果这些旧的方案已经严重过时，则可以联合老技术方案的核心开发一起来规划一个进化路线图，让老技术平稳过渡到相对较先进的技术方案。还有要说的是，如果老技术已经有新版本，应该优先考虑升级到新版本。幻想换个技术栈就能解决一切问题是不切实际的。事实上由于新技术产生时间短，社区规模可能较小，应用规模不大，问题未能广泛暴露导致由新技术带来的问题往往会更多，甚至会遇到无法以合理代价解决的问题。比如 iOS 引入的 WKWebkit 带来的 Cookie 以及 API 方面的问题，又或者 RN 方案导致无法直接使用依赖 DOM 的前端框架（比如 Highcharts 图表库）。</p>
+<h3 id="边缘产品和生命线产品"><a href="#边缘产品和生命线产品" class="headerlink" title="边缘产品和生命线产品"></a>边缘产品和生命线产品</h3><p>在人员的学习能力和意愿允许的前提下，边缘产品是最佳的试验场，适合探索各种候选技术，试验各种激进方案，积累经验教训。其影响范围可控，即使失控也不会带来太大的损失。当然，即使探索，也应该有计划地探索，不要每个边缘产品都采用不同的技术方案，那样会给人才供应带来巨大的挑战。</p>
+<p>而生命线产品则应该稳妥优先，采用保守方案。所以应该优先采用团队内部积累了一定经验或具有稳定的强力外援的技术。</p>
+<p>所有的生命线产品几乎必然是长周期产品，所以其可维护性同样是重中之重。</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>在目标产品维度上，低价值产品优先考虑门槛低的技术，但是高价值产品应该尽早进行投资性技术积累，优先考虑一些天花板高的技术，这样才不至于在若干年之后因为各种原因（团队技术能力进化空间方面或者项目维护方面）被迫重写。由于项目年久月深，如果工程化能力不足，这种重写往往会成为灾难。</p>
+<h2 id="0x01-几种主流的客户端技术方案"><a href="#0x01-几种主流的客户端技术方案" class="headerlink" title="0x01 几种主流的客户端技术方案"></a>0x01 几种主流的客户端技术方案</h2><p>在客户端开发技术快速演进的几年里，许多技术方案涌现了出来。在众多的技术方案的更新迭代中，我们可以发现一些规律。这些技术的关注点主要都在解决跨平台和热更新的问题。早期关于热更新的探索产生了 JSPatch， OCScript 等方案。而这种对于热更新的探索的研究慢慢拓展到了和跨平台特性结合的研究中，而我们熟悉的 Xamarin, Cordova，ReactNative，Weex 以及最近比较热门的 Flutter 都是这些研究催生的产物。</p>
+<p>相对一般的 App 而言，游戏客户端在上面的道路上早已经走得很远了，Cocos2d-x, Unity3d, Unreal Engine 等及跨平台和热更新及一身的引擎层出不穷，不过这些不是我们讨论的重点。至于为什么不会用游戏引擎来开发 App，请参见知乎上的<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/46490922">这个回答</a></p>
+<h3 id="纯原生-JSPatch"><a href="#纯原生-JSPatch" class="headerlink" title="纯原生 + JSPatch"></a>纯原生 + JSPatch</h3><p>这种方案是一种支持热更新的终端开发方案，这项技术诞生于 2015-2016 年左右的 iOS 平台。主要应用的还是 iOS 和 安卓的原生开发技术，在此基础之上辅以 JS 代码为载体的热更新机制。热更新的主要原理是通过 JavaScriptCore 来执行开发者下发的 js 脚本，将包含在脚本中的 OC 代码端提取出来。再通过 Objective-C 的运行时的反射特性，修改类，方法的实现；创建新的协议，类或者方法；在运行时加载原来没有的运行库等等。</p>
+<p>这个方法非常灵活，几乎可以解决一切的原生补丁问题。但这种过于灵活的性质也让 JSPatch 变得十分危险。应用基于这种方式可以绕过 AppStore 的审核实现对系统私有 API 的调用，从而破坏 iOS 的沙盒机制，威胁到用户的安全。这也是苹果所不允许的，目前使用这项技术的应用基本无法通过 AppStore 上架审核。</p>
+<h3 id="Xamarin"><a href="#Xamarin" class="headerlink" title="Xamarin"></a>Xamarin</h3><p>Xamarin 最初是由 Xamarin 公司开发提供的一基于 Mono（一个 C# 跨平台开发方案）的 iOS 和 Android 应用开发的解决方案。2015<br>年这套方案被微软收购，成为 Visual Studio 中的一个组件。</p>
+<p>虽然它实现了两端代码都用 C# 编写，但是对于平台相关的 API， Xamarin 只是做了翻译，而并没有去试图抹平平台间的差异。也就是说虽然你可以用 C# 编写一些公用的业务逻辑代码，但是平台相关的代码依然要写两份。虽然这样相对较薄的封装有利于应对平台日后的发展和变化，但是对于开发者来讲，依然没有显著降低学习成本。而且最致命的问题是它的社区不活跃，软件相对封闭遇到棘手问题的时候很难迅速解决。</p>
+<h3 id="ReactNative"><a href="#ReactNative" class="headerlink" title="ReactNative"></a>ReactNative</h3><p>React Native 确实是最近最火的跨平台App解决方案了。它脱胎于React，因为 React 基于 Virtual DOM 来进行界面渲染，所以用 Native 的 View 来替换掉原本 React 的 HTML DOM 就形成了 React Native 这个框架。</p>
+<p>虽然大部分代码是平台无关的，但是平台相关的代码都交由开发者进行统一的封装和实现，这虽然对跨平台带来了不便，但是引入的好处也是显而易见的，View层的部分通过原生组件实现，性能相对 H5 页面来说要高不少。</p>
+<p>RN 对于热更新也是十分友好的，由于 RN 的全部 js 代码都会被打包在一个 jsbundle 资源文件中，所以我们只需要下载并且替换 jsbundle 文件即可实现对 js 业务逻辑的更新。</p>
+<p>但是 RN 也不是没有缺点，首先 RN 提供了一个类似 CSS 的样式系统，但是由于平台差异以及官方开发力度的问题，这套布局系统存在很多兼容性问题，bug 以及缺少很多必要样式的支持。有些问题在开发中会变成一个阻塞性的障碍，即便有解决方案，实现可能也会是极其复杂的。</p>
+<p>再者，由于没有 DOM，也不支持标准的 SVG，许多涉及 UI 操作的 js 框架都是无法在 RN 中工作的。有人会说，不能用的话就自己写一个呗，那么比如 Highcharts 这种极其复杂的图表框架，显然不是所有团队都有能力和时间随随便便重写一个的，那么这时候就不得不用 webview 来展示这些必要的视图，这样一开实际上开发效率是很差的。</p>
+<p>调试能力不足，开发基础设施差也是一个不能忽视的问题，基于 Chrome Dev Tool 的调试工具经常会莫名其妙的用掉 6，7GB 内存，甚至整个电脑都被拖得变卡。调试需要将手机和电脑连接到同一网段，安卓机需要手动运行 adb 命令才可以实现调试。调试器也经常卡死，尤其是调试进行到最关键阶段的时候，调试器突然变得很卡，单步调试都变得极为困难，这会让人有一种要疯掉的感觉。</p>
+<p>还有一个严重的问题是，RN 框架迟迟未能进入 Release 版本。各种破坏性的改动依然在每个新版本中出现，这就导致框架更新变得十分困难。而且不知出于什么原因，RN 的新版本中经常会出现以前旧版本中已经修改过的 bug，作为一个框架来讲这样的稳定性和维护的水平实在是值得推敲。</p>
+<h3 id="Flutter"><a href="#Flutter" class="headerlink" title="Flutter"></a>Flutter</h3><p>Flutter 是谷歌研发的一个新的跨平台开发技术，使用 Dart 强类型语言作为开发语言。作为谷歌的下一代操作系统 fuchsia 的应用开发框架，的被谷歌寄予厚望。目前 1.0 版本已经释放出来，也有一些 App 将这个框架用在生产环境中，比如<a target="_blank" rel="noopener" href="https://www.infoq.cn/article/VBqfCIuwdjtU_CmcKaEu">闲鱼</a>。</p>
+<p>框架的优点，可以在网上搜一下，有很多布道文章都在吹捧 Flutter, 这里讲一些我认为 Flutter 可能存在的局限性。</p>
+<ol>
+<li><p>不支持热更新，由于 Flutter 在 Release 模式下使用 AOT 方式运行，实际上就是将 Dart 编译成机器码直接在 Dart 虚拟机上执行，这样的运行方式就导致无法通过下发补丁包的方式来直接更新代码。官方曾经在 2019 年的 Roadmap 中提出要关注热更新的问题，但是最近官方也由于苹果的政策问题以及性能问题正式<a target="_blank" rel="noopener" href="https://juejin.im/post/5cce88c8f265da039a3d816a">放弃</a>了热更新的开发。</p>
+</li>
+<li><p>无法与现有的前端技术社区提供的解决方案兼容，由于使用了 Dart 和 Dart 虚拟机，Flutter 完全不支持 js 库，而 Dart 库又远远不及 js 库那样丰富。</p>
+</li>
+<li><p>对于图表和图形类的应用，支持十分有限，目前还没有任何完善的图表和图形库支持 Flutter。</p>
+</li>
+<li><p>由于 Flutter 底层完全使用 Skia 绘图引擎来代替各个平台提供的视图组件，Flutter 无法很好地和原生视图一起工作，常见的场景比如嵌入式的地图组件在 Flutter 中的实现会变得异常复杂，甚至无法实现。</p>
+</li>
+<li><p>bug 依旧较多，项目仍不稳定，尚未解决的 Issue，截止现在还有 6018 个之多。而且 Flutter 应用的底层技术较为复杂，一旦框架出现问题，难以解决。</p>
+</li>
+</ol>
+<h3 id="Webview-方案"><a href="#Webview-方案" class="headerlink" title="Webview 方案"></a>Webview 方案</h3><p>Webview 方案是一个比较早期的跨平台方案，大多数 App 也都或多或少会用到 Webview。使用这一方案作为跨平台 App 解决方案的框架，最出名的就是 Cordova 了。虽然这是个很老的技术，但在我的理解来看，即便在今天依然可以发挥它的作用。尤其是多 Webview 的模式，甚至可以解决很多其他方案解决不了的难题。</p>
+<p>直接使用各个平台内建的 Webview，再辅以 JavaScriptBridge 用于 Web 和原生层之间的通信是这个技术方案的基本原理。使用标准的浏览器，可以让开发者将更多地经历放在前端开发商，而且开发者的选择也更加丰富，只要是 js 组件基本上就都可以随心所欲的使用。</p>
+<p>Cordava 基于 Argular2+ 和 AngularJS，使用单页面模式开发，在实践中动画性能存在一些问题，尤其是在安卓平台的页面切换过程中，卡顿尤为明显。 </p>
+<p>由于 Webview 本身可以是一个原生页面，多 Webview 的方式不但可以实现保持页面的状态，并且可以直接使用原生的页面切换动画已达到和原生 App 近似的使用体验。</p>
+<p>热更新同样也不是难题，对于页面文件放在本地的方案，我们只需要更新这些文件即可。如果有的页面被放在远端，那么我们无需考虑热更新的问题，只要将新版本的页面进行发布就可以实现全量客户端的更新。</p>
+<h2 id="0x02-架构设计"><a href="#0x02-架构设计" class="headerlink" title="0x02 架构设计"></a>0x02 架构设计</h2><p>对于客户端的架构设计，我觉得可以简单分为三个大块，第一块内容是客户端系统结构的设计，这部分要解决的问题是，客户端要采用哪些技术，每项技术在系统中处于什么层次，负责什么样的功能；第二块是 UI 框架，包括设计一个合理的可扩展的主题系统，以及扩展性较强的基本组件封装；第三块是对数据流的管理，主要任务是解决如何设计数据流动的路径，让应用在长期发展的过程中保持好的可维护性。</p>
+<h3 id="系统结构"><a href="#系统结构" class="headerlink" title="系统结构"></a>系统结构</h3><p>系统中会涉及到原生和非原生的系统组件，原生组件应该承担诸如 SDK 接入，系统能力调用，通用接口实现等职责，而 UI 相关的能力应该尽量放到非原生或者说跨平台的部分实现，这样可以降低开发的成本。但是遇到 UI 的性能瓶颈，不得不使用原生开发的情况应属例外。</p>
+<h3 id="UI-框架"><a href="#UI-框架" class="headerlink" title="UI 框架"></a>UI 框架</h3><p>由于 UI 的定制化程度和变化的可能性都很高，这一层可以做的比较薄，实现一个轻量的主题系统同时只对基本组件进行简单封装，尽量薄的封装可以提供很强的扩展性和可维护性。</p>
+<h3 id="数据流管理"><a href="#数据流管理" class="headerlink" title="数据流管理"></a>数据流管理</h3><p>软件架构的一个重要任务之一就是组织应用中的数据流，组织应用数据流的方法多种多样，常用的有 MVC，MVVM，Redux 等。</p>
+<center>![Alt text](bfebe9bc-902e-4550-b295-0c8b8bece03b.png)</center>
+<center>MVC</center>
+
+<p>这个模式认为，程序不论简单或复杂，从结构上看，都可以分成三层。</p>
+<ol>
+<li>View 传送指令到 Controller</li>
+<li>Controller 完成业务逻辑后，要求 Model 改变状态</li>
+<li>Model 将新的数据发送到 View，用户得到反馈</li>
+</ol>
+<center>![Alt text](f4ece01a-6eb4-427d-a07b-d748dd465ba1.png)</center>
+
+<center>MVVM</center>
+
+<ol>
+<li><p>各部分之间的通信，都是双向的。</p>
+</li>
+<li><p>View 与 Model 不发生联系，都通过 ViewModel 传递。</p>
+</li>
+<li><p>View 非常薄，不部署任何业务逻辑，称为”被动视图”（Passive View），即没有任何主动性，而 ViewModel 非常厚，所有逻辑都部署在那里。View 和 ViewModel 之间通过双向绑定来实现数据的同步。</p>
+</li>
+</ol>
+<center>![Alt text](918e01e3-1182-4330-b695-e0a8280fa646.png)</center>
+
+<center>Redux</center>
+
+<p>关于 Redux 的概念，可以参见<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_one_basic_usages.html">这篇文章</a></p>
+<p>三种模式各有各的优缺点，网上的分析也很多，这里我不想重复这些内容，下面谈一点我自己的感受。</p>
+<p>网上很多观点认为 MVVM 是 MVC 的进化，主要的论点是说 MVC 会导致 Controller 中代码过于臃肿。而 MVVM 的双向数据绑定以及 View 和 Model 的解耦解决了这个问题。其实多了解一些信息就会发现 MVC 模式并不只一种形式，还有很多其他的变形。有一些变形比如 MVP<br><img src="/2019/06/17/Experiences/zeroToOneDevApp-2/dac89d01-888c-45e3-8b16-da6ee8bc7c91.png" alt="Alt text"><br>和 MVVM 十分相似。难道只是在三者之间简单改变数据流向或者添加数据绑定就可以解决 controller 臃肿的问题吗？我认为还是远远不够的，真正解决问题还是需要将业务逻辑从 controller 中分散出来，分散到 service, adaptor, model 中去才能解决臃肿的问题。而数据绑定只是减少了更新数据的逻辑，这部分逻辑其实相对而言只占用了少数的代码量，并不能从根本上解决问题。</p>
+<p>Redux 看似简洁明了，单向数据流很清晰。但实际上自定义 Action 和为了保障数据不可变性而编写的大量模板代码让开发过程略显繁琐。</p>
+<p>因此，我认为设计架构不光要遵守某种教条的逻辑，更重要的是思考问题发生的根源，然后在一个基础上去改进设计。</p>
+<h2 id="0x03-准备脚手架"><a href="#0x03-准备脚手架" class="headerlink" title="0x03 准备脚手架"></a>0x03 准备脚手架</h2><h3 id="代码生成"><a href="#代码生成" class="headerlink" title="代码生成"></a>代码生成</h3><p>在创建视图，控制器或者数据模型的时候的时候免不了要写许多模板代码。软件工程的前辈们告诉我们，能够让电脑自动完成的事情就不要手动去做。代码生成器就是一个能够很大程度上解放生产力的工具。一旦开发模式固化下来，就应该着手去写一个这样的工具供开发人员使用。一键生成模板代码是一件非常爽的事情，大家可以将更多的时间和精力投入到有效的业务代码开发中。而且自动化的工具在很大程度上可以防止低级错误的出现，在这个层面上也有助于提升软件质量。</p>
+<h3 id="构建方案"><a href="#构建方案" class="headerlink" title="构建方案"></a>构建方案</h3><p>作为客户端项目来说，构建打包是一个必经的过程。对于小型项目来讲，可能构建和打包就是点击一下 IDE 上的 <code>Build</code> 按钮这么简单。但是对于有复杂依赖的大型项目来讲，构建就是一个过程很繁琐的过程，远不是单纯依靠 IDE 可以实现的。</p>
+<p>以一个成熟的 ReactNative 项目为例，构建和打包需要经历以下几个过程：</p>
+<ol>
+<li>安装 iOS / Android 依赖包</li>
+<li>安装 js 依赖包</li>
+<li>进行代码质量检查</li>
+<li>构建 ReactNative 资源包</li>
+<li>对资源包进行签名</li>
+<li>为资源包添加平台以及版本号信息</li>
+<li>ReactNative 资源包压缩</li>
+<li>将 ReactNative 资源移动到原生资源目录</li>
+<li>构建 iOS / Android 项目原生代码（在此过程中需要确保 iOS 证书的正确性，如果在开发者账户中添加了新的设备 ID 需要更新证书以确保构建包可以在目标设备上使用）</li>
+<li>为构建结果添加版本以及构建时间等信息</li>
+<li>将构建结果输出至目标路径</li>
+<li>清理工作空间</li>
+</ol>
+<p>可以看到想要得到一个可安装的 ReactNative App 包要经历如此复杂的步骤，这些步骤如果是依赖手动操作的话，想必几乎不可能一次性没有失误地通过。而构建脚本就是来解决这个问题的一个手段。</p>
+<h4 id="shell-脚本"><a href="#shell-脚本" class="headerlink" title="shell 脚本"></a>shell 脚本</h4><p>由于涉及到的很多操作基于操作系统提供的工具链以及其他应用提供的命令行界面才能完成，编写 shell 脚本是打造一个构建方案的必备能力。但是 shell 脚本有先天的劣势，语法较现代语言来讲比较晦涩，语法的容错性和灵活性也比较差，多一个或者少一个空格就会导致语句无法执行。调试也只有日志输出这个唯一的办法。在构件流程随着项目发展越发复杂的时候，shell 脚本较差的可维护性会变成项目的一个炸弹，可能在某次修改之后，构建会产生意料之外的结果进而造成质量问题。</p>
+<h4 id="fastlane"><a href="#fastlane" class="headerlink" title="fastlane"></a>fastlane</h4><p>为了解决单单依靠 shell 带来的问题，fastlane 被发明了出来，虽然在操作系统的框架之上，使用 fastlane 的构建过程也不能摆脱依赖 shell 的命运，但是由 ruby 编写的 fastlane 针对客户端构建提供了很多包装好的 ruby 方法，包括调用构建工具，执行 shell 指令，解决 iOS 证书相关问题等。使用这些方法可以方便地使用现代语言实现一些功能。即便当你不得不使用 shell 的时候，fastlane 提供的 shell 脚本包装方法也有助于将 shell 脚本产生的问题控制在最小的区域。统一的异常处理机制为脚本的可靠性提供了有力的保障。</p>
+<h2 id="0x04-参见"><a href="#0x04-参见" class="headerlink" title="0x04 参见"></a>0x04 参见</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://fastlane.tools/">Fastlane</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/46490922">用游戏引擎(如Unity)开发一款App应用有什么优势或劣势？</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.infoq.cn/article/VBqfCIuwdjtU_CmcKaEu">闲鱼开源 FlutterBoost：实现 Flutter 混合开发</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5cce88c8f265da039a3d816a">坏消息：Flutter官方暂时不会开发热更新（Code push）了。</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_one_basic_usages.html">Redux 入门教程（一）：基本用法</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/troubleshooter/article/details/78479984">贫血充血模型</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BB%8E%E6%97%A0%E5%88%B0%E6%9C%89%EF%BC%8C%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA-App/" rel="tag"># 从无到有，开发一个 App</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/06/09/Experiences/zeroToOneDevApp-1/" rel="prev" title="从无到有，开发一个 App（一）---在开发之前我们要想些什么">
+                  <i class="fa fa-chevron-left"></i> 从无到有，开发一个 App（一）---在开发之前我们要想些什么
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/02/Server/LetsHttps/" rel="next" title="让网站支持Https">
+                  让网站支持Https <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

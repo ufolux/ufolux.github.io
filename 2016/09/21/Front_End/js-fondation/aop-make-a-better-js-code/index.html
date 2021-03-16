@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="在 javscript 中 AOP 的使用会带来很多方便，在程序的结构上实现了解耦，代码逻辑更加清晰。使用 AOP 我们还可以对逻辑进行非侵入性的改造，下面来看下用法： 用于非侵入的插入逻辑before 函数 12345678910Function.prototype.before &#x3D; function(func) &amp;#123;    var __self &#x3D; this;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用AOP来改善JavaScript代码">
+<meta property="og:url" content="https://ufolux.github.io/2016/09/21/Front_End/js-fondation/aop-make-a-better-js-code/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="在 javscript 中 AOP 的使用会带来很多方便，在程序的结构上实现了解耦，代码逻辑更加清晰。使用 AOP 我们还可以对逻辑进行非侵入性的改造，下面来看下用法： 用于非侵入的插入逻辑before 函数 12345678910Function.prototype.before &#x3D; function(func) &amp;#123;    var __self &#x3D; this;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-09-21T12:10:10.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.096Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2016/09/21/Front_End/js-fondation/aop-make-a-better-js-code/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>使用AOP来改善JavaScript代码 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E4%BA%8E%E9%9D%9E%E4%BE%B5%E5%85%A5%E7%9A%84%E6%8F%92%E5%85%A5%E9%80%BB%E8%BE%91"><span class="nav-number">1.</span> <span class="nav-text">用于非侵入的插入逻辑</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2016/09/21/Front_End/js-fondation/aop-make-a-better-js-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用AOP来改善JavaScript代码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-09-21 20:10:10" itemprop="dateCreated datePublished" datetime="2016-09-21T20:10:10+08:00">2016-09-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在 javscript 中 AOP 的使用会带来很多方便，在程序的结构上实现了解耦，代码逻辑更加清晰。使用 AOP 我们还可以对逻辑进行非侵入性的改造，下面来看下用法：</p>
+<h3 id="用于非侵入的插入逻辑"><a href="#用于非侵入的插入逻辑" class="headerlink" title="用于非侵入的插入逻辑"></a>用于非侵入的插入逻辑</h3><p>before 函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Function.prototype.before &#x3D; function(func) &#123;</span><br><span class="line">    var __self &#x3D; this;</span><br><span class="line">    return function() &#123;</span><br><span class="line">        if (func.apply(this, arguments) &#x3D;&#x3D; false) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return __self.apply(this, arguments);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>after 函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Function.prototype.after &#x3D; function(func) &#123;</span><br><span class="line">    var __self &#x3D; this;</span><br><span class="line">    return function() &#123;</span><br><span class="line">        var ret &#x3D; __self.apply(this, arguments);</span><br><span class="line">        if (ret &#x3D;&#x3D;&#x3D; false) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        func.apply(this, arguments);</span><br><span class="line">        return ret;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>考虑这种情形，我们需要在 onload 方法之后或者之前执行一些代码<br>比如，我们需要在 alert(1)之前 alert(0)，在之后 alert(2)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">window.onload &#x3D; function() &#123;</span><br><span class="line">    alert(1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们考虑如下三种手段：</p>
+<ol>
+<li>直接修改 onload 中的代码</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">window.onload &#x3D; function() &#123;</span><br><span class="line">    alert(0);</span><br><span class="line">    alert(1);</span><br><span class="line">    alert(2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>无疑这种方式是耦合度最高，最具侵入性的方法。<br>2. 使用中间变量保存 onload</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">window.onload &#x3D; function() &#123;</span><br><span class="line">    alert(1);</span><br><span class="line">&#125;</span><br><span class="line">var __onlaod &#x3D; window.onload;</span><br><span class="line"></span><br><span class="line">window.onload &#x3D; function() &#123;</span><br><span class="line">    alert(0);</span><br><span class="line">    if(__onlaod) &#123;</span><br><span class="line">        __onload();</span><br><span class="line">    &#125;</span><br><span class="line">    alert(1);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这种方式较上一种好一些，但是这里需要维护一个中间变量，维护中间变量还是需要一些成本的，而且代码冗长不够优雅也不够通用。<br>3. 使用 AOP 的方式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">window.onload &#x3D; function() &#123;</span><br><span class="line">    alert(1);</span><br><span class="line">&#125;;</span><br><span class="line">window.onload &#x3D; (window.onload || function()&#123;&#125;).before(function()&#123;</span><br><span class="line">    alert(0);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">window.onload &#x3D; (window.onload || function()&#123;&#125;).after(function()&#123;</span><br><span class="line">    alert(2);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>使用 AOP 的方式显然是耦合度最低的非侵入式做法，代码也优雅很多，那我们来分析一下这两个函数的实现原理，以便今后我们可以自己写出这样的方法。</p>
+<p>下面我们来逐行地分析一下这两个方法，首先来看 <code>before</code> 函数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">Function.prototype.before &#x3D; function(func) &#123;</span><br><span class="line">    var __self &#x3D; this; &#x2F;&#x2F;使用中间变量 __self 保存了 this 指针，此时的 this 指向调用者，也就是 onload 方法</span><br><span class="line">    return function() &#123; &#x2F;&#x2F;返回一个函数</span><br><span class="line">        if (func.apply(this, arguments) &#x3D;&#x3D;&#x3D; false) &#123;</span><br><span class="line">            &#x2F;&#x2F;使用 apply 函数用 this 指针调用 func，因为这时候这个函数已经被赋值给 window.onload，所以这时候的 this 指向的是 window 对象，</span><br><span class="line">            &#x2F;&#x2F;这里其实是 window.func(arguments);</span><br><span class="line">            &#x2F;&#x2F;如果返回值是非 false 的返回值，就继续执行下一步，这个 false 是应该在 before 函数中返回的，用于控制是否继续执行原始的 onload 方法。</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return __self.apply(this, arguments); &#x2F;&#x2F;如果返回值不是 flase，这里就直接使用 this 指向的 window 对象调用保存的 onload 方法，实现对原始 window.onload 的调用</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Function.prototype.after &#x3D; function(func) &#123;</span><br><span class="line">    var __self &#x3D; this; &#x2F;&#x2F;使用中间变量 __self 保存了 this 指针，此时的 this 指向调用者，也就是 onload 方法</span><br><span class="line">    return function() &#123; &#x2F;&#x2F;返回一个函数</span><br><span class="line">        var ret &#x3D; __self.apply(this, arguments); &#x2F;&#x2F;直接使用 this 指针指向的 window 对象调用 onload 方法，实现 window 对 onload 方法的原始调用。并取方法调用的返回值。</span><br><span class="line">        if (ret &#x3D;&#x3D;&#x3D; false) &#123; &#x2F;&#x2F;如果onload 方法中没有返回 false，则说明，onload 方法中允许执行后续的方法。继续执行后续步骤</span><br><span class="line">            return false; &#x2F;&#x2F;否则就终止方法调用并且返回 false；</span><br><span class="line">        &#125;</span><br><span class="line">        func.apply(this, arguments); &#x2F;&#x2F;这时的 this 指针指向 window 对象，使用 window 对象调用 func</span><br><span class="line">        &#x2F;&#x2F;其实是 window.func(arguments);</span><br><span class="line">        return ret; &#x2F;&#x2F;返回返回值</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在本例中我们又一次看到了 ES 中 apply 的强大动态特性，很类似于 OC 中的 Swizzle<br>，动态的交换方法的实现，来实现非侵入的在方法的前后插入逻辑的动态装饰功能。</p>
+<p>其实 AOP 实现的是一个拦截程序生命周期的方法，通过拦截程序的生命周期来对不同的功能实现解耦。它的实现依赖动态语言的运行时特性，通过使用这些特性来让代码变得更加优雅，可维护性更好。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/08/26/Front_End/tools/introduce-webpack/" rel="prev" title="Webpack入门">
+                  <i class="fa fa-chevron-left"></i> Webpack入门
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/09/25/Front_End/wechat-dev/introduce-wechat-mina-framwork/" rel="next" title="微信小程序初体验">
+                  微信小程序初体验 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

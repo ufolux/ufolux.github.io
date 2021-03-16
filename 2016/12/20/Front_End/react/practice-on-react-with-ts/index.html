@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="一些概念TypeScript强类型的 javascript React利用 jsx 实现 web 开发的组件化。 d.ts 文件d.ts 文件是 typescript 的类型定义文件，ts 依靠这个文件来为 js 代码中的类型添加类型说明并提供类型检查所有的类型定义文件基本都可以在这里找到 typingshttps:&#x2F;&#x2F;github.com&#x2F;typings&#x2F;typingstypings 是一个 t">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TypeScript+React 实践">
+<meta property="og:url" content="https://ufolux.github.io/2016/12/20/Front_End/react/practice-on-react-with-ts/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="一些概念TypeScript强类型的 javascript React利用 jsx 实现 web 开发的组件化。 d.ts 文件d.ts 文件是 typescript 的类型定义文件，ts 依靠这个文件来为 js 代码中的类型添加类型说明并提供类型检查所有的类型定义文件基本都可以在这里找到 typingshttps:&#x2F;&#x2F;github.com&#x2F;typings&#x2F;typingstypings 是一个 t">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-12-20T13:56:38.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.097Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="react">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2016/12/20/Front_End/react/practice-on-react-with-ts/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>TypeScript+React 实践 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">一些概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TypeScript"><span class="nav-number">1.1.</span> <span class="nav-text">TypeScript</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#React"><span class="nav-number">1.2.</span> <span class="nav-text">React</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d-ts-%E6%96%87%E4%BB%B6"><span class="nav-number">1.3.</span> <span class="nav-text">d.ts 文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#typings"><span class="nav-number">1.4.</span> <span class="nav-text">typings</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E9%A1%B9%E7%9B%AE%E7%9A%84%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">建立项目的目录结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96-npm"><span class="nav-number">2.2.</span> <span class="nav-text">初始化 npm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83"><span class="nav-number">3.</span> <span class="nav-text">搭建开发环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x01-%E5%AE%89%E8%A3%85-typescript-%E5%92%8C-webpack"><span class="nav-number">3.1.</span> <span class="nav-text">0x01 安装 typescript 和 webpack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x02-%E5%AE%89%E8%A3%85-react-%E5%92%8C-react-dom"><span class="nav-number">3.2.</span> <span class="nav-text">0x02 安装 react 和 react-dom</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x03-%E5%AE%89%E8%A3%85%E5%BC%80%E5%8F%91%E4%BE%9D%E8%B5%96"><span class="nav-number">3.3.</span> <span class="nav-text">0x03 安装开发依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x04-HelloWorld"><span class="nav-number">3.4.</span> <span class="nav-text">0x04 HelloWorld</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.5.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x05-%E7%BC%96%E5%86%99-tsconfig-json"><span class="nav-number">3.6.</span> <span class="nav-text">0x05 编写 tsconfig.json</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x06-%E9%85%8D%E7%BD%AE-webpack"><span class="nav-number">3.7.</span> <span class="nav-text">0x06 配置 webpack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x07-run"><span class="nav-number">3.8.</span> <span class="nav-text">0x07 run</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%9D%91"><span class="nav-number">4.</span> <span class="nav-text">一些坑</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B2%A1%E6%9C%89-d-ts"><span class="nav-number">4.1.</span> <span class="nav-text">没有 d.ts</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-npm-%E5%AE%89%E8%A3%85%E7%9A%84-types-%E4%BC%9A%E6%8A%A5%E9%94%99"><span class="nav-number">4.2.</span> <span class="nav-text">使用 npm 安装的 types 会报错</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2016/12/20/Front_End/react/practice-on-react-with-ts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TypeScript+React 实践
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-12-20 21:56:38" itemprop="dateCreated datePublished" datetime="2016-12-20T21:56:38+08:00">2016-12-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="一些概念"><a href="#一些概念" class="headerlink" title="一些概念"></a>一些概念</h2><h3 id="TypeScript"><a href="#TypeScript" class="headerlink" title="TypeScript"></a>TypeScript</h3><p>强类型的 javascript</p>
+<h3 id="React"><a href="#React" class="headerlink" title="React"></a>React</h3><p>利用 jsx 实现 web 开发的组件化。</p>
+<h3 id="d-ts-文件"><a href="#d-ts-文件" class="headerlink" title="d.ts 文件"></a>d.ts 文件</h3><p>d.ts 文件是 typescript 的类型定义文件，ts 依靠这个文件来为 js 代码中的类型添加类型说明并提供类型检查<br>所有的类型定义文件基本都可以在<a target="_blank" rel="noopener" href="https://github.com/DefinitelyTyped/DefinitelyTyped">这里</a>找到</p>
+<h3 id="typings"><a href="#typings" class="headerlink" title="typings"></a>typings</h3><p><a target="_blank" rel="noopener" href="https://github.com/typings/typings">https://github.com/typings/typings</a><br>typings 是一个 typescript 的类型定义管理工具，可以使用它来安装 js 框架的 d.ts 类型定义文件，这样在 ts 项目中使用 js 框架时候就会得到准确的类型定义。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><blockquote>
+<p>材料<br><code>node</code><br><code>npm</code></p>
+</blockquote>
+<span id="more"></span>
+
+<h3 id="建立项目的目录结构"><a href="#建立项目的目录结构" class="headerlink" title="建立项目的目录结构"></a>建立项目的目录结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">proj&#x2F;</span><br><span class="line">   ├─ src&#x2F;</span><br><span class="line">   |    └─ components&#x2F;</span><br><span class="line">   |</span><br><span class="line">   └─ dist&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化-npm"><a href="#初始化-npm" class="headerlink" title="初始化 npm"></a>初始化 npm</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm init&#96;</span><br></pre></td></tr></table></figure>
+
+<h2 id="搭建开发环境"><a href="#搭建开发环境" class="headerlink" title="搭建开发环境"></a>搭建开发环境</h2><h3 id="0x01-安装-typescript-和-webpack"><a href="#0x01-安装-typescript-和-webpack" class="headerlink" title="0x01 安装 typescript 和 webpack"></a>0x01 安装 typescript 和 webpack</h3><p>在全局安装 typescript 和 webpack</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g typescript webpack</span><br></pre></td></tr></table></figure>
+<h3 id="0x02-安装-react-和-react-dom"><a href="#0x02-安装-react-和-react-dom" class="headerlink" title="0x02 安装 react 和 react-dom"></a>0x02 安装 react 和 react-dom</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save react react-dom @types&#x2F;react @types&#x2F;react-dom</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x03-安装开发依赖"><a href="#0x03-安装开发依赖" class="headerlink" title="0x03 安装开发依赖"></a>0x03 安装开发依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save-dev ts-loader source-map-loader</span><br><span class="line">$ npm link typescript</span><br></pre></td></tr></table></figure>
+<p>这里安装 <code>ts-loader</code> 用于调用 <code>tsc</code> 来根据 <code>tsconfig.json</code> 编译 .ts 文件，输出 .js 文件，<code>source-map-loader</code> 它会根据 tsc 编译生成的 ts&lt;-&gt;js sourcemap 文件生成 webpack 的 sourcemap 文件。</p>
+<p>npm link 可以让 ts-loader 直接使用全局的 tsc 来编译 ts 文件，这样就无须在项目目录下单独安装 typescript。</p>
+<h3 id="0x04-HelloWorld"><a href="#0x04-HelloWorld" class="headerlink" title="0x04 HelloWorld"></a>0x04 HelloWorld</h3><p>在 src 目录下新建 index.tsx 文件，键入如下内容</p>
+<p>index.tsx</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import * as React from &quot;react&quot;;</span><br><span class="line">import * as ReactDOM from &quot;react-dom&quot;;</span><br><span class="line"></span><br><span class="line">import &#123; Hello &#125; from &quot;.&#x2F;components&#x2F;Hello&quot;;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(</span><br><span class="line">    &lt;Hello compiler&#x3D;&quot;TypeScript&quot; framework&#x3D;&quot;React&quot; &#x2F;&gt;,</span><br><span class="line">    document.getElementById(&quot;example&quot;)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>在 src/components 目录下新建一个 Hello 组件</p>
+<p>Hello.tsx</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import * as React from &quot;react&quot;;</span><br><span class="line"></span><br><span class="line">export interface HelloProps &#123; compiler: string; framework: string; &#125;</span><br><span class="line"></span><br><span class="line">export class Hello extends React.Component&lt;HelloProps, &#123;&#125;&gt; &#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        return &lt;h1&gt;Hello from &#123;this.props.compiler&#125; and &#123;this.props.framework&#125;!&lt;&#x2F;h1&gt;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后在根目录下面创建 index.html 文件<br>index.html</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">    &lt;head&gt;</span><br><span class="line">        &lt;meta charset&#x3D;&quot;UTF-8&quot; &#x2F;&gt;</span><br><span class="line">        &lt;title&gt;Hello React!&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;&#x2F;head&gt;</span><br><span class="line">    &lt;body&gt;</span><br><span class="line">        &lt;div id&#x3D;&quot;example&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">        &lt;script src&#x3D;&quot;.&#x2F;node_modules&#x2F;react&#x2F;dist&#x2F;react.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">        &lt;script src&#x3D;&quot;.&#x2F;node_modules&#x2F;react-dom&#x2F;dist&#x2F;react-dom.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">        &lt;script src&#x3D;&quot;.&#x2F;dist&#x2F;bundle.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">    &lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id><a href="#" class="headerlink" title></a></h3><h3 id="0x05-编写-tsconfig-json"><a href="#0x05-编写-tsconfig-json" class="headerlink" title="0x05 编写 tsconfig.json"></a>0x05 编写 tsconfig.json</h3><p>在根目录下新建 <code>tsconfig.json</code> 文件，键入以下内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;compilerOptions&quot;: &#123;</span><br><span class="line">        &quot;outDir&quot;: &quot;.&#x2F;dist&#x2F;&quot;,</span><br><span class="line">        &quot;sourceMap&quot;: true,</span><br><span class="line">        &quot;noImplicitAny&quot;: true,</span><br><span class="line">        &quot;module&quot;: &quot;commonjs&quot;,</span><br><span class="line">        &quot;target&quot;: &quot;es5&quot;,</span><br><span class="line">        &quot;jsx&quot;: &quot;react&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;files&quot;: [</span><br><span class="line">        &quot;.&#x2F;src&#x2F;components&#x2F;Hello.tsx&quot;,</span><br><span class="line">        &quot;.&#x2F;src&#x2F;index.tsx&quot;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="0x06-配置-webpack"><a href="#0x06-配置-webpack" class="headerlink" title="0x06 配置 webpack"></a>0x06 配置 webpack</h3><p>同样在根目录下创建 webpack.config.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">    entry: &quot;.&#x2F;src&#x2F;index.tsx&quot;,</span><br><span class="line">    output: &#123;</span><br><span class="line">        filename: &quot;bundle.js&quot;,</span><br><span class="line">        path: __dirname + &quot;&#x2F;dist&quot;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    devtool: &quot;source-map&quot;,</span><br><span class="line"></span><br><span class="line">    resolve: &#123;</span><br><span class="line">        extensions: [&quot;&quot;, &quot;.webpack.js&quot;, &quot;.web.js&quot;, &quot;.ts&quot;, &quot;.tsx&quot;, &quot;.js&quot;]</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    module: &#123;</span><br><span class="line">        loaders: [</span><br><span class="line">            &#123; test: &#x2F;\.tsx?$&#x2F;, loader: &quot;ts-loader&quot; &#125;</span><br><span class="line">        ],</span><br><span class="line"></span><br><span class="line">        preLoaders: [</span><br><span class="line">            &#123; test: &#x2F;\.js$&#x2F;, loader: &quot;source-map-loader&quot; &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    externals: &#123;</span><br><span class="line">        &quot;react&quot;: &quot;React&quot;,</span><br><span class="line">        &quot;react-dom&quot;: &quot;ReactDOM&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x07-run"><a href="#0x07-run" class="headerlink" title="0x07 run"></a>0x07 run</h3><p>执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ webpack</span><br></pre></td></tr></table></figure>
+
+<h2 id="一些坑"><a href="#一些坑" class="headerlink" title="一些坑"></a>一些坑</h2><h3 id="没有-d-ts"><a href="#没有-d-ts" class="headerlink" title="没有 d.ts"></a>没有 d.ts</h3><p>有一些开源的 js 框架没有现成的 d.ts 类型定义文件，这就导致在 ts 中使用这些框架会编译不通过。</p>
+<p>如果框架是类似 jQuery 这种内容都被封装在一个全局变量中的框架来讲，以 jquery 为例只需要在html中引用文件，并在使用到框架的地方为对象添加 any 的类型说明就可以使用了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import &#39;jquery&#39;</span><br><span class="line"></span><br><span class="line">declare var jquery: any, $: any;</span><br></pre></td></tr></table></figure>
+
+<p>但是对于非封装到一个全局变量中的框架，就比较麻烦了。需要自己编写类型说明，这里还没有比较好的办法。编写类型定义文件的方法在<a target="_blank" rel="noopener" href="https://zhongsp.gitbooks.io/typescript-handbook/content/doc/handbook/declaration%20files/Introduction.html">这里</a></p>
+<h3 id="使用-npm-安装的-types-会报错"><a href="#使用-npm-安装的-types-会报错" class="headerlink" title="使用 npm 安装的 types 会报错"></a>使用 npm 安装的 types 会报错</h3><p>问题：<br>“@types/react”: “^0.14.44”,<br>“@types/react-dom”: “^0.14.18”,<br>在项目中使用这两个版本的类型定义文件编译时会报错。</p>
+<p>解决方案：<br>不要使用 npm 安装 types 直接使用 typings 安装需要的 js 框架的类型定义文件，然后在编译选项中引入这些声明文件。<br>参见: <a target="_blank" rel="noopener" href="http://hao.jser.com/archive/10416/">TYPESCRIPT项目和TSCONFIG.JSON</a><br>或者直接升级至以下版本<br>“@types/react”: “^0.14.52”,<br>“@types/react-dom”: “^0.14.19”,</p>
+<p>参考：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://to-u.xyz/2016/05/26/webpack-react-multiplePage/">http://to-u.xyz/2016/05/26/webpack-react-multiplePage/</a></li>
+<li><a target="_blank" rel="noopener" href="https://react-bootstrap.github.io/components.html">https://react-bootstrap.github.io/components.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.typescriptlang.org/docs/handbook/react-&amp;-webpack.html">https://www.typescriptlang.org/docs/handbook/react-&amp;-webpack.html</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/kinfey/article/details/50387534">http://blog.csdn.net/kinfey/article/details/50387534</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/react/" rel="tag"># react</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/11/24/Front_End/vendor/make-chart-by-highchart/" rel="prev" title="利用highchart绘制图表">
+                  <i class="fa fa-chevron-left"></i> 利用highchart绘制图表
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/01/19/Front_End/tools/modify-native-files-withe-chrome-dev-tool/" rel="next" title="ChromeDevTool修改本地文件">
+                  ChromeDevTool修改本地文件 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

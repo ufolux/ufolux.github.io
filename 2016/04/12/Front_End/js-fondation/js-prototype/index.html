@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="prototype 和原型链如下代码中 1234567891011121314function Box()&amp;#123;    this.a&#x3D;[]; &#x2F;&#x2F;实例变量    this.fn&#x3D;function()&amp;#123; &#x2F;&#x2F;实例方法    &amp;#125;&amp;#125;var box1&#x3D;new Box();box1.a.push(1);box1.fn&#x3D;&amp;#123;&amp;#125;;console.log(bo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS原型链 （prototype chain）">
+<meta property="og:url" content="https://ufolux.github.io/2016/04/12/Front_End/js-fondation/js-prototype/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="prototype 和原型链如下代码中 1234567891011121314function Box()&amp;#123;    this.a&#x3D;[]; &#x2F;&#x2F;实例变量    this.fn&#x3D;function()&amp;#123; &#x2F;&#x2F;实例方法    &amp;#125;&amp;#125;var box1&#x3D;new Box();box1.a.push(1);box1.fn&#x3D;&amp;#123;&amp;#125;;console.log(bo">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-04-12T01:55:53.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.097Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2016/04/12/Front_End/js-fondation/js-prototype/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>JS原型链 （prototype chain） | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#prototype-%E5%92%8C%E5%8E%9F%E5%9E%8B%E9%93%BE"><span class="nav-number">1.</span> <span class="nav-text">prototype 和原型链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#prototype%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">prototype模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DEMO"><span class="nav-number">3.</span> <span class="nav-text">DEMO:</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2016/04/12/Front_End/js-fondation/js-prototype/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JS原型链 （prototype chain）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-04-12 09:55:53" itemprop="dateCreated datePublished" datetime="2016-04-12T09:55:53+08:00">2016-04-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="prototype-和原型链"><a href="#prototype-和原型链" class="headerlink" title="prototype 和原型链"></a>prototype 和原型链</h2><p>如下代码中</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Box</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.a=[]; <span class="comment">//实例变量</span></span><br><span class="line">    <span class="built_in">this</span>.fn=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; <span class="comment">//实例方法</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> box1=<span class="keyword">new</span> Box();</span><br><span class="line">box1.a.push(<span class="number">1</span>);</span><br><span class="line">box1.fn=&#123;&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(box1.a); <span class="comment">//[1]            </span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">typeof</span> box1.fn); <span class="comment">//object</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> box2=<span class="keyword">new</span> Box();</span><br><span class="line"><span class="built_in">console</span>.log(box2.a); <span class="comment">//[]</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">typeof</span> box2.fn); <span class="comment">//function</span></span><br></pre></td></tr></table></figure>
+<p>在这段代码中，我们注意到，当修改了<code>box1</code>的<code>fn</code>之后<code>box2</code>的<code>fn</code>并没有发生改变。由于数组和函数都是对象，是引用类型，所以说明此处不同对象的属性和方法同名但并不指向同一个引用而是对类定义的属性和方法的拷贝。这对于属性来说很正常，但是对于函数来说就很不合理，因为同一个类的对象中的函数做的都是相同的事情，却保存着不同的引用，占据了不该占用的空间。protoype 就是为了解决这个问题出现的。</p>
+<span id="more"></span>
+<p>简单来讲 prototype 是一个指针，指向一个原型对象。这个对象的用途是包含可以由特定类型的所有实例共享的属性和方法。可以理解为一类对象的公共部分（是真正的公共部分，因为每一类对象都保持对同一地址的原型对象的引用）。这样的话，我们可以把一类对象的公共的函数挂在 prototype 中，这样的话，每一个实例都只保留一个引用而不是复制整个函数。在创建实例比较多的应用中可以节省内存。</p>
+<p>例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Animal</span>(<span class="params">name</span>)   //积累构造函数</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = name;<span class="comment">//设置对象属性</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Animal.prototype.behavior = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) //给基类构造函数的<span class="title">prototype</span>添加<span class="title">behavior</span>方法</span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    alert(<span class="string">&quot;this is a &quot;</span>+<span class="built_in">this</span>.name);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Dog = <span class="keyword">new</span> Animal(<span class="string">&quot;dog&quot;</span>);<span class="comment">//创建Dog对象</span></span><br><span class="line"><span class="keyword">var</span> Cat = <span class="keyword">new</span> Animal(<span class="string">&quot;cat&quot;</span>);<span class="comment">//创建Cat对象</span></span><br><span class="line"></span><br><span class="line">Dog.behavior();<span class="comment">//通过Dog对象直接调用behavior方法</span></span><br><span class="line">Cat.behavior();<span class="comment">//output &quot;this is a cat&quot;</span></span><br><span class="line"></span><br><span class="line">alert(Dog.behavior==Cat.behavior);<span class="comment">//output true;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意只有函数拥有可以直接调用的 <code>prototype</code>，且被初始化为空值，其他对象拥有的是<code>_proto_</code>这个内部属性，不可以直接使用。但本质来讲同一类对象的<code>_proto_</code>和类的<code>prototype</code>指向的是同一个对象。</p>
+<p>原型链：当从一个对象那里调取属性或方法时，如果该对象自身不存在这样的属性或方法，就会去自己关联的prototype对象那里寻找，如果prototype没有，就会去prototype关联的前辈prototype那里寻找，如果再没有则继续查找Prototype.Prototype引用的对象，依次类推，直到Prototype.….Prototype为undefined（Object的Prototype就是undefined）从而形成了所谓的“原型链”。</p>
+<p>总结一下，当发生对象的调用时，将会执行以下步骤：<br>setp1. 搜索本对象中有无此方法，如果有直接调用，没有就进行下一步。<br>step2. 搜索<code>prototype</code>中，如果有被调用的对象，直接调用。没有的话就去<code>prototype.prototype</code>中去寻找。<br>step3.如果找到<code>Object.prototype</code>还没有找到，就报出undefine。</p>
+<h2 id="prototype模式"><a href="#prototype模式" class="headerlink" title="prototype模式"></a>prototype模式</h2><p>使用prototype属性实现继承。<br>如果”猫”的prototype对象，指向一个Animal的实例，那么所有”猫”的实例，就能继承Animal了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">　　Cat.prototype = <span class="keyword">new</span> Animal();</span><br><span class="line">　　Cat.prototype.constructor = Cat;</span><br><span class="line">　　<span class="keyword">var</span> cat1 = <span class="keyword">new</span> Cat(<span class="string">&quot;大毛&quot;</span>,<span class="string">&quot;黄色&quot;</span>);</span><br><span class="line">　　<span class="built_in">console</span>.log(cat1.species); <span class="comment">// 动物</span></span><br></pre></td></tr></table></figure>
+<p>代码的第一行，将Cat的prototype对象指向一个Animal的实例。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">　　Cat.prototype = <span class="keyword">new</span> Animal();</span><br></pre></td></tr></table></figure>
+<p>第二行是需要注意的地方。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cat.prototype.constructor = Cat;</span><br></pre></td></tr></table></figure>
+
+<p>对象的 prototype 中都有一个 constructor 属性。这个属性指向了对象的构造方法。Cat.prototype 的 constructor 原本应该指向构造函数 Cat。但是经过  Cat.prototype = new Animal(); 之后，constructor 指向了 Animal，然而 cat1 对象显然是通过 Cat 方法来进行创建的，如果不进行修改将造成混乱。这里一定要手动指定一次。<br>这是很重要的一点，编程时务必要遵守，即如果替换了prototype对象，</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">　　o.prototype = &#123;&#125;;</span><br></pre></td></tr></table></figure>
+<p>那么，下一步必然是为新的prototype对象加上constructor属性，并将这个属性指回原来的构造函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">o.prototype.constructor = o;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="DEMO"><a href="#DEMO" class="headerlink" title="DEMO:"></a>DEMO:</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> counter = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Box</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">Box.prototype.fn = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; </span><br><span class="line">		counter++;</span><br><span class="line">		<span class="built_in">console</span>.log(counter);</span><br><span class="line">	&#125;;</span><br><span class="line">Box.prototype.a = [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> box1=<span class="keyword">new</span> Box();</span><br><span class="line">box1.a.push(<span class="number">1</span>);</span><br><span class="line"><span class="built_in">console</span>.log(box1.a); <span class="comment">//[1]            </span></span><br><span class="line">box1.fn();<span class="comment">//1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> box2=<span class="keyword">new</span> Box();</span><br><span class="line">box2.a.push(<span class="number">1</span>);</span><br><span class="line"><span class="built_in">console</span>.log(box2.a); <span class="comment">//[ 1, 1 ]</span></span><br><span class="line">box2.fn();<span class="comment">//2</span></span><br></pre></td></tr></table></figure>
+
+
+<p>其他参见：<br><a target="_blank" rel="noopener" href="http://www.cnblogs.com/yangjinjin/archive/2013/02/01/2889103.html">JS的prototype和<strong>proto</strong></a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/04/12/Front_End/js-fondation/js-event-loop-model/" rel="prev" title="JS事件循环模型">
+                  <i class="fa fa-chevron-left"></i> JS事件循环模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/04/12/Front_End/js-fondation/introduce-promise/" rel="next" title="Promise入门">
+                  Promise入门 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="BackgroundAs a Chinese old saying goes: Review the old and know the new (温故而知新). I learnt a lot from the OS class, recently, despite that I have taken this class 5 years ago during my undergraduate st">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Concurrent Programming Concepts Review">
+<meta property="og:url" content="https://ufolux.github.io/2021/03/11/OS/concurrent-programming-concepts-review/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="BackgroundAs a Chinese old saying goes: Review the old and know the new (温故而知新). I learnt a lot from the OS class, recently, despite that I have taken this class 5 years ago during my undergraduate st">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-03-11T07:31:17.000Z">
+<meta property="article:modified_time" content="2021-03-16T10:34:59.672Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2021/03/11/OS/concurrent-programming-concepts-review/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Concurrent Programming Concepts Review | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Background"><span class="nav-number">1.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mutual-Exclusion-Synchornization-Methods"><span class="nav-number">2.</span> <span class="nav-text">Mutual Exclusion &#x2F; Synchornization Methods</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mutual-Exclusion-VS-Synchornization"><span class="nav-number">2.1.</span> <span class="nav-text">Mutual Exclusion VS Synchornization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Busy-Waiting"><span class="nav-number">2.2.</span> <span class="nav-text">Busy Waiting</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Disabling-Interrupts"><span class="nav-number">2.2.1.</span> <span class="nav-text">Disabling Interrupts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Lock-Variable"><span class="nav-number">2.2.2.</span> <span class="nav-text">Lock Variable</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TSL-Test-and-Set-Lock"><span class="nav-number">2.2.3.</span> <span class="nav-text">TSL (Test and Set Lock)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#XCHG-Exchange"><span class="nav-number">2.2.4.</span> <span class="nav-text">XCHG (Exchange)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Semaphore"><span class="nav-number">2.3.</span> <span class="nav-text">Semaphore</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Mutex"><span class="nav-number">2.3.1.</span> <span class="nav-text">Mutex</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Futex"><span class="nav-number">2.3.2.</span> <span class="nav-text">Futex</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Condition-Variables"><span class="nav-number">2.3.3.</span> <span class="nav-text">Condition Variables</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Which-Lock-Should-I-Use"><span class="nav-number">3.</span> <span class="nav-text">Which Lock Should I Use</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Deadlock-VS-Starvation"><span class="nav-number">4.</span> <span class="nav-text">Deadlock VS Starvation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-Does-Deadlock-Happen"><span class="nav-number">5.</span> <span class="nav-text">How Does Deadlock Happen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Deadlock-Detection"><span class="nav-number">6.</span> <span class="nav-text">Deadlock Detection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Deadlock-Prevention"><span class="nav-number">7.</span> <span class="nav-text">Deadlock Prevention</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">8.</span> <span class="nav-text">References</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2021/03/11/OS/concurrent-programming-concepts-review/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Concurrent Programming Concepts Review
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-03-11 15:31:17" itemprop="dateCreated datePublished" datetime="2021-03-11T15:31:17+08:00">2021-03-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-16 18:34:59" itemprop="dateModified" datetime="2021-03-16T18:34:59+08:00">2021-03-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OS/" itemprop="url" rel="index"><span itemprop="name">OS</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OS/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OS/Linux/English/" itemprop="url" rel="index"><span itemprop="name">English</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>As a Chinese old saying goes: Review the old and know the new (温故而知新). I learnt a lot from the OS class, recently, despite that I have taken this class 5 years ago during my undergraduate study. The latest topic discussed on the class is concurrency and deadlock, I think it is a good time for me to review some concepts of concurrent programming.</p>
+<span id="more"></span>
+
+<h2 id="Mutual-Exclusion-Synchornization-Methods"><a href="#Mutual-Exclusion-Synchornization-Methods" class="headerlink" title="Mutual Exclusion / Synchornization Methods"></a>Mutual Exclusion / Synchornization Methods</h2><h3 id="Mutual-Exclusion-VS-Synchornization"><a href="#Mutual-Exclusion-VS-Synchornization" class="headerlink" title="Mutual Exclusion VS Synchornization"></a>Mutual Exclusion VS Synchornization</h3><ol>
+<li><p>Mutual Exclusion: There is a critical section (process can write shared data here) that allows only one process to enter. To ensure there is no other process enter this area, some measures should be applied here which called mutual exclusion.</p>
+</li>
+<li><p>Synchornization: A process can only execute when others finish their work. So we should take some actions to guarantee this, which are synchornization methods. </p>
+</li>
+</ol>
+<h3 id="Busy-Waiting"><a href="#Busy-Waiting" class="headerlink" title="Busy Waiting"></a>Busy Waiting</h3><h4 id="Disabling-Interrupts"><a href="#Disabling-Interrupts" class="headerlink" title="Disabling Interrupts"></a>Disabling Interrupts</h4><p>The crucial problem for busy waiting is how to ensure the critical region can not be entered by two different processes at a time. As we known, preemption happens with interrupts. If we disable interrupts temporarily when there is a process enter the critical section, this problem can be solved. But only <strong>on single processor system</strong>. </p>
+<p>On <strong>multi-processor system</strong> this does not work, because interrupts can only be disabled on one of the processors. Processses running on other processor can still enter the critical section simultaneously.</p>
+<h4 id="Lock-Variable"><a href="#Lock-Variable" class="headerlink" title="Lock Variable"></a>Lock Variable</h4><p>It is a very simple solution to this problem. Check if the lock variable is 0, continuously. If it becomes 0, set it to 1, and enter the critical region. When it finishes, reset the lock variable to 0, so that other waiting process can enter the critical section.</p>
+<p>But this can not work as expected, because you can’t perform the set lock operation atomically. There are changces for other processes modify the lock variable at the same time. The solution is not work either.</p>
+<h4 id="TSL-Test-and-Set-Lock"><a href="#TSL-Test-and-Set-Lock" class="headerlink" title="TSL (Test and Set Lock)"></a>TSL (Test and Set Lock)</h4><p>This is a hardware supported primitive. Using lock variable needs set and read lock variable atomically, which means no other operation can interrupt the lock setting procedure. Most of CPUs implement the TSL instruction to support this function. TSL means test and set lock. CPU will first lock the memory bus to prohibit other CPUs from accessing memory, then copy the lock value into register and store a non-zero value to lock variable. So this guarantees the operation is indivisable.</p>
+<h4 id="XCHG-Exchange"><a href="#XCHG-Exchange" class="headerlink" title="XCHG (Exchange)"></a>XCHG (Exchange)</h4><p>It is an alternative atomic instruction for TSL. Just like its name, XCHG will exchange the value in a resgister with value in memory (lock variable).</p>
+<h3 id="Semaphore"><a href="#Semaphore" class="headerlink" title="Semaphore"></a>Semaphore</h3><p>Busy waiting with TSL and XCHG can solve the problem, but they are not efficient enough. Busy waiting consumes a lot of CPU resources to check whether the lock varaible is available.</p>
+<p>Semaphore is not like busy waiting, it does not run the checking procedure continuously. Instead, semaphore mechanism uses <em>sleep</em> and <em>wakeup</em> to make it work. </p>
+<p>semaphore is a variable indicating how many processes can perform action. value of semaphore could be 0 or greater than 0. When a process want to perform action, it should decrease the semaphore by 1. When it finishes its work, it becomes ready and increases the semaphore by 1. When the semaphore is 0, which means nobody can perform action at this time, the process will be put into <code>sleep</code> by scheduler. Util the semaphore becomes greater than 0, scheduler will randomly wakes up that number of sleeping processes doing its job.</p>
+<p>The decrement and increament operations are named P, V (Proberen (try) and Verhogen (raise, make higher) in Dutch, because its inventor, Dijkstra, is from Netherlands) operations. It is essential for ensuring these operations are atomic. So usually implementations apply TSL and XCHG for these operations to promise atomicity.</p>
+<p>eg: Producer and Consumer Problem</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">#define N 100 &#x2F;&#x2F; N slots in the buffer</span><br><span class="line">item buff[N]; &#x2F;&#x2F; buffer slots</span><br><span class="line">typedef int semaphore;</span><br><span class="line">semaphore mutex &#x3D; 1;</span><br><span class="line">semaphore empty &#x3D; N;</span><br><span class="line">semaphore full &#x3D; 0;</span><br><span class="line"></span><br><span class="line">void Producer() &#123;</span><br><span class="line">    while(True) &#123;</span><br><span class="line">        item ele &#x3D; produceEle(); &#x2F;&#x2F; produce element</span><br><span class="line">        P(empty); &#x2F;&#x2F; decrease number of empty semaphore</span><br><span class="line">        P(mutex);</span><br><span class="line">        insertElem(ele, buff); &#x2F;&#x2F; insert element into buffer slot.</span><br><span class="line">        V(mutex);</span><br><span class="line">        V(full); &#x2F;&#x2F; increase number of full semaphore</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void Consumer() &#123;</span><br><span class="line">    while(True) &#123;</span><br><span class="line">        P(full); &#x2F;&#x2F; decrease number of full semaphore</span><br><span class="line">        P(mutex);</span><br><span class="line">        item ele &#x3D; removeEle(buff); &#x2F;&#x2F; remove element from buffer</span><br><span class="line">        V(mutex);</span><br><span class="line">        V(empty); &#x2F;&#x2F; increase number of empty semaphore</span><br><span class="line">        consumeEle(); &#x2F;&#x2F; consume the element</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Mutex"><a href="#Mutex" class="headerlink" title="Mutex"></a>Mutex</h4><p>As we see in the code sniplet before, when the value of semaphore are only 0 or 1, it is called a binary-semaphore, or a mutex which could be used for mutual exclusion and synchornization.</p>
+<h4 id="Futex"><a href="#Futex" class="headerlink" title="Futex"></a>Futex</h4><p>Every <em>lock</em> and <em>unlock</em> operation will first trap into kernel by sycalls to check if the lock variable is owned by others. But, in reality, most of time the lock variable does not belongs to anyone.It is usually free for processes to enter the critical section, but the test lock procedure still cost a lot by doing a syscall. To make this more efficiency, futex were created.</p>
+<p>Futex stands for “Fast Userspace muTexes”, which, basically, does the lock test procedure in user space. Only when the lock is not free, it performs a syscall. That’s why futex improves performance a lot.</p>
+<h4 id="Condition-Variables"><a href="#Condition-Variables" class="headerlink" title="Condition Variables"></a>Condition Variables</h4><p>Condition Variables is a synchornization mechanism. Synchornization needs more than just mutual exclusion; also need a way to wait for another thread to do something (e.g., wait for a character to be added to the buffer). So, it provides a way to make process wait util the specific condition is fullfilled.</p>
+<h2 id="Which-Lock-Should-I-Use"><a href="#Which-Lock-Should-I-Use" class="headerlink" title="Which Lock Should I Use"></a>Which Lock Should I Use</h2><p>Which Lock should I use, busy waiting or semaphores? There are two simple principles:</p>
+<ol>
+<li><p>If lock hold time is short or task is uninterruptable, busy waiting and lock variables are OK (Linux kernel always use it).</p>
+</li>
+<li><p>Else use semaphores.</p>
+</li>
+</ol>
+<h2 id="Deadlock-VS-Starvation"><a href="#Deadlock-VS-Starvation" class="headerlink" title="Deadlock VS Starvation"></a>Deadlock VS Starvation</h2><p>These two concepts are usually confusing. Basically, <strong>Deadlock</strong> happens when processes are waiting on events or resources that will never come. It can be on only one process or system wide. And in this case, no process can go further.</p>
+<p>Under <strong>Starvation</strong>, some process can move forward, but there does have some process(es) can not be excuted. Because, there is no resource available for them to access, due to scheduling reason.</p>
+<p>For an instance, if the process scheduler always process short execution time process first (SRTF), the long run time process may have no changce to be executed, if there always comes short time tasks. Then, a starvation happened.</p>
+<h2 id="How-Does-Deadlock-Happen"><a href="#How-Does-Deadlock-Happen" class="headerlink" title="How Does Deadlock Happen"></a>How Does Deadlock Happen</h2><p>When a process A need a resource to move forward, but that resource is held by process B. At the meantime, process B is also waiting for the resource held by A.</p>
+<p>If the resource is like memory, which can be preempted, deadlock will not happen. But, if it is a non-preemptable resource, like a Blu-ray recorder, deadlock will happen.</p>
+<p>There are 4 essential conditions for deadlock:</p>
+<ol>
+<li>Each resource is either currently assigned to exactly one process or is available.</li>
+<li>Processes currently holding resources that were granted earlier can request new resources.</li>
+<li>Resources previously granted cannot be forcibly taken away from a process. They must be explicitly released by the process holding them.</li>
+<li>There must be a circular chain of two or more processes, each of which is waiting for a resource held by the next member of the chain.</li>
+</ol>
+<h2 id="Deadlock-Detection"><a href="#Deadlock-Detection" class="headerlink" title="Deadlock Detection"></a>Deadlock Detection</h2><p>Basically, the algorithm to detect deadlock is to detect cycles in the resource allocation graph.</p>
+<p>For Each node N in the graph do:</p>
+<ol>
+<li>Initialize L to empty list and designate all arcs as unmarked</li>
+<li>Add the current node to end of L. If the node appears in L twice then we have a cycle and the algorithm terminates</li>
+<li>From the given node pick any unmarked outgoing arc. If none is available go to 5.</li>
+<li>Pick an outgoing arc at random and mark it. Then follow it to the new current node and go to 2.</li>
+<li>If the node is the initial node then no cycles and the algorithm terminates. Otherwise, we are in dead end. Remove that node and go back to the previous one. Go to 2.</li>
+</ol>
+<h2 id="Deadlock-Prevention"><a href="#Deadlock-Prevention" class="headerlink" title="Deadlock Prevention"></a>Deadlock Prevention</h2><p>If one of the 4 essential conditions can’t be reached, deadlock is impossible structurally.</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://web.stanford.edu/~ouster/cgi-bin/cs140-spring14/lecture.php?topic=locks">https://web.stanford.edu/~ouster/cgi-bin/cs140-spring14/lecture.php?topic=locks</a></li>
+<li>Modern Operating Systems 4th Edition–Andrew Tanenbaum.pdf Section 2.3 and 6</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/09/C++/different-getopt-behavior/" rel="prev" title="Different Behavior on getopt">
+                  <i class="fa fa-chevron-left"></i> Different Behavior on getopt
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/16/llvm/learning-llvm-11-01/" rel="next" title="macOS 11 环境下 LLVM 11.0 构建和安装">
+                  macOS 11 环境下 LLVM 11.0 构建和安装 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

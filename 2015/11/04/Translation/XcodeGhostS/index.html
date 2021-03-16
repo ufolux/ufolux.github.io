@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="XcodeGhost S: A New Breed Hits the USNovember 03, 2015 | By Yong Kang , Zhaofeng Chen, Raymond Wei | Threat Research, Botnetsapple logo grey Just over a month ago, iOS users were warned of the threat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XcodeGhostS">
+<meta property="og:url" content="https://ufolux.github.io/2015/11/04/Translation/XcodeGhostS/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="XcodeGhost S: A New Breed Hits the USNovember 03, 2015 | By Yong Kang , Zhaofeng Chen, Raymond Wei | Threat Research, Botnetsapple logo grey Just over a month ago, iOS users were warned of the threat">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-11-04T02:52:24.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.110Z">
+<meta property="article:author" content="Sines">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2015/11/04/Translation/XcodeGhostS/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>XcodeGhostS | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2015/11/04/Translation/XcodeGhostS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          XcodeGhostS
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2015-11-04 10:52:24" itemprop="dateCreated datePublished" datetime="2015-11-04T10:52:24+08:00">2015-11-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>XcodeGhost S: A New Breed Hits the US<br>November 03, 2015 | By Yong Kang , Zhaofeng Chen, Raymond Wei | Threat Research, Botnets<br>apple logo grey</p>
+<p>Just over a month ago, iOS users were warned of the threat to their devices by the XcodeGhost malware. Apple quickly reacted, taking down infected apps from the App Store and releasing new security features to stop malicious activities. Through continuous monitoring of our customers’ networks, FireEye researchers have found that, despite the quick response, the threat of XcodeGhost has maintained persistence and been modified.</p>
+<span id="more"></span>
+
+<p>More specifically, we found that:</p>
+<p>XcodeGhost has entered into U.S. enterprises and is a persistent security risk<br>Its botnet is still partially active<br>A variant we call XcodeGhost S reveals more advanced samples went undetected<br>After monitoring XcodeGhost related activity for four weeks, we observed 210 enterprises with XcodeGhost-infected applications running inside their networks, generating more than 28,000 attempts to connect to the XcodeGhost Command and Control (CnC) servers – which, while not under attacker control, are vulnerable to hijacking by threat actors. Figure 1 shows the top five countries XcodeGhost attempted to callback to during this time.</p>
+<p>Figure 1. Top five countries XcodeGhost attempted to callback in a four-week span</p>
+<p>The 210 enterprises we detected with XcodeGhost infections represent a wide range of industries. Figure 2 shows the top five industries affected by XcodeGhost, sorted by the percentage of callback attempts to the XcodeGhost CnC servers from inside their networks:</p>
+<p>Figure 2: Top five industries affected based on callback attempts</p>
+<p>Researchers have demonstrated how XcodeGhost CnC traffic can be hijacked to:</p>
+<p>Distribute apps outside the App Store<br>Force browse to URL<br>Aggressively promote any app in the App Store by launching the download page directly<br>Pop-up phishing windows<br>Figure 3 shows the top 20 most active infected apps among 152 apps, based on data from our DTI cloud:</p>
+<p>Figure 3: Top 20 infected apps</p>
+<p>Although most vendors have already updated their apps on App Store, this chart indicates many users are actively using older, infected versions of various apps in the field. The version distribution varies among apps. For example, the most popular Apps 网易云音乐 and WeChat-infected versions are listed in Figure 4.</p>
+<p>App Name</p>
+<p>Version</p>
+<p>Incident Count (in 3 weeks)</p>
+<p>WeChat</p>
+<p>6.2.5.19</p>
+<p>2963</p>
+<p>网易云音乐</p>
+<p>Music 163</p>
+<p>2.8.2</p>
+<p>3084</p>
+<p>2.8.3</p>
+<p>2664</p>
+<p>2.8.1</p>
+<p>1227</p>
+<p>Figure 4: Sample infected app versions</p>
+<p>The infected iPhones are running iOS versions from 6.x.x to 9.x.x as illustrated by Figure 5. It is interesting to note that nearly 70% of the victims within our customer base remain on older iOS versions. We encourage them to update to the latest version iOS 9 as quickly as possible.</p>
+<p>Figure 5: Distribution of iOS versions running infected apps</p>
+<p>Some enterprises have taken steps to block the XcodeGhost DNS query within their network to cut off the communication between employees’ iPhones and the attackers’ CnC servers to protect them from being hijacked. However, until these employees update their devices and apps, they are still vulnerable to potential hijacking of the XcodeGhost CnC traffic – particularly when outside their corporate networks.</p>
+<p>Given the number of infected devices detected within a short period among so many U.S enterprises, we believe that XcodeGhost continues to be an ongoing threat for enterprises.</p>
+<p>XcodeGhost Modified to Exploit iOS 9</p>
+<p>We have worked with Apple to have all XcodeGhost and XcodeGhost S (described below) samples we have detected removed from the App Store.</p>
+<p>XcodeGhost is planted in different versions of Xcode, including Xcode 7 (released for iOS 9 development). In the latest version, which we call XcodeGhost S, features have been added to infect iOS 9 and bypass static detection.</p>
+<p>According to [1], Apple introduced the “NSAppTransportSecurity” approach for iOS 9 to improve client-server connection security. By default, only secure connections (https with specific ciphers) are allowed on iOS 9. Due to this limitation, previous versions of XcodeGhost would fail to connect with the CnC server by using http. However, Apple also allows developers to add exceptions (“NSAllowsArbitraryLoads”) in the app’s Info.plist to allow http connection. As shown in Figure 6, the XcodeGhost S sample reads the setting of “NSAllowsArbitraryLoads” under the “NSAppTransportSecurity” entry in the app’s Info.plist and picks different CnC servers (http/https) based on this setting.</p>
+<p>Figure 6: iOS 9 adoption in XcodeGhost S</p>
+<p>Further, the CnC domain strings are concatenated character by character to bypass the static detection in XcodeGhost S, such behavior is shown in Figure 7.</p>
+<p>Figure 7: Construct the CnC domain character by character</p>
+<p>The FireEye iOS dynamic analysis platform has successfully detected an app  (“自由邦”)  [2] infected by XcodeGhost S and this app has been taken down from App Store in cooperation with Apple. It is a shopping app for travellers and is available on both U.S. and CN App Stores. As shown in Figure 8, the infected app’s version is 2.6.6, updated on Sep. 15.</p>
+<p>Figure 8: An App Store app is infected with XcodeGhost S</p>
+<p>Enterprise Protection</p>
+<p>FireEye MTP has detected and assisted in Apple’s takedown of thousands of XcodeGhost-infected iOS applications. We advise all organizations to notify their employees of the threat of XcodeGhost and other malicious iOS apps. Employees should make sure that they update all apps to the latest version. For the apps Apple has removed, users should remove the apps and switch to other uninfected apps on App Store.</p>
+<p>FireEye MTP management customers have full visibility into which mobile devices are infected in their deployment base. We recommend that customers immediately review MTP alerts, locate infected devices/users, and quarantine the devices until the infected apps are removed. FireEye NX customers are advised to immediately review alert logs for activities related to XcodeGhost communications.</p>
+<p>[1] <a target="_blank" rel="noopener" href="https://developer.apple.com/library/prerelease/ios/technotes/App-Transport-Security-Technote/">https://developer.apple.com/library/prerelease/ios/technotes/App-Transport-Security-Technote/</a><br>[2] <a target="_blank" rel="noopener" href="https://itunes.apple.com/us/app/id915233927">https://itunes.apple.com/us/app/id915233927</a><br>[3] <a target="_blank" rel="noopener" href="http://drops.wooyun.org/papers/9024">http://drops.wooyun.org/papers/9024</a><br>[4] <a target="_blank" rel="noopener" href="https://itunes.apple.com/us/app/pdf-reader-annotate-scan-sign/id368377690?mt=8">https://itunes.apple.com/us/app/pdf-reader-annotate-scan-sign/id368377690?mt=8</a><br>[5] <a target="_blank" rel="noopener" href="https://itunes.apple.com/us/app/winzip-leading-zip-unzip-cloud/id500637987?mt=8">https://itunes.apple.com/us/app/winzip-leading-zip-unzip-cloud/id500637987?mt=8</a><br>[6] <a target="_blank" rel="noopener" href="https://itunes.apple.com/us/app/snaproll-use-as-snaps-on-snapchat/id741401966?mt=8">https://itunes.apple.com/us/app/snaproll-use-as-snaps-on-snapchat/id741401966?mt=8</a><br>[7] <a target="_blank" rel="noopener" href="https://www.fireeye.com/blog/threat-research/2015/08/ios_masque_attackwe.html">https://www.fireeye.com/blog/threat-research/2015/08/ios_masque_attackwe.html</a><br>[8] <a target="_blank" rel="noopener" href="https://www.fireeye.com/blog/threat-research/2015/02/ios_masque_attackre.html">https://www.fireeye.com/blog/threat-research/2015/02/ios_masque_attackre.html</a><br>[9] <a target="_blank" rel="noopener" href="https://www.fireeye.com/blog/threat-research/2014/11/masque-attack-all-your-ios-apps-belong-to-us.html">https://www.fireeye.com/blog/threat-research/2014/11/masque-attack-all-your-ios-apps-belong-to-us.html</a><br>[10] <a target="_blank" rel="noopener" href="https://www.fireeye.com/blog/threat-research/2015/06/three_new_masqueatt.html">https://www.fireeye.com/blog/threat-research/2015/06/three_new_masqueatt.html</a></p>
+<p>This entry was posted on Tue Nov 03 07:27:00 EST 2015 and filed under Apple, Blog, Botnet, Botnets, Botnets, Latest Blog Posts, Raymond Wei, Threat Research, Yong Kang , Zhaofeng Chen and application security.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/11/04/Translation/MVVM%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9/" rel="prev" title="MVVM的优缺点">
+                  <i class="fa fa-chevron-left"></i> MVVM的优缺点
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/11/06/iOS/Objective-C%E7%9A%84%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E8%BF%87%E7%A8%8B/" rel="next" title="Objective-C的消息转发过程">
+                  Objective-C的消息转发过程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

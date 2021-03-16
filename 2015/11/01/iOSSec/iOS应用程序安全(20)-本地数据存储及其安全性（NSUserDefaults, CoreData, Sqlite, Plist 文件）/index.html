@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="作者：Prateek Gianchandani译者：吴发伟原文网址版权声明：自由转载-非商用-保持署名本文我们将看看应用在本地存储数据有哪些方法以及这些不同方法的安全性。我们将会在一个demo上这些这些测试，你可以从我的github账号上下载这个例子程序。对于CoreData的例子，你可以从这下载例子程序。本例有一个不同点就是我们将会在模拟器上运行这些应用，而不是在设备上运行。这样做的目的是为了证">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS应用程序安全(20)-本地数据存储及其安全性（NSUserDefaults, CoreData, Sqlite, Plist 文件）">
+<meta property="og:url" content="https://ufolux.github.io/2015/11/01/iOSSec/iOS%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%AE%89%E5%85%A8(20)-%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%8F%8A%E5%85%B6%E5%AE%89%E5%85%A8%E6%80%A7%EF%BC%88NSUserDefaults,%20CoreData,%20Sqlite,%20Plist%20%E6%96%87%E4%BB%B6%EF%BC%89/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="作者：Prateek Gianchandani译者：吴发伟原文网址版权声明：自由转载-非商用-保持署名本文我们将看看应用在本地存储数据有哪些方法以及这些不同方法的安全性。我们将会在一个demo上这些这些测试，你可以从我的github账号上下载这个例子程序。对于CoreData的例子，你可以从这下载例子程序。本例有一个不同点就是我们将会在模拟器上运行这些应用，而不是在设备上运行。这样做的目的是为了证">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat1.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat2.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat3.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat4.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat5.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat6.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat7.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat10.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat11.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat12.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat13.png">
+<meta property="og:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat14.png">
+<meta property="article:published_time" content="2015-11-01T11:46:52.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.116Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="iOS安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat1.png">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2015/11/01/iOSSec/iOS%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%AE%89%E5%85%A8(20)-%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%8F%8A%E5%85%B6%E5%AE%89%E5%85%A8%E6%80%A7%EF%BC%88NSUserDefaults,%20CoreData,%20Sqlite,%20Plist%20%E6%96%87%E4%BB%B6%EF%BC%89/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>iOS应用程序安全(20)-本地数据存储及其安全性（NSUserDefaults, CoreData, Sqlite, Plist 文件） | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%9C%E8%80%85%EF%BC%9APrateek-Gianchandani"><span class="nav-number">1.</span> <span class="nav-text">作者：Prateek Gianchandani</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%91%E8%80%85%EF%BC%9A%E5%90%B4%E5%8F%91%E4%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">译者：吴发伟</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E6%96%87%E7%BD%91%E5%9D%80"><span class="nav-number">3.</span> <span class="nav-text">原文网址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%88%E6%9D%83%E5%A3%B0%E6%98%8E%EF%BC%9A%E8%87%AA%E7%94%B1%E8%BD%AC%E8%BD%BD-%E9%9D%9E%E5%95%86%E7%94%A8-%E4%BF%9D%E6%8C%81%E7%BD%B2%E5%90%8D"><span class="nav-number">4.</span> <span class="nav-text">版权声明：自由转载-非商用-保持署名</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSUserDefaults"><span class="nav-number"></span> <span class="nav-text">NSUserDefaults</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Plist-%E6%96%87%E4%BB%B6"><span class="nav-number"></span> <span class="nav-text">Plist 文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CoreData%E5%92%8CSqlite%E6%96%87%E4%BB%B6"><span class="nav-number"></span> <span class="nav-text">CoreData和Sqlite文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Keychain"><span class="nav-number"></span> <span class="nav-text">Keychain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%B0%8F%E6%8A%80%E5%B7%A7"><span class="nav-number"></span> <span class="nav-text">一些小技巧</span></a></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2015/11/01/iOSSec/iOS%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%AE%89%E5%85%A8(20)-%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%8F%8A%E5%85%B6%E5%AE%89%E5%85%A8%E6%80%A7%EF%BC%88NSUserDefaults,%20CoreData,%20Sqlite,%20Plist%20%E6%96%87%E4%BB%B6%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS应用程序安全(20)-本地数据存储及其安全性（NSUserDefaults, CoreData, Sqlite, Plist 文件）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2015-11-01 19:46:52" itemprop="dateCreated datePublished" datetime="2015-11-01T19:46:52+08:00">2015-11-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h4 id="作者：Prateek-Gianchandani"><a href="#作者：Prateek-Gianchandani" class="headerlink" title="作者：Prateek Gianchandani"></a>作者：Prateek Gianchandani</h4><h4 id="译者：吴发伟"><a href="#译者：吴发伟" class="headerlink" title="译者：吴发伟"></a>译者：吴发伟</h4><h4 id="原文网址"><a href="#原文网址" class="headerlink" title="原文网址"></a><a target="_blank" rel="noopener" href="http://resources.infosecinstitute.com/ios-application-security-part-20-local-data-storage-nsuserdefaults-coredata-sqlite-plist-files/">原文网址</a></h4><h4 id="版权声明：自由转载-非商用-保持署名"><a href="#版权声明：自由转载-非商用-保持署名" class="headerlink" title="版权声明：自由转载-非商用-保持署名"></a>版权声明：自由转载-非商用-保持署名</h4><p>本文我们将看看应用在本地存储数据有哪些方法以及这些不同方法的安全性。<br>我们将会在一个demo上这些这些测试，你可以从我的<a target="_blank" rel="noopener" href="https://github.com/prateek147/localDataStorageDemo">github账号</a>上下载这个例子程序。对于CoreData的例子，你可以从<a target="_blank" rel="noopener" href="https://github.com/ChrisDrit/Core-Data-Example-Code">这</a>下载例子程序。本例有一个不同点就是我们将会在模拟器上运行这些应用，而不是在设备上运行。这样做的目的是为了证明在前面文章中的操作都可以通过Xcode来把这些应用运行在模拟器上。当然，你也可以把这应用安装到设备上。</p>
+<span id="more"></span>
+
+<h3 id="NSUserDefaults"><a href="#NSUserDefaults" class="headerlink" title="NSUserDefaults"></a>NSUserDefaults</h3><p>保存用户信息和属性的一个非常普通的方法就是使用NSUserDefaults。保存在NSUserDefaults中的信息在你的应用关闭后再次打开之后依然存在。保存信息到NSUserDefaults的一个例子就是保存用户是否已登录的状态。我们把用户的登录状态保存到NSUserDefaults以便用户关闭应用再次打开应用的时候，应用能够从NSUserDefaults获取数据，根据用户是否登录展示不同的界面。有些应用也用这个功能来保存机密数据，比如用户的访问令牌，以便下次应用登录的时候，它们能够使用这个令牌来再次认证用户。<br>从我的<a target="_blank" rel="noopener" href="https://github.com/prateek147/localDataStorageDemo">github</a>可以下载例子应用，运行起来。你可以得到下面的界面，现在输入一些信息到与NSUserDefaults相关的文本框，然后点击下面的“Save in NSUserDefaults”。这样数据就保存到NSUserDefaults了。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat1.png" alt></p>
+<p>许多人不知道的是保存到NSUserDefaults的数据并没有加密，因此可以很容易的从应用的包中看到。NSUserDefaults被存在一个以应用的bundle id为名称的plist文件中。 首先，我们需要找到我们应用的bundle id。因为我们在模拟器上运行，我们可以在 <code>/Users/$username/Library/Application Support/iPhone Simulator/$ios version of simulator/Applications/</code> 找到应用。我这的路径是：<code>Users/prateekgianchandani/Library/Application Support/iPhone Simulator/6.1/Applications</code>。<br>一旦我们找到那个目录，我们可以看到一堆应用。我们可以用最近修改的日期找到我们的应用，因为它是最近修改的。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat2.png" alt></p>
+<p>进入到应用的bundle里面。通过 NSUserDefaults 保存的数据都可以在如下图所示的 <code>Library -&gt; Preferences -&gt; $AppBundleId.plist</code> 文件中找到。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat3.png" alt></p>
+<p>打开这个 plist 文件，我们可以清楚的看到这个文件的内容。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat4.png" alt></p>
+<p>有时候，plist 文件会以二进制格式保存，因此可能第一下看到会觉得不可读。你可以用 plutil 工具把它转成 xml 格式，或者直接用 iExplorer 在设备上查看。</p>
+<h3 id="Plist-文件"><a href="#Plist-文件" class="headerlink" title="Plist 文件"></a>Plist 文件</h3><p>另一种保存数据普遍用的方法就是 plist 文件。Plist 文件应该始终被用来保存那些非机密的文件，因为它们没有加密，因此即使在非越狱的设备上也非常容易被获取。已经有漏洞被爆出来，大公司把机密数据比如访问令牌，用户名和密码保存到 plist 文件中。在下面的 demo 中，我们输入一些信息并保存到 plist 文件。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat5.png" alt></p>
+<p>下面是把数据保存到plist文件的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NSArray *paths &#x3D; NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES)</span><br><span class="line">	NSString *documentsDirectory &#x3D; [paths objectAtIndex:0];</span><br><span class="line">NSString *filePath &#x3D; [documentsDirectory stringByAppendingString:@&quot;&#x2F;userInfo.plist&quot;];</span><br><span class="line">NSMutableDictionary* plist &#x3D; [[NSMutableDictionary alloc] init];</span><br><span class="line">[plist setValue:self.usernameTextField.text forKey:@&quot;username&quot;];</span><br><span class="line">[plist setValue:self.passwordTextField.text forKey:@&quot;passwprd&quot;];</span><br><span class="line">[plist writeToFile:filePath atomically:YES];</span><br></pre></td></tr></table></figure>
+
+<p>如你所见，我们能够给 plist 文件指定路径。我们可以搜索整个应用的所有plist文件。在这里，我们找到一个叫做 <code>userinfo.plist</code> 的文件。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat6.png" alt></p>
+<p>可以看到，它包含了我们刚刚输入的用户名/密码的组合。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat7.png" alt></p>
+<h3 id="CoreData和Sqlite文件"><a href="#CoreData和Sqlite文件" class="headerlink" title="CoreData和Sqlite文件"></a>CoreData和Sqlite文件</h3><p>因为 CoreData 内部使用 Sqlite 来保存信息，因此我们这里将只会介绍下 CoreData 。如果你不知道什么是 CoreData ，请查阅 Apple 官方文档</p>
+<p>因此，基本上，CoreData 可以用来创建一个 model ，管理不同对象的关系，把数据保存到本地，然后当你查询的时候从本地缓存中获取它们。本例中，我们将使用一个 demo ，位于 <a target="_blank" rel="noopener" href="https://github.com/ChrisDrit/Core-Data-Example-Code">github</a> 。运行起来，你会发现它只是一个简单的RSS feed。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat10.png" alt></p>
+<p>这个应用用CoreData保存数据。一个非常重要的一点就是CoreData内部使用sql，因此所有文件都以.db文件保存。我们到这个app的bundle中去看看。 在这个app的bundle中，你可以看到那里有一个MyCoreData.sqlite的文件。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat11.png" alt></p>
+<p>我们可以用sqlite3分析。我这slite文件的地址是：<code>~/Library/Application Support/iPhone Simulator/6.1/Applications/51038055-3CEC-4D90-98B8-A70BF12C7E9D/Documents</code>.</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat12.png" alt></p>
+<p>我们可以看到，这里有个叫做ZSTORIES的表。在Core Data中，每个表名开头都会被追加一个Z。这意味着真正的实体名称是STORIES，如我们在工程的源码文件看到的那样。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat13.png" alt></p>
+<p>我们可以非常容易的导出这个表的所有值。请却表headers的状态是on。</p>
+<p><img src="http://resources.infosecinstitute.com/wp-content/uploads/101613_1214_IOSApplicat14.png" alt></p>
+<p>正如我们看到的那样，默认的，保存在CoreData的数据都是没有加密的，因此可以轻易的被取出。因此，我们不应该用CoreData保存机密数据。 有些库包装了一下CoreData, 声称能够保存加密数据。也有些库能够把数据加密保存到设备上，不过不使用CoreData。例如，Salesforce Mobile SDK 就使用了一个被称为SmartStore的功能来把加密数据以”Soups”的形式保存到设备上。</p>
+<h3 id="Keychain"><a href="#Keychain" class="headerlink" title="Keychain"></a>Keychain</h3><p>有些开发者不太喜欢把数据保存到 Keychain 中，因为实现起来不那么直观。不过，把信息保存到 Keychain 中可能是非越狱设备上最安全的一种保存数据的方式了。而在越狱设备上，没有任何事情是安全的。这篇文章展示了使用一个简单的 wrapper 类，把数据保存到keychain是多么的简单。使用这个 wrapper 来保存数据到 keychain 就像把数据保存到 NSUserDefaults 那么简单。下面就是一段把字符串保存到 keychain 的代码。请注意和使用 NSUserDefaults 的语法非常类似。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PDKeychainBindings *bindings &#x3D; [PDKeychainBindings sharedKeychainBindings];</span><br><span class="line">[bindings setObject:@&quot;XYZ&quot; forKey:@&quot;authToken&quot;];</span><br></pre></td></tr></table></figure>
+
+<p>下面是一段从keychain中取数据的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PDKeychainBindings *bindings &#x3D; [PDKeychainBindings sharedKeychainBindings];</span><br><span class="line">NSLog(@&quot;Auth token is %@&quot;,[bindings objectForKey:@&quot;authToken&quot;]]);</span><br></pre></td></tr></table></figure>
+
+<h3 id="一些小技巧"><a href="#一些小技巧" class="headerlink" title="一些小技巧"></a>一些小技巧</h3><p>正如之前讨论过的那样，没有任何信息在越狱设备上是安全的。攻击者能够拿到Plist文件，导出整个keychain，替换方法实现，并且攻击者能做他想做的任何事情。不过开发者能够使用一些小技巧来使得脚本小子从应用获得信息变得更难。比如把文件加密放到本地设备上。这里<a target="_blank" rel="noopener" href="http://highaltitudehacks.com/2013/09/17/ios-dev-storing-info-in-keychain-with-nsuserdefaults-like-syntax">这篇文章</a>详细的讨论了这一点。或者你可以使得攻击者更难理解你的信息。比如考虑要把某个用户的认证令牌（authentication token）保存到keychain当中，脚本小子可能就会导出keychain中的这个数据，然后试图劫持用户的会话。我们只需再把这个认证令牌字符串反转一下（reverse），然后再保存到keychain中，那么攻击者就不太可能会知道认证令牌是反转保存的。当然，攻击者可以追踪你的应用的每一个调用，然后理解到这一点，但是，一个如此简单的技术就能够让脚本小子猜足够的时间，以至于他们会开始寻找其它应用的漏洞。另一个简单技巧就是在每个真正的值保存之前都追加一个常量字符串。<br>在接下来的文章里，我们将讨论使用GDB进行运行时分析</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS%E5%AE%89%E5%85%A8/" rel="tag"># iOS安全</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/10/31/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%8D%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" rel="prev" title="Swift学习笔记－基本概念">
+                  <i class="fa fa-chevron-left"></i> Swift学习笔记－基本概念
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/11/01/iOSSec/%E5%88%87%E5%8B%BF%E5%B0%86%E5%86%85%E9%83%A8%E6%B5%8B%E8%AF%95%E7%89%88%E6%9C%AC%E9%9A%8F%E6%84%8F%E5%8F%91%E6%94%BE%E6%B5%8B%E8%AF%95/" rel="next" title="切勿将内部测试版本随意发放测试">
+                  切勿将内部测试版本随意发放测试 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

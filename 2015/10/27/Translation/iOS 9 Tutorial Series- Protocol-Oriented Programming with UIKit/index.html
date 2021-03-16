@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="iOS 9 系列教程 在UIKit中实践面向协议编程原文在此 翻译 by skyfly.xyz 在 WWDC2015 上那次关于 Swift 面向协议编程的发人深省的演讲后（是的，“很难啃”的那部分）似乎每个人都在谈论协议扩展这个令人兴奋的新的语言特性，同时它也使每个人都感到过困惑。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 9 系列教程 在UIKit中实践面向协议编程">
+<meta property="og:url" content="https://ufolux.github.io/2015/10/27/Translation/iOS%209%20Tutorial%20Series-%20Protocol-Oriented%20Programming%20with%20UIKit/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="iOS 9 系列教程 在UIKit中实践面向协议编程原文在此 翻译 by skyfly.xyz 在 WWDC2015 上那次关于 Swift 面向协议编程的发人深省的演讲后（是的，“很难啃”的那部分）似乎每个人都在谈论协议扩展这个令人兴奋的新的语言特性，同时它也使每个人都感到过困惑。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-10-27T15:42:07.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.110Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="iOS设计模式">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2015/10/27/Translation/iOS%209%20Tutorial%20Series-%20Protocol-Oriented%20Programming%20with%20UIKit/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>iOS 9 系列教程 在UIKit中实践面向协议编程 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#iOS-9-%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%9C%A8UIKit%E4%B8%AD%E5%AE%9E%E8%B7%B5%E9%9D%A2%E5%90%91%E5%8D%8F%E8%AE%AE%E7%BC%96%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">iOS 9 系列教程 在UIKit中实践面向协议编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%8D%8F%E8%AE%AE%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">1.0.1.</span> <span class="nav-text">使用协议的好处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%8E%BB%E4%BD%BF%E7%94%A8%E5%8D%8F%E8%AE%AE%E6%89%A9%E5%B1%95"><span class="nav-number">1.0.2.</span> <span class="nav-text">如何去使用协议扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E6%89%A9%E5%B1%95%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.0.3.</span> <span class="nav-text">协议扩展的局限性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E6%89%A9%E5%B1%95%E7%8E%B0%E6%9C%89%E7%9A%84-UIKit-%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.1.</span> <span class="nav-text">第一部分：扩展现有的 UIKit 协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95-UICoordinateSpace"><span class="nav-number">1.1.1.</span> <span class="nav-text">扩展 UICoordinateSpace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95-UITableViewDataSource"><span class="nav-number">1.1.2.</span> <span class="nav-text">扩展 UITableViewDataSource</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95-UIViewControllerContextTransitioning"><span class="nav-number">1.1.3.</span> <span class="nav-text">扩展 UIViewControllerContextTransitioning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95-UIScrollViewDelegate"><span class="nav-number">1.1.4.</span> <span class="nav-text">扩展 UIScrollViewDelegate</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E6%89%A9%E5%B1%95%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.2.</span> <span class="nav-text">第二部分：扩展自定义的协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MVC%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.2.1.</span> <span class="nav-text">MVC详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%8D%8F%E8%AE%AE%E6%9D%A5%E7%AE%A1%E7%90%86Model%EF%BC%88M%EF%BC%89"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">利用协议来管理Model（M）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%8F%E8%AE%AE-%EF%BC%88C%EF%BC%89"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">数据格式化协议 （C）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%B7%E5%BC%8F%E7%9A%84%E5%8D%8F%E8%AE%AE%EF%BC%88V%EF%BC%89"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">样式的协议（V）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E4%BB%80%E4%B9%88%E6%94%B6%E8%8E%B7%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">有什么收获？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">1.3.1.</span> <span class="nav-text">增加复杂度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E7%AC%AC%E4%B8%89%E6%96%B9%E7%9A%84%E4%BB%A3%E7%A0%81%E6%95%B4%E5%90%88"><span class="nav-number">1.3.2.</span> <span class="nav-text">与第三方的代码整合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B6%E8%8E%B7"><span class="nav-number">1.4.</span> <span class="nav-text">收获</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2015/10/27/Translation/iOS%209%20Tutorial%20Series-%20Protocol-Oriented%20Programming%20with%20UIKit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS 9 系列教程 在UIKit中实践面向协议编程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2015-10-27 23:42:07" itemprop="dateCreated datePublished" datetime="2015-10-27T23:42:07+08:00">2015-10-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="iOS-9-系列教程-在UIKit中实践面向协议编程"><a href="#iOS-9-系列教程-在UIKit中实践面向协议编程" class="headerlink" title="iOS 9 系列教程 在UIKit中实践面向协议编程"></a>iOS 9 系列教程 在UIKit中实践面向协议编程</h1><p><a target="_blank" rel="noopener" href="https://www.captechconsulting.com/blogs/ios-9-tutorial-series-protocol-oriented-programming-with-uikit">原文在此</a> 翻译 by skyfly.xyz</p>
+<p>在 WWDC2015 上那次关于 Swift 面向协议编程的发人深省的演讲后（是的，“很难啃”的那部分）似乎每个人都在谈论协议扩展这个令人兴奋的新的语言特性，同时它也使每个人都感到过困惑。</p>
+<span id="more"></span>
+
+
+<p>我曾经阅读过不计其数的关于 Swift 协议和协议扩展细节的文章，很明显，协议扩展将会成为 Swift 这道大餐里面的一剂猛料，苹果甚至建议，在可能的情况下尽量使用协议来替代类 —— 这个方法是面向协议编程的关键。</p>
+<p>但是这些文章仅仅告诉了我什么是协议扩展，他们并没有明确的告诉我面向协议编程对于 UI 开发的意义是什么。现在大多数可用的示例代码构建的场景都是从来没有利用过任何框架。</p>
+<p>我想要知道协议扩展应该如何应用于我已经构建的那些应用，我如何才能更加有力地在 iOS 中最重要的框架 — UIKit 中去利用这些方法。</p>
+<p>既然我们有协议扩展，那么基于协议的方法在充满了类的 UIKit 框架中是不是更有价值呢？这篇文章中，我尝试对 Swift 协议扩展在真实世界的 UI 场景中的作用作一个合理的说明，并且也是记录我发现并没有完全的认识到协议扩展作用的流水账。</p>
+<h3 id="使用协议的好处"><a href="#使用协议的好处" class="headerlink" title="使用协议的好处"></a>使用协议的好处</h3><p>协议并没有什么新鲜的，但我们可以使用内置的功能，共享的逻辑，神奇的力量扩展它们的这个想法……嗯，这是一个有趣的想法。更多个协议 == 更好的灵活性。每个协议扩展都是一小块可以被采用，重写（或者不）的模块化功能，并且可以通过 where 子句与特定类型的代码进行交互。</p>
+<p>协议确实存在的目的确实只是为了讨编译器的欢心，但是协议扩展是真正可以在代码集之中共享的逻辑片段。</p>
+<p>虽然我们只可以继承自一个父类，但是我们可以按照意愿遵守任意多数量的协议，遵守一个扩展后的协议就类似于在 Angular.js 中向 element 添加一个指令一样 —— 我们将一段改变对象行为的逻辑注射进去。协议不再仅仅是一个约定，结合扩展，他们可以是对功能的接受。</p>
+<h3 id="如何去使用协议扩展"><a href="#如何去使用协议扩展" class="headerlink" title="如何去使用协议扩展"></a>如何去使用协议扩展</h3><p>协议扩展的用法十分简单，这篇文章不是一个指南，但是如果你需要尽快得知它是如何工作的而不是讨论协议扩展之于 UIKit 开发的适用性，请你去参考官方的 Swift 文档中关于协议扩展的那部分内容。</p>
+<h3 id="协议扩展的局限性"><a href="#协议扩展的局限性" class="headerlink" title="协议扩展的局限性"></a>协议扩展的局限性</h3><p>在我们开始之前，需要弄清楚协议扩展不能做什么。有很多我们不能使用协议扩展来做的事，它们之中有许多是因为语言的设计原因导致的。然而我希望看到的是，在Swift的后续版本中，苹果可以对这些局限性做相应的处理。</p>
+<ul>
+<li><p>不能在 Objective-C 中调用协议扩展中的成员。</p>
+</li>
+<li><p>不能对结构体类型使用 where 语句。</p>
+</li>
+<li><p>不能定义由多个逗号分隔的 where 语句，类似于 if let 声明。</p>
+</li>
+<li><p>不能将动态变量存储在协议扩展中。</p>
+</li>
+<li><p>这也适用于非泛型的扩展中</p>
+</li>
+<li><p>静态变量应该是允许存在的，但是按照目前来看， Xcode 7.0 中将这种做法看作是一个错误，错误信息是 “static stored properties not yet supported in generic types”。</p>
+</li>
+<li><p>不能通过super来调用一个协议扩展，不像非泛型扩展那样，不过 <a href>@ketzusaka</a> 指出这可以通过这样的 <code>(self as MyProtocol).method()</code> 调用来实现。好想法！由于这个原因，协议扩展并没有真正的继承的概念。</p>
+</li>
+<li><p>不能遵守多个其中有重复成员的协议扩展。Swift 运行时会遵守最后一个协议而忽略其他的协议。</p>
+<p>举个例子，如果我们有2个实现了相同方法的协议扩展，只有我们遵守的最后一个协议中的那个方法会被调用。无法调用其它扩展中的方法。</p>
+</li>
+<li><p>不能继承可选的协议方法。</p>
+<p>可选协议方法需要使用     <code>@objc</code> 标签，然而这个标签并不能和协议扩展一起工作。</p>
+</li>
+<li><p>协议和它的扩展不能同时声明。</p>
+</li>
+</ul>
+<p>如果能够在声明协议扩展协议部分的同时实现它的扩展，那就太好了。因为当扩展中包含了所有重要的逻辑时，协议中并不总是会有成员存在。</p>
+<h2 id="第一部分：扩展现有的-UIKit-协议"><a href="#第一部分：扩展现有的-UIKit-协议" class="headerlink" title="第一部分：扩展现有的 UIKit 协议"></a>第一部分：扩展现有的 UIKit 协议</h2><p>当我第一次了解到协议扩展的时候，首先映入我脑海的协议是 <code>UITableViewDataSource</code> ，可以说在iOS平台上这是被最广泛实现的一个协议。我想，我是不是可以在我的应用中为所有的 <code>UITableViewDataSource</code> 提供一个默认的实现呢？这个貌似很有趣。</p>
+<p>如果每个 UITableView 有很多的 sections，为什么不在同一个地方继承 <code>UITableViewDataSource</code> 并且实现 <code>numberOfSectionsInTableView:</code> 呢？如果我要在所有的列表中实现滑动删除功能的话，为何不在协议扩展中去实现 <code>UITableViewDelegate</code> 呢？</p>
+<p>到现在为止，这件事还是不可能的。</p>
+<p>我们<strong>不能</strong>做的：为 Objective-C    协议提供默认实现。</p>
+<p>UIKit 仍然是从 Objective-C 编译过来的，而且 Objective-C 中没有可扩展协议这个概念。在实践中，这意味着尽管我们可以声明对 UIKit 协议的扩展，但是 UIKit 对象并不能够发现我们写在协议扩展中的方法。</p>
+<p>举一个例子：如果我们在 <code>UICollectionViewDelegate</code> 的扩展中实现 <code>collectionView:didSelectItemAtIndexPath:</code> 方法，结果就是当 cell 被点击的时候，我们写在协议扩展中的这个方法并不会被调用，因为处于 Objective-C 语境中的 <code>UICollectionView</code> 发现不了这个方法。如果我们将一个非可选方法写到协议扩展里面，比如 <code>collectionView:cellForItemAtIndexPath:</code>，编译器将会抱怨说，我们没有遵守 <code>UICollectionViewDelegate</code> 协议。</p>
+<p>Xcode 尝试着去给我们的协议扩展方法添加 <code>@objc</code> 前缀去修复这个问题，但是这是白费劲，这样做只会导致一个新的错误：<code>&quot;Method in protocol extension cannot be represented in Objective-C.&quot;</code> 这是底层的问题 —— 协议扩展只在 Swift2.x 以上版本的代码中才是可用的。</p>
+<p>我们<strong>不能</strong>做的：为一个现存的 Objective-C 协议添加新的方法。</p>
+<p>我们可以通过 Swift 直接调用 UIKit 的协议扩展方法，就算 UIKit 无法发现他们。这意味着尽管我们不能重写现存的 UIKit 协议方法，但是当我们需要使用那些协议的时候，可以为他们添加新的便利方法。</p>
+<p>我承认，这好像没有那么令人激动。并且任何传统的 Objective-C 代码依旧无法调用这些方法。但这里还是留着一些机会。下面是一些简单的例子，这些例子告诉我们当前可以如何将现有的 UIKit 协议和协议扩展结合使用。</p>
+<p>UIKit 协议扩展示例</p>
+<h3 id="扩展-UICoordinateSpace"><a href="#扩展-UICoordinateSpace" class="headerlink" title="扩展 UICoordinateSpace"></a>扩展 <code>UICoordinateSpace</code></h3><p>是否曾经有过必须在 Core Graphics 和 UIKit 坐标系中做转换的经历？我们可以为 <code>UICoordinateSpace</code> 添加辅助方法，一个让 UIView 遵守的协议。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">extension UICoordinateSpace &#123;</span><br><span class="line">    func insvertedRect(rect: CGRect) -&gt; CGRect &#123;</span><br><span class="line">        var transform &#x3D; CGAffineTransformMakeScale(1, -1)</span><br><span class="line">        transform &#x3D; CGAffineTransformTranslate(transform, 0, -self.bounds.size.height)</span><br><span class="line">        return CGRectApplyAffineTransform(rect, transform)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在我们的 <code>invertedRect</code> 方法在任何  <code>UICoordinateSpace</code> 协议的遵守者中都是可用的了，我们可以在我们的绘图方法中使用它。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class DrawingView : UIView &#123;</span><br><span class="line">    &#x2F;&#x2F; Example -- Referencing custom UICoordinateSpace method inside UIView drawRect.</span><br><span class="line">    override func drawRect(rect: CGRect) &#123;</span><br><span class="line">        let invertedRect &#x3D; self.invertedRect(CGRectMake(50.0, 50.0, 200.0, 100.0))</span><br><span class="line">        print(NSStringFromCGRect(invertedRect)) &#x2F;&#x2F; 50.0, -150.0, 200.0, 100.0</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="扩展-UITableViewDataSource"><a href="#扩展-UITableViewDataSource" class="headerlink" title="扩展 UITableViewDataSource"></a>扩展 <code>UITableViewDataSource</code></h3><p>尽管我们不能为 <code>UITableViewDataSource</code> 提供默认实现，但我们仍然可以将那些可以被应用中任何 <code>UITableViewDataSource</code> 用到的通用逻辑放入协议中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">extension UITableViewDataSource &#123;</span><br><span class="line">    &#x2F;&#x2F; Returns the total # of rows in a table view.</span><br><span class="line">    func totalRows(tableView: UITableView) -&gt; Int &#123;</span><br><span class="line">        let totalSections &#x3D; self.numberOfSectionsInTableView?(tableView) ?? 1</span><br><span class="line">        var s &#x3D; 0, t &#x3D; 0</span><br><span class="line">        while s &lt; totalSections &#123;</span><br><span class="line">            t +&#x3D; self.tableView(tableView, numberOfRowsInSection: s)</span><br><span class="line">            s++</span><br><span class="line">        &#125;</span><br><span class="line">        return t</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的 <code>totalRows:</code> 方法是一个能够计算出我们 TableView 中 cell 个数的快捷方法，当 TableView 被分成很多 section 但是需要显示条目总数的时候很有用。<code>tableView:titleForFooterInSection:</code> 是使用这个方法的最佳位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class ItemsController: UITableViewController &#123;</span><br><span class="line">    &#x2F;&#x2F; Example -- displaying total # of items as a footer label.</span><br><span class="line">    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? &#123;</span><br><span class="line">        if section &#x3D;&#x3D; self.numberOfSectionsInTableView(tableView)-1 &#123;</span><br><span class="line">            return String(&quot;Viewing %f Items&quot;, self.totalRows(tableView))</span><br><span class="line">        &#125;</span><br><span class="line">        return &quot;&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="扩展-UIViewControllerContextTransitioning"><a href="#扩展-UIViewControllerContextTransitioning" class="headerlink" title="扩展 UIViewControllerContextTransitioning"></a>扩展 <code>UIViewControllerContextTransitioning</code></h3><p>在阅读过我的《自定义导航过场动画 &amp; 更多（胡乱塞入的）》这篇文章后，也许你正在忙于制作一个自定义的导航过场动画。这里有一些我本应该在那个教程中用到的方法，是通过<br><code>UIViewControllerContextTransitioning</code> 协议提供的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">extension UIViewControllerContextTransitioning &#123;</span><br><span class="line">    &#x2F;&#x2F; Mock the indicated view by replacing it with its own snapshot. Useful when we don&#39;t want to render a view&#39;s subviews during animation, such as when applying transforms.</span><br><span class="line">    func mockViewWithKey(key: String) -&gt; UIView? &#123;</span><br><span class="line">        if let view &#x3D; self.viewForKey(key), container &#x3D; self.containerView() &#123;</span><br><span class="line">            let snapshot &#x3D; view.snapshotViewAfterScreenUpdates(false)</span><br><span class="line">            snapshot.frame &#x3D; view.frame</span><br><span class="line">            </span><br><span class="line">            container.insertSubview(snapshot, aboveSubview: view)</span><br><span class="line">            view.removeFromSuperview()</span><br><span class="line">            return snapshot</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        return nil</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Add a background to the container view. Useful for modal presentations, such as showing a partially translucent background behind our modal content.</span><br><span class="line">    func addBackgroundView(color: UIColor) -&gt; UIView? &#123;</span><br><span class="line">        if let container &#x3D; self.containerView() &#123;</span><br><span class="line">            let bg &#x3D; UIView(frame: container.bounds)</span><br><span class="line">            bg.backgroundColor &#x3D; color</span><br><span class="line">            </span><br><span class="line">            container.addSubview(bg)</span><br><span class="line">            container.sendSubviewToBack(bg)</span><br><span class="line">            return bg</span><br><span class="line">        &#125;</span><br><span class="line">        return nil</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们能在传入我们动画协调者的 <code>transitionContext</code> 对象中调用这些方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">class AnimationCoordinator : NSObject, UIViewControllerAnimatedTransitioning &#123;</span><br><span class="line">    &#x2F;&#x2F; Example -- using helper methods during a view controller transition.</span><br><span class="line">    func animateTransition(transitionContext: UIViewControllerContextTransitioning) &#123;</span><br><span class="line">        &#x2F;&#x2F; Add a background</span><br><span class="line">        transitionContext.addBackgroundView(UIColor(white: 0.0, alpha: 0.5))</span><br><span class="line">        </span><br><span class="line">        &#x2F;&#x2F; Swap out the &quot;from&quot; view</span><br><span class="line">        transitionContext.mockViewWithKey(UITransitionContextFromViewKey)</span><br><span class="line">        </span><br><span class="line">        &#x2F;&#x2F; Animate using awesome 3D animation...</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -&gt; NSTimeInterval &#123;</span><br><span class="line">        return 5.0</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="扩展-UIScrollViewDelegate"><a href="#扩展-UIScrollViewDelegate" class="headerlink" title="扩展 UIScrollViewDelegate"></a>扩展 <code>UIScrollViewDelegate</code></h3><p>我们现在来看这种情况，在我们的应用中有许多个 <code>UIPageControl</code> 实例，为了使他们工作，我们往往要在各个 <code>UIScrollViewDelegate</code> 的实现之间复制和粘贴一些代码。协议扩展可以让这些逻辑变成通用化，而所有的调用都可以通过 <code>self</code> 来进行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">extension UIScrollViewDelegate &#123;</span><br><span class="line">    &#x2F;&#x2F; Convenience method to update a UIPageControl with the correct page.</span><br><span class="line">    func updatePageControl(pageControl: UIPageControl, scrollView: UIScrollView) &#123;</span><br><span class="line">        pageControl.currentPage &#x3D; lroundf(Float(scrollView.contentOffset.x &#x2F; (scrollView.contentSize.width &#x2F; CGFloat(pageControl.numberOfPages))));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Additionally, if we know Self is a UICollectionViewController we can eliminate the method&#39;s scrollView parameter.</span><br><span class="line"></span><br><span class="line">extension UIScrollViewDelegate where Self: UICollectionViewController &#123;</span><br><span class="line">    func updatePageControl(pageControl: UIPageControl) &#123;</span><br><span class="line">        pageControl.currentPage &#x3D; lroundf(Float(self.collectionView!.contentOffset.x &#x2F; (self.collectionView!.contentSize.width &#x2F; CGFloat(pageControl.numberOfPages))));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Example -- Page control updates from a UICollectionViewController using a protocol extension.</span><br><span class="line">class PagedCollectionView : UICollectionViewController &#123;</span><br><span class="line">    let pageControl &#x3D; UIPageControl()</span><br><span class="line">    </span><br><span class="line">    override func scrollViewDidScroll(scrollView: UIScrollView) &#123;</span><br><span class="line">        self.updatePageControl(self.pageControl)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>没错，这些例子都很做作，事实证明，当涉及到扩展现有的 UIKit 协议时，并没有太多的选择，所做的事情都是非常不值一提的。然而，我们还是要问，如何才能在现有的 UIKit 设计模式上去使用自定义的协议扩展。</p>
+<h2 id="第二部分：扩展自定义的协议"><a href="#第二部分：扩展自定义的协议" class="headerlink" title="第二部分：扩展自定义的协议"></a>第二部分：扩展自定义的协议</h2><p>使用 MVC 模式的面向协议编程<br>一个 iOS 应用一定会实现3个最重要的功能，这也是 iOS 应用开发的核心。这种设计模式通常被称为 <code>MVC (Model-View-Controller)</code>。其实，一个 app 真正所做的事情就是将某种数据可视化的表示出来。</p>
+<h3 id="MVC详解"><a href="#MVC详解" class="headerlink" title="MVC详解"></a>MVC详解</h3><p>在下面三个例子中，我将会通过协议扩展来演示一些面向协议的设计模式，MVC模式的3个组成部分按照 Model -&gt; Controller -&gt; View 的顺序来工作。</p>
+<h4 id="利用协议来管理Model（M）"><a href="#利用协议来管理Model（M）" class="headerlink" title="利用协议来管理Model（M）"></a>利用协议来管理Model（M）</h4><p>就拿我们正在开发的音乐 app Pear Music 来讲。涉及到了艺人，唱片，歌曲和播放列表这些 Model。我们需要构建一些代码来根据一个已经载入的标志从网络上获取这些 model。</p>
+<p>当使用协议来进行开发的时候，最好从一个最高层次的抽象来入手。一个基本的原理是通过 API 按照资源的远程表示填充到 model 中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Any entity which represents data which can be loaded from a remote source.</span><br><span class="line">protocol RemoteResource &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>不过，稍等一下，这只不过是一个空的协议！我们不打算直接使用 <code>RemoteResource</code> 。这不是一个合约，而是一组功能，其中包括发起网络请求。因此，<code>RemoteResource</code> 的真正价值在于它的协议扩展。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">extension RemoteResource &#123;</span><br><span class="line">    func load(url: String, completion: ((success: Bool)-&gt;())?) &#123;</span><br><span class="line">        print(&quot;Performing request: &quot;, url)</span><br><span class="line">        </span><br><span class="line">        let task &#x3D; NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: url)!) &#123; (data, response, error) -&gt; Void in</span><br><span class="line">            if let httpResponse &#x3D; response as? NSHTTPURLResponse where error &#x3D;&#x3D; nil &amp;&amp; data !&#x3D; nil &#123;</span><br><span class="line">                print(&quot;Response Code: %d&quot;, httpResponse.statusCode)</span><br><span class="line">                </span><br><span class="line">                dataCache[url] &#x3D; data</span><br><span class="line">                if let c &#x3D; completion &#123;</span><br><span class="line">                    c(success: true)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                print(&quot;Request Error&quot;)</span><br><span class="line">                if let c &#x3D; completion &#123;</span><br><span class="line">                    c(success: false)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        task.resume()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func dataForURL(url: String) -&gt; NSData? &#123;</span><br><span class="line">        &#x2F;&#x2F; A real app would require a more robust caching solution.</span><br><span class="line">        return dataCache[url]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public var dataCache: [String : NSData] &#x3D; [:]</span><br></pre></td></tr></table></figure>
+
+<p>现在我们有了一个具有内建了加载远程数据并且检索数据功能的协议，任何这个协议的接受者将会自动得到这些方法。</p>
+<p>我们已经给出了两个 API 用于交互，一个是表示 JSON 数据的（<code>api,pearmusic.com</code>）另一个是表示媒体的（<code>media.pearmusic.com</code>）。为了处理这个，我们将会为每种类型的数据设计一个 <code>RemoteResource</code> 的子协议。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protocol JSONResource : RemoteResource &#123;</span><br><span class="line">    var jsonHost: String &#123; get &#125;</span><br><span class="line">    var jsonPath: String &#123; get &#125;</span><br><span class="line">    func processJSON(success: Bool)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protocol MediaResource : RemoteResource &#123;</span><br><span class="line">    var mediaHost: String &#123; get &#125;</span><br><span class="line">    var mediaPath: String &#123; get &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>一起来实现这几个协议</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">extension JSONResource &#123;</span><br><span class="line">    &#x2F;&#x2F; Default host value for REST resources</span><br><span class="line">    var jsonHost: String &#123; return &quot;api.pearmusic.com&quot; &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Generate the fully qualified URL</span><br><span class="line">    var jsonURL: String &#123; return String(format: &quot;http:&#x2F;&#x2F;%@%@&quot;, self.jsonHost, self.jsonPath) &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Main loading method.</span><br><span class="line">    func loadJSON(completion: (()-&gt;())?) &#123;</span><br><span class="line">        self.load(self.jsonURL) &#123; (success) -&gt; () in</span><br><span class="line">            &#x2F;&#x2F; Call adopter to process the result</span><br><span class="line">            self.processJSON(success)</span><br><span class="line">            </span><br><span class="line">            &#x2F;&#x2F; Execute completion block on the main queue</span><br><span class="line">            if let c &#x3D; completion &#123;</span><br><span class="line">                dispatch_async(dispatch_get_main_queue(), c)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们提供了默认的 host，一个用来生成完整的 URL，另一个用来让他自己通过 <code>RemoteResourse</code> 的 <code>load:</code> 方法载入资源。一会我们会依靠我们的协议接受者来提供正确的 jsonPath。</p>
+<p><code>MediaResource</code> 的模式与之相似。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">extension MediaResource &#123;</span><br><span class="line">    &#x2F;&#x2F; Default host value for media resources</span><br><span class="line">    var mediaHost: String &#123; return &quot;media.pearmusic.com&quot; &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Generate the fully qualified URL</span><br><span class="line">    var mediaURL: String &#123; return String(format: &quot;http:&#x2F;&#x2F;%@%@&quot;, self.mediaHost, self.mediaPath) &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Main loading method</span><br><span class="line">    func loadMedia(completion: (()-&gt;())?) &#123;</span><br><span class="line">        self.load(self.mediaURL) &#123; (success) -&gt; () in</span><br><span class="line">            &#x2F;&#x2F; Execute completion block on the main queue</span><br><span class="line">            if let c &#x3D; completion &#123;</span><br><span class="line">                dispatch_async(dispatch_get_main_queue(), c)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>你可能注意到了这些实现是十分相似的。事实上将这些方法提升到 <code>RemoteResource</code> 它本身中是更加明智的，我们的子协议只需要返回正确的 host 就够了。</p>
+<p>美中不足的是，我们的协议之间并不是互斥的 —— 我们想要一个能够同时表示 <code>JSONResource</code> 和 <code>MediaResource</code> 的对象。记住，协议扩展彼此之间会相互覆盖。除非我们想要显式地将这些属性和方法分开，只有哪些在最后一个被接受的协议中的方法和属性才能被调用。</p>
+<p>通过给我们一些数据访问，来让他们更加特化。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">extension JSONResource &#123;</span><br><span class="line">    var jsonValue: [String : AnyObject]? &#123;</span><br><span class="line">        do &#123;</span><br><span class="line">            if let d &#x3D; self.dataForURL(self.jsonURL), result &#x3D; try NSJSONSerialization.JSONObjectWithData(d, options: NSJSONReadingOptions.MutableContainers) as? [String : AnyObject] &#123;</span><br><span class="line">                return result</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch &#123;&#125;</span><br><span class="line">        return nil</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension MediaResource &#123;</span><br><span class="line">    var imageValue: UIImage? &#123;</span><br><span class="line">        if let d &#x3D; self.dataForURL(self.mediaURL) &#123;</span><br><span class="line">            return UIImage(data: d)</span><br><span class="line">        &#125;</span><br><span class="line">        return nil</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是一个展现协议扩展价值的经典的例子。一个传统的协议说：“我保证我是这种类型的东西，拥有这些特性“，而一个协议扩展说：”我有这些特性，因此我可以做这些特别的事情”。 <code>MediaResource</code> 访问了图像数据，它可以不去管它的具体类型或者是上下文，而是很简单的提供一个图像的值。</p>
+<p>我提到我们将要根据一个标志（identifiers）加载我们的 model ，所以我们来为那些具有一个唯一标志的实体写一个协议。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">protocol Unique &#123;</span><br><span class="line">    var id: String! &#123; get set &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension Unique where Self: NSObject &#123;</span><br><span class="line">    &#x2F;&#x2F; Built-in init method from a protocol!</span><br><span class="line">    init(id: String?) &#123;</span><br><span class="line">        self.init()</span><br><span class="line">        if let identifier &#x3D; id &#123;</span><br><span class="line">            self.id &#x3D; identifier</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            self.id &#x3D; NSUUID().UUIDString</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Bonus: Make sure Unique adopters are comparable.</span><br><span class="line">func &#x3D;&#x3D;(lhs: Unique, rhs: Unique) -&gt; Bool &#123;</span><br><span class="line">    return lhs.id &#x3D;&#x3D; rhs.id</span><br><span class="line">&#125;</span><br><span class="line">extension NSObjectProtocol where Self: Unique &#123;</span><br><span class="line">    func isEqual(object: AnyObject?) -&gt; Bool &#123;</span><br><span class="line">        if let o &#x3D; object as? Unique &#123;</span><br><span class="line">            return o.id &#x3D;&#x3D; self.id</span><br><span class="line">        &#125;</span><br><span class="line">        return false</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于我们不能在扩展中存储属性，我们还是不得不去依赖我们 <code>Unique</code> 的接受者声明 <code>id</code> 类型的属性。另外，你可能注意到了，我只为那些那些继承自 <code>NSObject</code> 类型的对象扩展了 <code>Unique</code> 协议。否则我们就不能调用 <code>self.init()</code> 因为它没有被声明。我们用一个变通的办法来解决这个问题，这个办法就是在协议中声明 <code>init()</code> 方法，但是这就需要接受者来实现这个方法。由于我们所有的 model 都是继承自 NSObject 类型的，所以这个情况下，这不成问题。</p>
+<p>Ok，我们已经得到了一个从网络加载数据的基本策略。我们开始让 model 遵守这些协议。这是 <code>Song</code> model 的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Song : NSObject, JSONResource, Unique &#123;</span><br><span class="line">    &#x2F;&#x2F; MARK: - Metadata</span><br><span class="line">    var title: String?</span><br><span class="line">    var artist: String?</span><br><span class="line">    var streamURL: String?</span><br><span class="line">    var duration: NSNumber?</span><br><span class="line">    var imageURL: String?</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; MARK: - Unique</span><br><span class="line">    var id: String!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是，稍等，<code>JSONResource</code> 的实现去哪了？</p>
+<p>与其直接在我们的类中去实现 <code>JSONResource</code> 协议，不如利用一个条件化的协议扩展。这让我们只需在同一个地方稍作调整就可以组织所有基于 <code>RemoteResource</code> 的格式化逻辑，同时保持我们 model 实现的简洁。因此我们需要将下面的代码放进 <code>RemoteResource.swift</code> 文件中，而其他之前基于这个协议的逻辑则不用修改。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">extension JSONResource where Self: Song &#123;</span><br><span class="line">    var jsonPath: String &#123; return String(format: &quot;&#x2F;songs&#x2F;%@&quot;, self.id) &#125;</span><br><span class="line">    </span><br><span class="line">    func processJSON(success: Bool) &#123;</span><br><span class="line">        if let json &#x3D; self.jsonValue where success &#123;</span><br><span class="line">            self.title &#x3D; json[&quot;title&quot;] as? String ?? &quot;&quot;</span><br><span class="line">            self.artist &#x3D; json[&quot;artist&quot;] as? String ?? &quot;&quot;</span><br><span class="line">            self.streamURL &#x3D; json[&quot;url&quot;] as? String ?? &quot;&quot;</span><br><span class="line">            self.duration &#x3D; json[&quot;duration&quot;] as? NSNumber ?? 0</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>保持在一个地方的所有的东西和 <code>RemoteResource</code> 相关对程序的组织有好处。协议的实现都在同一个地方，而且扩展的范围很清晰。当声明一个需要被扩展的协议时，我建议将扩展写在同一个文件内。</p>
+<p>多亏了 <code>JSONResource</code>,<code>Unique</code> 的协议扩展，加载一首歌曲现在看起来是这个样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let s &#x3D; Song(id: &quot;abcd12345&quot;)</span><br><span class="line">let artistLabel &#x3D; UILabel()</span><br><span class="line"></span><br><span class="line">s.loadJSON &#123; (success) -&gt; () in</span><br><span class="line">    artistLabel.text &#x3D; s.artist</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>转眼间我们的 Song 对象是一个队员数据的简单封装了，这也正是它应该变成的样子。我们的协议扩展正在为它做所有麻烦的事情。</p>
+<p>这里有一个例子，它解释了一个同时遵守了 <code>JSONResource</code>，<code>MediaResource</code> 和 <code>MediaResource</code> 协议的 Playlist 对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">class Playlist: NSObject, JSONResource, MediaResource, Unique &#123;</span><br><span class="line">    &#x2F;&#x2F; MARK: - Metadata</span><br><span class="line">    var title: String?</span><br><span class="line">    var createdBy: String?</span><br><span class="line">    var songs: [Song]?</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; MARK: - Unique</span><br><span class="line">    var id: String!</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension JSONResource where Self: Playlist &#123;</span><br><span class="line">    var jsonPath: String &#123; return String(format: &quot;&#x2F;playlists&#x2F;%@&quot;, self.id) &#125;</span><br><span class="line">    </span><br><span class="line">    func processJSON(success: Bool) &#123;</span><br><span class="line">        if let json &#x3D; self.jsonValue where success &#123;</span><br><span class="line">            self.title &#x3D; json[&quot;title&quot;] as? String ?? &quot;&quot;</span><br><span class="line">            self.createdBy &#x3D; json[&quot;createdBy&quot;] as? String ?? &quot;&quot;</span><br><span class="line">            &#x2F;&#x2F; etc...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>在之前我们不假思索地为 <code>Playlist</code> 实现了 <code>MediaResource</code> 协议，是时候向后退回一点。我们注意到 media API 只要求提供 identifier ，并没有说明任何的具体类型。那意味着我们只需要知道 identifier 就可以构建 meidaPath。我们来使用一个 where 子句来让 <code>MediaResource</code> “聪明地” 和 <code>Unique</code> 一起工作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">extension MediaResource where Self: Unique &#123;</span><br><span class="line">    var mediaPath: String &#123; return String(format: &quot;&#x2F;images&#x2F;%@&quot;, self.id) &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>由于 <code>Playlist</code> 已经遵守了 <code>Unique</code> 协议，这里已经不需要实现什么东西,就可以是它与 <code>MediaResource</code> 一起工作了！同样的逻辑可以应用到任何同样既是 <code>Unique</code> 也是 <code>MediaResource</code> 的对象上 —— 只要对象的 identifier 和我们 media API 中的图像符合就可以。他就将可以正常的工作。</p>
+<p>Here’s how it looks to load our Playlist image:</p>
+<p>看看它是怎么加载我们播放列表图片的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let p &#x3D; Playlist(id: &quot;abcd12345&quot;)</span><br><span class="line">let playlistImageView &#x3D; UIImageView(frame: CGRectMake(0.0, 0.0, 200.0, 200.0))</span><br><span class="line"></span><br><span class="line">p.loadMedia &#123; () -&gt; () in</span><br><span class="line">    playlistImageView.image &#x3D; p.imageValue</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>我们现在有一个通用的方法去定义那些可以被我们 app 中任何实体用到的远程资源了，不只是这些 model 对象。我们可以通过简单的扩展 <code>RemoteResource</code> 协议来处理不同类型的 <code>REST</code> 操作，并且可以为其它类型的数据构建更多的子协议。</p>
+<h4 id="数据格式化协议-（C）"><a href="#数据格式化协议-（C）" class="headerlink" title="数据格式化协议 （C）"></a>数据格式化协议 （C）</h4><p>我们已经创建了一个加载 model 对象的方法，让我们将视线转移到下一步。为了将数据以一致的方式显示出来，我们需要格式化对象的元数据。</p>
+<p>Pear Music 是一个庞大的 app，而且我们有许多不同类型的 model。每一个 model 都可以被显示在很多不同的地方。举个例子，我们想用一个艺人的名字作为 view controller 的标题，我们就想要让它简单地显示类似于 “{name}” 这样的东西。然而如果我们有一些额外的空间，比如在 <code>UITableViewCell</code> 中，我们就要换做用 “{name} ({instrument})” 这样的东西来显示。更进一步，如果我们有更大的空间，比如在一个很大的 <code>UILabel</code> 里面，我们就要使用 “{name} ({instrument}) {bio}”。</p>
+<p>我们可以将这些格式化代码放入 view controller ， cell ，label 之中。这会工作得很好，但是这样做就会将逻辑散布在应用之中从而降低了可维护性。</p>
+<p>将字符串格式化的工作可以放在 model 对象自身中来进行，但是当这些字符串真的需要被显示的时候，就不得不去做类型假设。</p>
+<p>我们可以在一个基类中抛出一些便利方法，并且让每个 model 的子类提供他们自己的格式化方法，但是使用面向协议编程的方法，我们就应该以更加通用角度的考虑这些。</p>
+<p>来把这些抽象的想法变成另一个协议好了，它可以描述任意一个可以被当成字符串来表示的对象。这里将会提供许多种长度的字符串，他们可以被用在不同的 UI 场景下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Any entity which can be represented as a string of varying lengths.</span><br><span class="line">protocol StringRepresentable &#123;</span><br><span class="line">    var shortString: String &#123; get &#125;</span><br><span class="line">    var mediumString: String &#123; get &#125;</span><br><span class="line">    var longString: String &#123; get &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Bonus: Make sure StringRepresentable adopters are printed descriptively to the console.</span><br><span class="line">extension NSObjectProtocol where Self: StringRepresentable &#123;</span><br><span class="line">    var description: String &#123; return self.longString &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>足够简单。这里有几个我们将要构建成符合 <code>StringRepresentable</code> 协议的 model 对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Artist : NSObject, StringRepresentable &#123;</span><br><span class="line">    var name: String!</span><br><span class="line">    var instrument: String!</span><br><span class="line">    var bio: String!</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Album : NSObject, StringRepresentable &#123;</span><br><span class="line">    var title: String!</span><br><span class="line">    var artist: Artist!</span><br><span class="line">    var tracks: Int!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>与我们组织 <code>RemoteResource</code> 的实现相似，我们将会把格式化的逻辑放进单独的 <code>StringRepresentable.swift</code> 文件中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">extension StringRepresentable where Self: Artist &#123;</span><br><span class="line">    var shortString: String &#123; return self.name &#125;</span><br><span class="line">    var mediumString: String &#123; return String(format: &quot;%@ (%@)&quot;, self.name, self.instrument) &#125;</span><br><span class="line">    var longString: String &#123; return String(format: &quot;%@ (%@), %@&quot;, self.name, self.instrument, self.bio) &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension StringRepresentable where Self: Album &#123;</span><br><span class="line">    var shortString: String &#123; return self.title &#125;</span><br><span class="line">    var mediumString: String &#123; return String(format: &quot;%@ (%d Tracks)&quot;, self.title, self.tracks) &#125;</span><br><span class="line">    var longString: String &#123; return String(format: &quot;%@, an Album by %@ (%d Tracks)&quot;, self.title, self.artist.name, self.tracks) &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在我们已经处理好了格式化问题。还需要以一种方式来选择哪个字符串会在我们的 UI 场景下用到。我们坚持一贯的做法，来为在屏幕上显示的所有 <code>StringRepresentable</code> 定义行为，给他们一个 <code>containerSize</code> 和 <code>containerFont</code> 用于计算。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">protocol StringDisplay &#123;</span><br><span class="line">    var containerSize: CGSize &#123; get &#125;</span><br><span class="line">    var containerFont: UIFont &#123; get &#125;</span><br><span class="line">    func assignString(str: String)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我建议只在协议中声明那些将会被接受者实现的方法。而将那些真正包含了功能的方法写在协议扩展中。<code>displayStringValue:</code> 决定会用到哪个字符串，并且将它传到有具体类型的 <code>assignString:</code> 方法中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">extension StringDisplay &#123;</span><br><span class="line">    func displayStringValue(obj: StringRepresentable) &#123;</span><br><span class="line">        &#x2F;&#x2F; Determine the longest string which can fit within the containerSize, then assign it.</span><br><span class="line">        if self.stringWithin(obj.longString) &#123;</span><br><span class="line">            self.assignString(obj.longString)</span><br><span class="line">        &#125; else if self.stringWithin(obj.mediumString) &#123;</span><br><span class="line">            self.assignString(obj.mediumString)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            self.assignString(obj.shortString)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">#pragma mark - Helper Methods</span><br><span class="line">    </span><br><span class="line">    func sizeWithString(str: String) -&gt; CGSize &#123;</span><br><span class="line">        return (str as NSString).boundingRectWithSize(CGSizeMake(self.containerSize.width, .max),</span><br><span class="line">            options: .UsesLineFragmentOrigin,</span><br><span class="line">            attributes:  [NSFontAttributeName: self.containerFont],</span><br><span class="line">            context: nil).size</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    private func stringWithin(str: String) -&gt; Bool &#123;</span><br><span class="line">        return self.sizeWithString(str).height &lt;&#x3D; self.containerSize.height</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在我们有了几个 <code>StringRepresentable</code> model 对象，当接受协议的时候，它们将会自动选择正确的字符串来使用。那么，如何才能正确的将其插入 UIKit ？</p>
+<p>我们从 UILabel 开始，最简单的例子。传统的选择会是子类化 UILabel 并且接受协议，然后使用自定义的 UILabel 实例自动接受 <code>StringDisplay</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">extension UILabel : StringDisplay &#123;</span><br><span class="line">    var containerSize: CGSize &#123; return self.frame.size &#125;</span><br><span class="line">    var containerFont: UIFont &#123; return self.font &#125;</span><br><span class="line">    func assignString(str: String) &#123;</span><br><span class="line">        self.text &#x3D; str</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那确实是他全部的代码了，我们可以让其他 UIKit 类也这样做，只是返回 <code>StringDisplay</code> 需要的数据来施展这个魔法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">extension UITableViewCell : StringDisplay &#123;</span><br><span class="line">    var containerSize: CGSize &#123; return self.textLabel!.frame.size &#125;</span><br><span class="line">    var containerFont: UIFont &#123; return self.textLabel!.font &#125;</span><br><span class="line">    func assignString(str: String) &#123;</span><br><span class="line">        self.textLabel!.text &#x3D; str</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension UIButton : StringDisplay &#123;</span><br><span class="line">    var containerSize: CGSize &#123; return self.frame.size&#125;</span><br><span class="line">    var containerFont: UIFont &#123; return self.titleLabel!.font &#125;</span><br><span class="line">    func assignString(str: String) &#123;</span><br><span class="line">        self.setTitle(str, forState: .Normal)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension UIViewController : StringDisplay &#123;</span><br><span class="line">    var containerSize: CGSize &#123; return self.navigationController!.navigationBar.frame.size &#125;</span><br><span class="line">    var containerFont: UIFont &#123; return UIFont(name: &quot;HelveticaNeue-Medium&quot;, size: 34.0)! &#125; &#x2F;&#x2F; default UINavigationBar title font</span><br><span class="line">    func assignString(str: String) &#123;</span><br><span class="line">        self.title &#x3D; str</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么，在实践中这个看起来是什么样子的呢？我们声明一个 <code>Artist</code> 对象，他遵守了 <code>StringRepresentable</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">let a &#x3D; Artist()</span><br><span class="line">a.name &#x3D; &quot;Bob Marley&quot;</span><br><span class="line">a.instrument &#x3D; &quot;Guitar &#x2F; Vocals&quot;</span><br><span class="line">a.bio &#x3D; &quot;Every little thing&#39;s gonna be alright.&quot;</span><br><span class="line">Since all UIButton instances have been extended to adopt StringDisplay, we can call the displayStringValue: method on them.</span><br><span class="line"></span><br><span class="line">let smallButton &#x3D; UIButton(frame: CGRectMake(0.0, 0.0, 120.0, 40.0))</span><br><span class="line">smallButton.displayStringValue(a)</span><br><span class="line"></span><br><span class="line">print(smallButton.titleLabel!.text) &#x2F;&#x2F; &#39;Bob Marley&#39;</span><br><span class="line"></span><br><span class="line">let mediumButton &#x3D; UIButton(frame: CGRectMake(0.0, 0.0, 300.0, 40.0))</span><br><span class="line">mediumButton.displayStringValue(a)</span><br><span class="line"></span><br><span class="line">print(mediumButton.titleLabel!.text) &#x2F;&#x2F; &#39;Bob Marley (Guitar &#x2F; Vocals)&#39;</span><br></pre></td></tr></table></figure>
+
+
+<p>按钮的标题现在显示出适合 frame 的字符串。</p>
+<p>用户点击一个唱片，然后 push 一个 <code>AlbumDetailsViewController</code>。我们的协议能够判断导航栏标题的格式。因为我们的 <code>StringDisplay</code> 协议扩展，<code>UINavigationBar</code> 在 iPad 上面将会显示一个更长一点的字符串，而 iPhone上面会显示一个更短的字符串。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class AlbumDetailsViewController : UIViewController &#123;</span><br><span class="line">    var album: Album!</span><br><span class="line">    </span><br><span class="line">    override func viewWillAppear(animated: Bool) &#123;</span><br><span class="line">        super.viewWillAppear(animated)</span><br><span class="line">        </span><br><span class="line">        &#x2F;&#x2F; Display the right string based on the nav bar width.</span><br><span class="line">        self.displayStringValue(self.album)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>我们保证所有对 model 中字符串格式化的操作都已经在统一的地方完成了，而且它们的显示也灵活地根据所使用的 UI 元素进行了相应的调整。这种模式在日后创建的 model 和各种各样的 UI 元素中都可以被复用。由于我们构建的协议具有灵活性，这种实现方式甚至可以被直接利用到无 UI 的环境中去。</p>
+<h4 id="样式的协议（V）"><a href="#样式的协议（V）" class="headerlink" title="样式的协议（V）"></a>样式的协议（V）</h4><p>我们已经了解了协议扩展对于模型和字符串格式化所起的作用，现在我们看一下纯前端的例子，这将说明协议扩展是如何让 UI 开发变得更强大的。</p>
+<p>我们可以把协议当作 CSS 的 classes 来看待，并使用它来定义 UIKit 对象的样式。然后，通过接受一个样式协议使对象的可视化的外观自动改变。</p>
+<p>首先，我们定义一个基协议，这个协议表示一个样式化的实体，声明一个最终被用来使格式生效的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Any entity which supports protocol-based styling.</span><br><span class="line">protocol Styled &#123;</span><br><span class="line">    func updateStyles()</span><br><span class="line">&#125;</span><br><span class="line">Then we&#39;ll make some sub-protocols which define different types of styles we&#39;d like to use.</span><br><span class="line"></span><br><span class="line">protocol BackgroundColor : Styled &#123;</span><br><span class="line">    var color: UIColor &#123; get &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protocol FontWeight : Styled &#123;</span><br><span class="line">    var size: CGFloat &#123; get &#125;</span><br><span class="line">    var bold: Bool &#123; get &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>我们创建了这些继承的样式，所以我们的接受者就不需要显式地这么做了。</p>
+<p>现在我们要把特殊的样式分支出来，并且使用协议扩展返回真正的值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protocol BackgroundColor_Purple : BackgroundColor &#123;&#125;</span><br><span class="line">extension BackgroundColor_Purple &#123;</span><br><span class="line">    var color: UIColor &#123; return UIColor.purpleColor() &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protocol FontWeight_H1 : FontWeight &#123;&#125;</span><br><span class="line">extension FontWeight_H1 &#123;</span><br><span class="line">    var size: CGFloat &#123; return 24.0 &#125;</span><br><span class="line">    var bold: Bool &#123; return true &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样一来，剩下的所有事情就是基于 UIKit 元素的类型实现 <code>updateStyles</code> 方法我们使用非泛型的扩展来让全部的 <code>UITableViewCell</code> 实例遵守 <code>Styled</code> 协议。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">extension UITableViewCell : Styled &#123;</span><br><span class="line">    func updateStyles() &#123;</span><br><span class="line">        if let s &#x3D; self as? BackgroundColor &#123;</span><br><span class="line">            self.backgroundColor &#x3D; s.color</span><br><span class="line">            self.textLabel?.textColor &#x3D; .whiteColor()</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        if let s &#x3D; self as? FontWeight &#123;</span><br><span class="line">            self.textLabel?.font &#x3D; (s.bold) ? UIFont.boldSystemFontOfSize(s.size) : UIFont.systemFontOfSize(s.size)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>为了确认 <code>updateStyles</code> 被自动的调用，可以在扩展中重写 <code>awakeFromNib</code> 方法。有兴趣的人可以了解下，这个重写本质上会被插入继承链中，好像扩展是 <code>UITableViewCell</code> 的直接子类。在一个 <code>UITableViewCell</code> 的子类中调用 <code>super</code> 现在等于直接调用了这个方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public override func awakeFromNib() &#123;</span><br><span class="line">        super.awakeFromNib()</span><br><span class="line">        self.updateStyles()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在当我们创建 cell 的时候，只要接受我们想要的协议就可以了！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class PurpleHeaderCell : UITableViewCell, BackgroundColor_Purple, FontWeight_H1 &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我已经在我们的 UIKit 元素上创建了一个类 CSS 的样式声明。我们甚至可以为 UIKit 山寨一个类似于 Bootstrap 的东西。这种实现在很多方面都有较大的提升，而且对于那些拥有很多界面元素并且样式是高度动态化的应用来说是很有价值的。</p>
+<p>想象一个应用程序，有20个不同的视图控制器，每一个遵守2到3个共同的视觉风格。我们只需要使用样式协议，而不是强迫自己继承一个基类，或者使用不断增多的全局方法来配置我们的样式，采用的样式协议很有必要，这让我们更专注于对更重要细节的实现。</p>
+<h2 id="有什么收获？"><a href="#有什么收获？" class="headerlink" title="有什么收获？"></a>有什么收获？</h2><p>到现在为止，我们已经做了很多有趣的事情，那么我们从使用协议和协议扩展的经验中收获了什么呢？可能会有人说，我们没必要去创建这协议。</p>
+<p>面向协议的编程不能完美的适配所有基于 UI 的开发场景。</p>
+<p>当我们向应用程序添加共享，通用的功能的时候，协议和协议的扩展通常是有价值的。此外，其价值在程序的组织结构上的体现胜过于功能上的体现。</p>
+<p>数据类型越多，协议可能就会更加有效。无论何时，只要 UI 需要显示众多格式的信息，协议都可以带来很大的改善。但是这并不意味着我们仅仅为了实现一个现实艺人名字的紫色 cell 就要去使用6个协议和一堆扩展。</p>
+<p>我们借助 Pear Music 的情况来看一下面向协议的实现是否变得更加重要。</p>
+<h3 id="增加复杂度"><a href="#增加复杂度" class="headerlink" title="增加复杂度"></a>增加复杂度</h3><p>我们已经在 Pear Music 上工作了一段时间，而且我们的唱片，艺人，歌曲和播放列表有着很棒的 UI。我们仍然用着美妙的协议和扩展，让它们为 MVC 的所有层面上都提供着便捷。现在 Pear 的 CEO 已经要求我们着手构建2.0版本了…我们面临一个新奇的竞争对手的挑战，它叫 Apple Music。</p>
+<p>我们需要一个非常酷的新特性来定义我们的产品，经过广泛的研究我们做了决定，这个特性就是长按预览功能。这很大胆，也很有革命性，Jony Ive 貌似已经在镜头前谈论这个。现在我们基于 UIKit 使用面向协议编程来实现它。</p>
+<p>构建模态页面</p>
+<p>以下讲述了它是如何运作的 —— 我们的用户长按一个艺人，唱片，歌曲或者是播放列表的时候一个有动画效果的模态视图会显示在屏幕上，从网络中载入图片并且显示这个项目的描述，另外还有一个分享到 Facebook 的按钮。</p>
+<p>我们来构建这个将会在用户长按时模态显示的 <code>UIViewController</code>。只需要一些遵守了 <code>StringRepresentable</code> 和 <code>MediaResource</code> 协议的东西的帮助，我们在一开始就可以通过初始化方法实现通用化，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class PreviewController: UIViewController &#123;</span><br><span class="line">    @IBOutlet weak var descriptionLabel: UILabel!</span><br><span class="line">    @IBOutlet weak var imageView: UIImageView!</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; The main model object which we&#39;re displaying</span><br><span class="line">    var modelObject: protocol!</span><br><span class="line">    </span><br><span class="line">    init(previewObject: protocol) &#123;</span><br><span class="line">        self.modelObject &#x3D; previewObject</span><br><span class="line">    </span><br><span class="line">        super.init(nibName: &quot;PreviewController&quot;, bundle: NSBundle.mainBundle())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来，使用内建的协议扩展方法来把数据传给 <code>descriptionLabel</code> 和 <code>imageView</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">override func viewDidLoad() &#123;</span><br><span class="line">        super.viewDidLoad()</span><br><span class="line">        </span><br><span class="line">        &#x2F;&#x2F; Apply string representations to our label. Will use the string which fits into our descLabel.</span><br><span class="line">        self.descriptionLabel.displayStringValue(self.modelObject)</span><br><span class="line">        </span><br><span class="line">        &#x2F;&#x2F; Load MediaResource image from the network if needed</span><br><span class="line">        if self.modelObject.imageValue &#x3D;&#x3D; nil &#123;</span><br><span class="line">            self.modelObject.loadMedia &#123; () -&gt; () in</span><br><span class="line">                self.imageView.image &#x3D; self.modelObject.imageValue</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            self.imageView.image &#x3D; self.modelObject.imageValue</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后，我们用相同的方法来获取可以通过 Facebook 分享的元数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Called when tapping the Facebook share button.</span><br><span class="line">    @IBAction func tapShareButton(sender: UIButton) &#123;</span><br><span class="line">        if SLComposeViewController.isAvailableForServiceType(SLServiceTypeFacebook) &#123;</span><br><span class="line">            let vc &#x3D; SLComposeViewController(forServiceType: SLServiceTypeFacebook)</span><br><span class="line">            </span><br><span class="line">            &#x2F;&#x2F; Use StringRepresentable.shortString in the title</span><br><span class="line">            let post &#x3D; String(format: &quot;Check out %@ on Pear Music 2.0!&quot;, self.modelObject.shortString)</span><br><span class="line">            vc.setInitialText(post)</span><br><span class="line">            </span><br><span class="line">            &#x2F;&#x2F; Use the MediaResource url to link to</span><br><span class="line">            let url &#x3D; String(self.modelObject.mediaURL)</span><br><span class="line">            vc.addURL(NSURL(string: url))</span><br><span class="line">            </span><br><span class="line">            &#x2F;&#x2F; Add the entity&#39;s image</span><br><span class="line">            vc.addImage(self.modelObject.imageValue!);</span><br><span class="line">            </span><br><span class="line">            self.presentViewController(vc, animated: true, completion: nil)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>使用协议是我们受益匪浅 —— 没有他们的话，我们也许已经在 <code>PreviewController</code> 中为每一种需要接收的对象都做了初始化方法。使用基于协议的方法是我们极佳地保持了视图控制器的简洁，并且可以灵活的应对未来的实现。</p>
+<p>我们已经造出了一个轻便的，简洁的 <code>PreviewController</code>，我们可以把艺人，唱片，歌曲，播放列表或者其他任何基于协议模式构建的模型传进去。 <code>PreviewController</code> 里面却不会有一行关于具体模型的代码！</p>
+<h3 id="与第三方的代码整合"><a href="#与第三方的代码整合" class="headerlink" title="与第三方的代码整合"></a>与第三方的代码整合</h3><p>在构建 <code>PreviewController</code> 时，这是最后一个我们可以很好地应用协议和协议扩展的场景。我们整合了一个新的框架，这个框架可以为我们 app 中的音乐人加载对应的 Twitter 信息。我们想在主页显示推文列表，我们已经拿到了一个推文的 model 对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class TweetObject &#123;</span><br><span class="line">    var favorite_count: Int!</span><br><span class="line">    var retweet_count: Int!</span><br><span class="line">    var text: String!</span><br><span class="line">    var user_name: String!</span><br><span class="line">    var profile_image_id: String!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们并不拥有这个代码，我们也无法修改 <code>TweetObject</code>，但是我们仍然希望我们的用户可以使用长按手势来预览推文，并且使用和 <code>PreviewController</code> 相同的UI。我们需要做的所有事情就是扩展它，让他接受我们现有的协议。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">extension TweetObject : StringRepresentable, MediaResource &#123;</span><br><span class="line">    &#x2F;&#x2F; MARK: - MediaResource</span><br><span class="line">    var mediaHost: String &#123; return &quot;api.twitter.com&quot; &#125;</span><br><span class="line">    var mediaPath: String &#123; return String(format: &quot;&#x2F;images&#x2F;%@&quot;, self.profile_image_id) &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; MARK: - StringRepresentable</span><br><span class="line">    var shortString: String &#123; return self.user_name &#125;</span><br><span class="line">    var mediumString: String &#123; return String(format: &quot;%@ (%d Retweets)&quot;, self.user_name, self.retweet_count) &#125;</span><br><span class="line">    var longString: String &#123; return String(format: &quot;%@ Wrote: %@&quot;, self.user_name, self.text) &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在我们可以将一个 <code>TweetObject</code> 对象传给 <code>PreviewController</code> 了，甚至不需要它知道我们使用的是一个外部的框架！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let tweet &#x3D; TweetObject()</span><br><span class="line">let vc &#x3D; PreviewController(previewObject: tweet)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="收获"><a href="#收获" class="headerlink" title="收获"></a>收获</h2><p>在 WWDC 2015 上，苹果建议在以往需要用到类的地方去使用协议，但是我质疑这个规则忽视了协议扩展与那些重类的（class-heavy）的框架，比如 UIKit 一同使用时展现出的细节上的局限性。协议扩展只能在<br>它们本身具有广泛的使用性并且不需要支持传统代码的时候才会体现出真正的价值。尽管一些我提到的例子乍一听起来是微不足道的，但是当你的应用体积变的庞大而且逻辑变得复杂的时候，这种灵活的设计会变得极为有用。</p>
+<p>这是个可以解释的代码的成本效益（cost-benefit）问题。在一个主要基于 UI 的应用中协议和扩展并不是总能占有一席之地。如果你只有一个页面并且页面上只要显示一种信息，这并不会带来什么改变，不要对它在协议的层面进行过度思考。但是如果你的应用对于同样的核心数据在不同的视觉状态，样式和表示上变换多样，使用协议和协议扩展作为你的数据和它的表现形式之间的桥梁是一个明智的方法，这么作将会在未来受益。</p>
+<p>最后，我想把协议扩展称为一种通用的改变游戏规则的特性不如将其称为是一个在高精确度开发场景中的一种具有建设性的工具。还是那句话，我觉得任何开发者对面向协议的技术的尝试都是值得的 —— 如果你不在协议的层面重新调整现有代码，你将永远不会知道这么做的益处。广泛的使用它们吧。</p>
+<p>如果你有任何疑问，或者你想和我探讨一些细节，给我发个 email 或者 在 Twitter 上直接找我！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># iOS设计模式</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/10/27/HDOJ/HDOJ1003/" rel="next" title="HDOJ 1003">
+                  HDOJ 1003 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

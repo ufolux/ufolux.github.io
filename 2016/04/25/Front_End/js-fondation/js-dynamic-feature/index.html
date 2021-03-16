@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="JS 的动态调用特性是 JS 动态特性中重要的组成部分，提到这个特性就需要讲明白bind，call，apply这三个函数 JS函数的调用机制js 里函数调用有 4 种模式：方法调用、正常函数调用、构造器函数调用、apply&#x2F;call 调用。无论哪种函数调用除了你声明时定义的形参外，还会自动添加 2 个形参，分别是 this 和 arguments。arguments 是一个 array-like">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js动态调用特性">
+<meta property="og:url" content="https://ufolux.github.io/2016/04/25/Front_End/js-fondation/js-dynamic-feature/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="JS 的动态调用特性是 JS 动态特性中重要的组成部分，提到这个特性就需要讲明白bind，call，apply这三个函数 JS函数的调用机制js 里函数调用有 4 种模式：方法调用、正常函数调用、构造器函数调用、apply&#x2F;call 调用。无论哪种函数调用除了你声明时定义的形参外，还会自动添加 2 个形参，分别是 this 和 arguments。arguments 是一个 array-like">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-04-25T09:02:53.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.096Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2016/04/25/Front_End/js-fondation/js-dynamic-feature/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>js动态调用特性 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JS%E5%87%BD%E6%95%B0%E7%9A%84%E8%B0%83%E7%94%A8%E6%9C%BA%E5%88%B6"><span class="nav-number">1.</span> <span class="nav-text">JS函数的调用机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8"><span class="nav-number">1.1.</span> <span class="nav-text">方法调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">函数调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%99%A8%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8"><span class="nav-number">1.3.</span> <span class="nav-text">构造器函数调用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%A5%E7%9C%8B%E8%BF%99%E4%B8%89%E4%B8%AA%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">来看这三个函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#apply"><span class="nav-number">2.1.</span> <span class="nav-text">apply</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#call"><span class="nav-number">2.2.</span> <span class="nav-text">call</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bind"><span class="nav-number">2.3.</span> <span class="nav-text">bind</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2016/04/25/Front_End/js-fondation/js-dynamic-feature/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          js动态调用特性
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-04-25 17:02:53" itemprop="dateCreated datePublished" datetime="2016-04-25T17:02:53+08:00">2016-04-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>JS 的动态调用特性是 JS 动态特性中重要的组成部分，提到这个特性就需要讲明白<code>bind</code>，<code>call</code>，<code>apply</code>这三个函数</p>
+<h2 id="JS函数的调用机制"><a href="#JS函数的调用机制" class="headerlink" title="JS函数的调用机制"></a>JS函数的调用机制</h2><p>js 里函数调用有 4 种模式：方法调用、正常函数调用、构造器函数调用、apply/call 调用。无论哪种函数调用除了你声明时定义的形参外，还会<strong>自动添加</strong> 2 个形参，分别是 this 和 arguments。<strong>arguments 是一个 array-like 类型对象</strong>，提供了 length 和下标操作符访问元素的方法，但是却没有提供其他任何数组对象应有的方法。</p>
+<p>this 到对象的绑定是一个超级延迟绑定，这个绑定发生在函数调用的时候，this 代表的也就是主调方对象。这实现了 JS 的强大动态特性。</p>
+<span id="more"></span>
+
+<h3 id="方法调用"><a href="#方法调用" class="headerlink" title="方法调用"></a>方法调用</h3><p>如果函数是对象的属性，那么对函数的调用成为方法调用。通过对象点语法调用方法时，函数内部的 this 指针将指向对象本身。</p>
+<h3 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h3><p>如果函数不是对象的属性，那么对函数的调用就叫做函数调用，内部的 this 指针指向任何调用这个函数的对象，如果有如下情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function a(m) &#123;</span><br><span class="line">    this.x &#x3D; m;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a(2);</span><br></pre></td></tr></table></figure>
+
+<p>按照 JS 的坑爹尿性这样的调用会导致，window 对象被添加上 x 属性并被赋值为 m，这里需要谨慎。</p>
+<h3 id="构造器函数调用"><a href="#构造器函数调用" class="headerlink" title="构造器函数调用"></a>构造器函数调用</h3><p>按照约定，构造器函数如下方式定义，通过 <code>new</code> 关键字进行调用。因为构造器函数调用会导致与其他函数调用不同的效果，所以<strong>构造器函数的首字母需要大写</strong>来和普通函数进行区分，这非常重要。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var Cons &#x3D; function () &#123;</span><br><span class="line">    &#x2F;&#x2F;do something</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var cons &#x3D; new Cons();</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>new</code>关键字调用构造器函数且返回值不是对象时，函数会背地里生成一个链接到函数 prototype 成员的新对象，同时将 this 指针绑定到这个对象上面。new 关键字也会改变 return 的语义，如果构造器函数返回值不是对象，则会返回 this 指针（即新对象）。</p>
+<h2 id="来看这三个函数"><a href="#来看这三个函数" class="headerlink" title="来看这三个函数"></a>来看这三个函数</h2><h3 id="apply"><a href="#apply" class="headerlink" title="apply"></a>apply</h3><p>apply 接受两个参数，第一个参数是想要让 this 绑定到的对象，第二个参数是一个数组，里面存放想要传递个函数的参数。<br>使用 apply 函数，你就可以把任意的对象赋给被调函数内部的 this 指针，这样一来动态性就有变态般的提升了。<br>第一个参数为 null 时，this 指针已然是当前的 this 指向的1对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function a(xx) &#123;        </span><br><span class="line">    this.b &#x3D; xx;</span><br><span class="line">&#125;</span><br><span class="line">var o &#x3D; &#123;&#125;;</span><br><span class="line">a.apply(o, [5]);</span><br><span class="line">alert(a.b);    &#x2F;&#x2F; undefined</span><br><span class="line">alert(o.b);    &#x2F;&#x2F; 5</span><br></pre></td></tr></table></figure>
+<h3 id="call"><a href="#call" class="headerlink" title="call"></a>call</h3><p>call 和 apply 几乎相同，只是 call 的参数是不定参数，第一个参数代表的依然和 apply 一样，只是参数数组变成了多个参数的形式传入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function a(xx，yy) &#123;        </span><br><span class="line">    this.b &#x3D; xx + yy;</span><br><span class="line">&#125;</span><br><span class="line">var o &#x3D; &#123;&#125;;</span><br><span class="line">a.call(o, 5, 6);</span><br><span class="line">alert(a.b);    &#x2F;&#x2F; undefined</span><br><span class="line">alert(o.b);    &#x2F;&#x2F; 11</span><br></pre></td></tr></table></figure>
+<h3 id="bind"><a href="#bind" class="headerlink" title="bind"></a>bind</h3><p>bind 的参数和以上两个函数一致，只是不会像他们一样马上发生函数调用，bind 只是将对象绑定给 this 指针，然后返回新的函数，想什么时候调就什么时候调。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var m &#x3D; &#123;   </span><br><span class="line">    &quot;x&quot; : 1</span><br><span class="line">&#125;;</span><br><span class="line">function foo(y) &#123;</span><br><span class="line">    alert(this.x + y);</span><br><span class="line">&#125;</span><br><span class="line">foo.apply(m, [5]);</span><br><span class="line">foo.call(m, 5);</span><br><span class="line">var foo1 &#x3D; foo.bind(m, 5);</span><br><span class="line">foo1();</span><br></pre></td></tr></table></figure>
+
+
+<p>应用：</p>
+<p>apply，call 可以用到构造函数的继承上。<br>使用方法参见：<br><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2010/05/object-oriented_javascript_inheritance.html">http://www.ruanyifeng.com/blog/2010/05/object-oriented_javascript_inheritance.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/04/25/Front_End/js-fondation/js-scope/" rel="prev" title="js作用域">
+                  <i class="fa fa-chevron-left"></i> js作用域
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/05/19/Front_End/js-fondation/four-memory-leak-situation-in-js-code/" rel="next" title="JavaScript 中4种常见的内存泄露陷阱">
+                  JavaScript 中4种常见的内存泄露陷阱 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

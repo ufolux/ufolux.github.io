@@ -1,0 +1,14 @@
+# hexo robots.txt
+User-agent: *
+Allow: /
+Allow: /archives/
+
+Disallow: /vendors/
+Disallow: /js/
+Disallow: /css/
+Disallow: /fonts/
+Disallow: /vendors/
+
+Sitemap: http://www.skyfly.xyz/sitemap.xml
+Sitemap: http://www.skyfly.xyz/baidusitemap.xml
+

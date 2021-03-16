@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="什么是 ui-router不同于 ng-router 基于 url 的路由系统， ui-router 提供了一个基于 state 状态机的路由方式。它可以实现在不改变 url 情况下更新视图中局部内容，也可以在一个页面内嵌套并更新多个视图（状态的嵌套，这是相对于 ng-router 的一大优势），使用 ui-router 可以轻松应对复杂场景的页面应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅析ui-router">
+<meta property="og:url" content="https://ufolux.github.io/2016/04/12/Front_End/AngularJS/introduce-ui-router/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="什么是 ui-router不同于 ng-router 基于 url 的路由系统， ui-router 提供了一个基于 state 状态机的路由方式。它可以实现在不改变 url 情况下更新视图中局部内容，也可以在一个页面内嵌套并更新多个视图（状态的嵌套，这是相对于 ng-router 的一大优势），使用 ui-router 可以轻松应对复杂场景的页面应用。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-04-12T01:56:29.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.095Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="AngularJS">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2016/04/12/Front_End/AngularJS/introduce-ui-router/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>浅析ui-router | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-ui-router"><span class="nav-number">1.</span> <span class="nav-text">什么是 ui-router</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ui-router-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">ui-router 基本用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1-state"><span class="nav-number">2.1.</span> <span class="nav-text">抽象 state</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90-state"><span class="nav-number">2.2.</span> <span class="nav-text">子 state</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#views"><span class="nav-number">2.3.</span> <span class="nav-text">views</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#resolve"><span class="nav-number">2.4.</span> <span class="nav-text">resolve</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2%E8%B7%B3%E8%BD%AC"><span class="nav-number">2.5.</span> <span class="nav-text">页面跳转</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E6%88%98"><span class="nav-number">3.</span> <span class="nav-text">实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tab-%E5%8D%95%E9%A1%B5%E9%9D%A2%E5%BA%94%E7%94%A8"><span class="nav-number">3.1.</span> <span class="nav-text">tab 单页面应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%85%B1%E9%A1%B5%E9%9D%A2%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">3.2.</span> <span class="nav-text">公共页面的处理</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2016/04/12/Front_End/AngularJS/introduce-ui-router/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅析ui-router
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-04-12 09:56:29" itemprop="dateCreated datePublished" datetime="2016-04-12T09:56:29+08:00">2016-04-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="什么是-ui-router"><a href="#什么是-ui-router" class="headerlink" title="什么是 ui-router"></a>什么是 ui-router</h2><p>不同于 ng-router 基于 url 的路由系统， ui-router 提供了一个基于 state 状态机的路由方式。它可以实现在不改变 url 情况下更新视图中局部内容，也可以在一个页面内嵌套并更新多个视图（状态的嵌套，这是相对于 ng-router 的一大优势），使用 ui-router 可以轻松应对复杂场景的页面应用。</p>
+<span id="more"></span>
+
+<h2 id="ui-router-基本用法"><a href="#ui-router-基本用法" class="headerlink" title="ui-router 基本用法"></a>ui-router 基本用法</h2><p>state 方法会返回 $stateProvider 本身，和 ng-router 一样支持链式操作。</p>
+<h3 id="抽象-state"><a href="#抽象-state" class="headerlink" title="抽象 state"></a>抽象 state</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$stateProvider</span><br><span class="line">      <span class="comment">// setup an abstract state for the tabs directive</span></span><br><span class="line">      .state(<span class="string">&#x27;tabs&#x27;</span>, &#123;</span><br><span class="line">        url: <span class="string">&#x27;/tab&#x27;</span>,</span><br><span class="line">        abstract: <span class="literal">true</span>,</span><br><span class="line">        templateUrl: <span class="string">&#x27;templates/tabs.html&#x27;</span></span><br><span class="line">      &#125;)</span><br></pre></td></tr></table></figure>
+<p>上述代码描述了一个抽象的状态，一个抽象的状态可以有子状态但不能显式激活，它将被隐性激活当其子状态被激活时。<br>下面是一些你将可能会使用到抽象状态的示例：</p>
+<ul>
+<li>为所有子状态预提供一个基url在父状态中设置template属性，子状态对应的模板将插入到父状态模板中的ui-view(s)中</li>
+<li>通过resolve属性，为所有子状态提供解决依赖项通过data属性，为所有子状态或者事件监听函数提供自定义数据</li>
+<li>运行onEnter或onExit函数，这些函数可能在以某种方式修改应用程序。</li>
+<li>上面场景的任意组合</li>
+</ul>
+<p>请记住：抽象的状态模板仍然需要<ui-view>，来让自己的子状态模板插入其中。因此，如果您使用抽象状态只是为了预提供基url、提供解决依赖项或者自定义data、运行onEnter/Exit函数，你任然需要设置template: “<ui-view>“。</ui-view></ui-view></p>
+<p>上述代码中为所有子状态指定了一个基 url ，后续所有的子状态都会继承这个 url （表现形式是：<code>/tab/childUrl</code>）。</p>
+<h3 id="子-state"><a href="#子-state" class="headerlink" title="子 state"></a>子 state</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.state(<span class="string">&#x27;tabs.questionList&#x27;</span>, &#123;</span><br><span class="line">         url: <span class="string">&#x27;/questionList&#x27;</span>,</span><br><span class="line">         views: &#123;</span><br><span class="line">           <span class="string">&#x27;questionList&#x27;</span>: &#123;</span><br><span class="line">             templateUrl: <span class="string">&#x27;templates/Question/questionList.html&#x27;</span>,</span><br><span class="line">             controller: <span class="string">&#x27;QuestionController&#x27;</span></span><br><span class="line">           &#125;</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
+<p>使用点语法为 <code>tabs</code> 状态创建了一个子状态，对应的 html 代码应该是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;ion-tab icon&#x3D;&quot;ion-navicon&quot; href&#x3D;&quot;#&#x2F;tab&#x2F;questionList&quot;&gt;</span><br><span class="line">  &lt;ion-nav-view name&#x3D;&quot;questionList&quot;&gt;&lt;&#x2F;ion-nav-view&gt;</span><br><span class="line">&lt;&#x2F;ion-tab&gt;</span><br></pre></td></tr></table></figure>
+
+<p><code>ion-nav-view</code> 实际上它是一个具有 <code>ui-view</code> 指令的 html 标签。 <code>name</code> 是 <code>ui-view</code> 的名字，tabs 状态对应的是包含了 questionList 视图的 tabs.html，questionList 嵌套在 tabs 页面内部，所以 questionList 是 tabs 的子状态。</p>
+<p><code>views</code> 中的 <code>questionList</code> 是视图的名称，ui-router 将会把这个视图替换成 <code>templateUrl</code> 中对应的 html。</p>
+<p><code>controller</code> 是 <code>questionList</code> 视图对应的控制器。</p>
+<h3 id="views"><a href="#views" class="headerlink" title="views"></a>views</h3><p>一个 url 对应的页面中嵌套有多个视图的时候，可以再 views 对象中添加对应的视图名字为 key 的对象，运行时嵌套的视图会按照规则被自动替换。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">.state(&#39;tabs.mainPage&#39;, &#123;</span><br><span class="line">          url: &#39;&#x2F;questionList&#39;,</span><br><span class="line">          views: &#123;</span><br><span class="line">            &#39;questionList&#39;: &#123;</span><br><span class="line">              templateUrl: &#39;templates&#x2F;Question&#x2F;questionList.html&#39;,</span><br><span class="line">              controller: &#39;QuestionController&#39;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#39;answerList&#39;: &#123;</span><br><span class="line">              templateUrl: &#39;templates&#x2F;Answer&#x2F;answerList.html&#39;,</span><br><span class="line">              controller: &#39;AnswerController&#39;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure>
+<p>对应的 html ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;div ui-view&#x3D;&quot;questionList&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">&lt;div ui-view&#x3D;&quot;answerList&quot;&gt;&lt;&#x2F;div&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="resolve"><a href="#resolve" class="headerlink" title="resolve"></a>resolve</h3><p>为子状态注入依赖，参见：<a target="_blank" rel="noopener" href="http://bubkoo.com/2014/01/01/angular/ui-router/guide/nested-states%20&amp;%20nested-views/#继承解决的依赖项">http://bubkoo.com/2014/01/01/angular/ui-router/guide/nested-states%20&amp;%20nested-views/#继承解决的依赖项</a></p>
+<h3 id="页面跳转"><a href="#页面跳转" class="headerlink" title="页面跳转"></a>页面跳转</h3><p>页面跳转可以使用 <code>$state.go(stateName [,paramObject] [,option])</code> 第三个参数一般不使用，具体 api 参考请见<br><a target="_blank" rel="noopener" href="https://angular-ui.github.io/ui-router/site/#/api/ui.router.state.$state#methods_go">https://angular-ui.github.io/ui-router/site/#/api/ui.router.state.$state#methods_go</a></p>
+<p>例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$state.go(&#39;tabs.discovery&#39;, &#123; anId: anId &#125;);&#x2F;&#x2F;去到绝对state路径</span><br><span class="line">$state.go(&#39;^.discovery&#39;, &#123; anId: anId &#125;);&#x2F;&#x2F;去姊妹状态</span><br><span class="line">$state.go(&#39;^&#39;);&#x2F;&#x2F;回父状态</span><br><span class="line">$state.go(&#39;.child.grandchild&#39;);&#x2F;&#x2F;去孙状态</span><br></pre></td></tr></table></figure>
+
+<p>或者可以使用 <code>ui-sref</code> 指令在 html 中直接写 state 跳转。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;li ui-sref-active&#x3D;&quot;current&quot;&gt;&lt;a ui-sref&#x3D;&quot;home.index&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">&lt;li ui-sref-active&#x3D;&quot;current&quot;&gt;&lt;a ui-sref&#x3D;&quot;home.project&quot;&gt;2&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">&lt;li ui-sref-active&#x3D;&quot;current&quot;&gt;&lt;a ui-sref&#x3D;&quot;^.project.home(&#123;id:3&#125;)&quot;&gt;3&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;   </span><br></pre></td></tr></table></figure>
+
+<p><code>ui-sref-active</code> 指令将在元素被选中的时候，为元素添加 <code>active</code> 的 class。</p>
+<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><h3 id="tab-单页面应用"><a href="#tab-单页面应用" class="headerlink" title="tab 单页面应用"></a>tab 单页面应用</h3><p>对于一个拥有两个 tab 的单页面应用来说，每一个 tab 都对应着一个自己的视图，每一个 tab 都应该拥有一个自己的导航栈。但对于 ui-router 而言，我们始终是在替换同一个视图的内容，所以所有的页面都要挂在 tab 的子级，而不是更下方的层次。</p>
+<h3 id="公共页面的处理"><a href="#公共页面的处理" class="headerlink" title="公共页面的处理"></a>公共页面的处理</h3><p>从不同 tab 中的页面跳转至相同页面情况存在时，需要将公共页面作为 tab 的子 state，分别在需要跳转的 tab 下使用不同的名称挂载，url 也需要不同，类似如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 问题列表state</span><br><span class="line">      .state(&#39;tabs.questionList&#39;, &#123;</span><br><span class="line">          url: &#39;&#x2F;questionList&#39;,</span><br><span class="line">          views: &#123;</span><br><span class="line">            &#39;questionList&#39;: &#123;</span><br><span class="line">              templateUrl: &#39;templates&#x2F;Question&#x2F;questionList.html&#39;,</span><br><span class="line">              controller: &#39;QuestionController&#39;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        &#x2F;&#x2F; 问题详情</span><br><span class="line">        .state(&#39;tabs.questionList-question-detail&#39;, &#123;</span><br><span class="line">          url: &#39;&#x2F;questionList&#x2F;question&#x2F;:quId&#39;,</span><br><span class="line">          views: &#123;</span><br><span class="line">            &#39;questionList&#39;: &#123;</span><br><span class="line">              templateUrl: &#39;templates&#x2F;Public&#x2F;question-detail.html&#39;,</span><br><span class="line">              controller: &#39;QuestionDetailCtrl&#39;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        &#x2F;&#x2F; 答案详情</span><br><span class="line">        .state(&#39;tabs.questionList-answer-detail&#39;, &#123;</span><br><span class="line">          url: &#39;&#x2F;questionList&#x2F;answer&#x2F;:anId&#39;,</span><br><span class="line">          views: &#123;</span><br><span class="line">            questionList: &#123;</span><br><span class="line">              templateUrl: &#39;templates&#x2F;Public&#x2F;answer-detail.html&#39;,</span><br><span class="line">              controller: &#39;AnswerDetailController&#39;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        &#x2F;&#x2F;发现</span><br><span class="line">      .state(&#39;tabs.discovery&#39;, &#123;</span><br><span class="line">        url: &#39;&#x2F;discovery&#39;,</span><br><span class="line">        views: &#123;</span><br><span class="line">          &#39;discovery&#39;: &#123;</span><br><span class="line">            templateUrl: &#39;templates&#x2F;Discovery&#x2F;discovery.html&#39;,</span><br><span class="line">            controller: &#39;DiscoveryController&#39;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">      .state(&#39;tabs.discovery-question-detail&#39;,&#123;</span><br><span class="line">        url:&#39;&#x2F;discovery&#x2F;question&#x2F;:quId&#39;,</span><br><span class="line">        views: &#123;</span><br><span class="line">          &#39;discovery&#39;: &#123;</span><br><span class="line">            templateUrl: &#39;templates&#x2F;Public&#x2F;question-detail.html&#39;,</span><br><span class="line">            controller: &#39;QuestionDetailCtrl&#39;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">      .state(&#39;tabs.discovery-answer-detail&#39;,&#123;</span><br><span class="line">        url:&#39;&#x2F;discovery&#x2F;answer&#x2F;:anId&#39;,</span><br><span class="line">        views: &#123;</span><br><span class="line">          &#39;discovery&#39;: &#123;</span><br><span class="line">            templateUrl: &#39;templates&#x2F;Public&#x2F;answer-detail.html&#39;,</span><br><span class="line">            controller: &#39;AnswerDetailController&#39;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br></pre></td></tr></table></figure>
+<p>这里的页面逻辑是，<code>问题列表-&gt;问题详情-&gt;答案详情&amp;发现-&gt;问题详情|发现-&gt;答案详情</code>。我们就需要按照如上方式进行 state 的配置。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AngularJS/" rel="tag"># AngularJS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/04/12/Front_End/AngularJS/angular-service/" rel="prev" title="服务">
+                  <i class="fa fa-chevron-left"></i> 服务
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/04/12/Front_End/js-fondation/where-to-put-js-code/" rel="next" title="JS代码到底要放在什么位置">
+                  JS代码到底要放在什么位置 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

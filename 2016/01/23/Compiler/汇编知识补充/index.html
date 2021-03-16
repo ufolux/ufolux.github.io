@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="做编译器的代码生成器部分的时候一定会使用到汇编代码，特在此总结一些简单的汇编语言知识点。以能看懂常见的汇编代码为目的，不做深入探究。 学习一种的汇编语言，必须了解这种 CPU 的寄存器、寻址方式以及各种指令。我们就先从寄存器开始着手吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="x86 汇编知识补充">
+<meta property="og:url" content="https://ufolux.github.io/2016/01/23/Compiler/%E6%B1%87%E7%BC%96%E7%9F%A5%E8%AF%86%E8%A1%A5%E5%85%85/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="做编译器的代码生成器部分的时候一定会使用到汇编代码，特在此总结一些简单的汇编语言知识点。以能看懂常见的汇编代码为目的，不做深入探究。 学习一种的汇编语言，必须了解这种 CPU 的寄存器、寻址方式以及各种指令。我们就先从寄存器开始着手吧。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-01-23T02:35:56.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.084Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="Compiler">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2016/01/23/Compiler/%E6%B1%87%E7%BC%96%E7%9F%A5%E8%AF%86%E8%A1%A5%E5%85%85/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>x86 汇编知识补充 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">通用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8-%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.1.</span> <span class="nav-text">通用寄存器 段寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E5%AF%84%E5%AD%98%E5%99%A8-%E5%A0%86%E6%A0%88%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">指针寄存器 堆栈寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.3.</span> <span class="nav-text">其他常用寄存器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mov"><span class="nav-number">3.1.</span> <span class="nav-text">mov</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cmp"><span class="nav-number">3.2.</span> <span class="nav-text">cmp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4"><span class="nav-number">3.3.</span> <span class="nav-text">跳转指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#call-ret"><span class="nav-number">3.4.</span> <span class="nav-text">call ret</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#enter-leave"><span class="nav-number">3.5.</span> <span class="nav-text">enter leave</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E7%AE%97%E6%8C%87%E4%BB%A4"><span class="nav-number">3.6.</span> <span class="nav-text">运算指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4"><span class="nav-number">3.7.</span> <span class="nav-text">其他常用指令</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2016/01/23/Compiler/%E6%B1%87%E7%BC%96%E7%9F%A5%E8%AF%86%E8%A1%A5%E5%85%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          x86 汇编知识补充
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-01-23 10:35:56" itemprop="dateCreated datePublished" datetime="2016-01-23T10:35:56+08:00">2016-01-23</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Compiler/" itemprop="url" rel="index"><span itemprop="name">Compiler</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>做编译器的代码生成器部分的时候一定会使用到汇编代码，特在此总结一些简单的汇编语言知识点。以能看懂常见的汇编代码为目的，不做深入探究。</p>
+<p>学习一种的汇编语言，必须了解这种 CPU 的寄存器、寻址方式以及各种指令。我们就先从寄存器开始着手吧。</p>
+<span id="more"></span>
+<h2 id="通用寄存器"><a href="#通用寄存器" class="headerlink" title="通用寄存器"></a>通用寄存器</h2><p>32位x86架构的CPU有8个通用寄存器:</p>
+<h3 id="通用寄存器-段寄存器"><a href="#通用寄存器-段寄存器" class="headerlink" title="通用寄存器 段寄存器"></a>通用寄存器 段寄存器</h3><ul>
+<li>AX: Accumulator register (累加器 CS 代码段)</li>
+<li>CX: Counter register (计数器 SS 堆栈段)</li>
+<li>DX: Data register (数据 ES 附加段)</li>
+<li>BX: Base register (基址 DS 数据段)</li>
+</ul>
+<h3 id="指针寄存器-堆栈寄存器"><a href="#指针寄存器-堆栈寄存器" class="headerlink" title="指针寄存器 堆栈寄存器"></a>指针寄存器 堆栈寄存器</h3><ul>
+<li>SP: Stack pointer register (栈指针,指向栈顶)</li>
+<li>BP: Stack base pointer register (基址指针,指向当前stack frame的底部)</li>
+<li>SI: Source index register (源索引指针)</li>
+<li>DI: Destination index register (目的索引指针)</li>
+</ul>
+<p>以上名称对应的寄存器均为16位，在32位模式下，上面的寄存器名称前需要加E，64位模式下需要加R。例如，访问32位的AX寄存器需要使用名称EAX，而访问64位(x86_64)的需要使用RAX。</p>
+<p>另外，AX, BX, CX, DX这四个通用寄存器的高8位和低8位还可以分成两个单独的寄存器使用，名称分别是XH和XL(X=A,B,C,D)。</p>
+<p>下面是RAX寄存器的示意图:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+---------------------------------------------------------------+</span><br><span class="line">| 8bits | 8bits | 8bits | 8bits | 8bits | 8bits | 8bits | 8bits |</span><br><span class="line">|---------------------------------------------------------------|</span><br><span class="line">|                              RAX                              |</span><br><span class="line">|---------------------------------------------------------------|</span><br><span class="line">|                               |              EAX              |</span><br><span class="line">|---------------------------------------------------------------|</span><br><span class="line">|                                               |      AX       | </span><br><span class="line">|---------------------------------------------------------------|</span><br><span class="line">|                                               |  AH   |   AL  |</span><br><span class="line">+---------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+<p>x86_64添加了8个新的通用寄存器，且引入了新的命名规则，详情可参考<a target="_blank" rel="noopener" href="http://en.wikibooks.org/wiki/X86_Assembly/X86_Architecture#General-purpose_registers_.2864-bit_naming_conventions.29">这里</a>。</p>
+<h3 id="其他常用寄存器"><a href="#其他常用寄存器" class="headerlink" title="其他常用寄存器"></a>其他常用寄存器</h3><ul>
+<li>EFLAGS: 32位寄存器，用于保存指令结果和处理器状态，具体说明可参考这里。</li>
+<li>IP: 指令寄存器，用于保存要执行的指令，和通用寄存器类似，32位模式下用EIP，64位模式下用RIP。</li>
+</ul>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><p>x86汇编语言主要有两个语法分支: AT&amp;T和Intel。我们平常接触到的GNU系的工具（包括GCC，OBJDUMP等）都是使用AT&amp;T语法，若无特别说明，下面的汇编代码例子也是如此。</p>
+<table>
+<thead>
+<tr>
+<th align="left">操作</th>
+<th align="left">AT&amp;T</th>
+<th align="left">Intel</th>
+<th align="left">注释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">寄存器前缀</td>
+<td align="left">%eax</td>
+<td align="left">eax</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">立即数前缀</td>
+<td align="left">$5</td>
+<td align="left">5</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">指令后缀</td>
+<td align="left">movl</td>
+<td align="left">mov</td>
+<td align="left">操作数长度4</td>
+</tr>
+<tr>
+<td align="left">参数次序</td>
+<td align="left">movl $5, %eax</td>
+<td align="left">mov eax, 5</td>
+<td align="left">R[eax] = 5</td>
+</tr>
+<tr>
+<td align="left">取址1</td>
+<td align="left">var</td>
+<td align="left">[var]</td>
+<td align="left">变量</td>
+</tr>
+<tr>
+<td align="left">取址2</td>
+<td align="left">0x8(%eax)</td>
+<td align="left">[eax + 0x8]</td>
+<td align="left">偏移</td>
+</tr>
+<tr>
+<td align="left">取址3</td>
+<td align="left">arr(, %eax, 4)</td>
+<td align="left">[eax * 4 + arr]</td>
+<td align="left">数组</td>
+</tr>
+</tbody></table>
+<h2 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h2><h3 id="mov"><a href="#mov" class="headerlink" title="mov"></a>mov</h3><p>拷贝数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># R[eax] &#x3D; 5</span><br><span class="line">movl $5, %eax</span><br><span class="line"># var &#x3D; 5</span><br><span class="line">movl %eax, var</span><br></pre></td></tr></table></figure>
+<h3 id="cmp"><a href="#cmp" class="headerlink" title="cmp"></a>cmp</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmpl $2, count.0</span><br></pre></td></tr></table></figure>
+<p>比较操作符，并将结果暂存于EFLAGS寄存器。</p>
+<h3 id="跳转指令"><a href="#跳转指令" class="headerlink" title="跳转指令"></a>跳转指令</h3><p>跳转指令可以修改IP寄存器的值，以实现控制流转换。</p>
+<ul>
+<li>jmp (jump):无条件跳转到对应的label地址处。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jmp label</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>je (jump if equal): 如果上一次cmp指令结果是相等的，跳转到label处。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">je label</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>jne (jump if not equal):和je相反，如果上一次cmp指令结果不相等，跳转到label处。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmp $5, $eax</span><br><span class="line">jne label</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>jl (jump if less):如果上一次cmp指令结果小于条件成立，跳转到label处。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmp $5, $eax</span><br><span class="line">jl label</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>jle (jump if less or equal):如果上一次cmp指令结果小于等于条件成立，跳转到label处。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmp $5, $eax</span><br><span class="line">jle label</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>jg (jump if greater):如果上一次cmp指令结果大于条件成立，跳转到label处。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmp $5, $eax</span><br><span class="line">jg label</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>jge (jump if greater or equal):如果上一次cmp指令结果大于等于条件成立，跳转到label处。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmp $5, $eax</span><br><span class="line">jge label</span><br></pre></td></tr></table></figure>
+
+<p>在<a target="_blank" rel="noopener" href="https://en.wikibooks.org/wiki/X86_Assembly/Control_Flow#Jump_Instructions">这里</a>查看更多跳转指令</p>
+<h3 id="call-ret"><a href="#call-ret" class="headerlink" title="call ret"></a>call ret</h3><ul>
+<li>call: 将下一条指令的地址入栈，然后跳转到proc地址处。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cal proc</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>ret: 将栈顶的数据出栈并载入IP寄存器（即跳转回call的下一条指令处）。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ret</span><br></pre></td></tr></table></figure>
+
+<h3 id="enter-leave"><a href="#enter-leave" class="headerlink" title="enter leave"></a>enter leave</h3><ul>
+<li>enter: 新建一个stack frame，相当于:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">push %ebp</span><br><span class="line">mov  %esp, %ebp</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">enter arg</span><br></pre></td></tr></table></figure>
+<ul>
+<li>leave: 销毁当前stack frame，恢复上一个stack frame，相当于:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mov %ebp, %esp</span><br><span class="line">pop %ebp</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">leave</span><br></pre></td></tr></table></figure>
+
+<h3 id="运算指令"><a href="#运算指令" class="headerlink" title="运算指令"></a>运算指令</h3><ul>
+<li>add: 加法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># R[ebx] +&#x3D; R[eax]</span><br><span class="line">add %eax, %ebx</span><br></pre></td></tr></table></figure>
+<ul>
+<li>sub: 减法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># R[ebx] -&#x3D; R[eax]</span><br><span class="line">sub %eax, %ebx</span><br></pre></td></tr></table></figure>
+<ul>
+<li>inc: 自增</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># R[eax] +&#x3D; 1</span><br><span class="line">inc %eax</span><br></pre></td></tr></table></figure>
+<ul>
+<li>dec: 自减</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># R[eax] -&#x3D; 1</span><br><span class="line">dec %eax</span><br></pre></td></tr></table></figure>
+<h3 id="其他常用指令"><a href="#其他常用指令" class="headerlink" title="其他常用指令"></a>其他常用指令</h3><ul>
+<li>lea (Load effective address):</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># R[eax] &#x3D; R[ebx] - 8</span><br><span class="line">lea -0x8(%ebx), %eax</span><br></pre></td></tr></table></figure>
+<p>注意和mov指令的区别:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># mem[R[eax]] &#x3D; R[ebx] - 8</span><br><span class="line">mov -0x8(%ebx), %eax</span><br></pre></td></tr></table></figure>
+
+<p>引用：<a target="_blank" rel="noopener" href="http://blog.atime.me/note/asm-summary.html">http://blog.atime.me/note/asm-summary.html</a></p>
+<p>参阅：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Control_flow">https://en.wikipedia.org/wiki/Control_flow</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Compiler/" rel="tag"># Compiler</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/12/26/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%B1%9E%E6%80%A7/" rel="prev" title="Swift学习笔记-属性">
+                  <i class="fa fa-chevron-left"></i> Swift学习笔记-属性
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/04/12/Front_End/js-fondation/js-event-loop-model/" rel="next" title="JS事件循环模型">
+                  JS事件循环模型 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

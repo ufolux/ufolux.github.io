@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="? 和 ! 是什么接触 Swift 的小伙伴们肯定对 ? 和 ! 这俩符号不陌生。他们广泛地出现在 iOS SDK 的各个地方。IDE 也会自动补全这两个家伙。但是这两个家伙到底是啥?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift学习笔记-深入理解可选类型">
+<meta property="og:url" content="https://ufolux.github.io/2015/12/20/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="? 和 ! 是什么接触 Swift 的小伙伴们肯定对 ? 和 ! 这俩符号不陌生。他们广泛地出现在 iOS SDK 的各个地方。IDE 也会自动补全这两个家伙。但是这两个家伙到底是啥?">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-12-20T07:38:07.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.109Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="学习">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2015/12/20/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Swift学习笔记-深入理解可选类型 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%92%8C-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">? 和 ! 是什么</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.1.</span> <span class="nav-text">?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#-1"><span class="nav-number">1.2.</span> <span class="nav-text">!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%B1%9E%E6%80%A7%E5%92%8C%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">调用可选类型变量的属性和方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%BA%E5%88%B6%E8%A7%A3%E5%8C%85"><span class="nav-number">2.1.</span> <span class="nav-text">强制解包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optional-Binding"><span class="nav-number">2.2.</span> <span class="nav-text">Optional Binding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%E9%93%BE%EF%BC%88Optional-Chaining%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">可选链（Optional Chaining）</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2015/12/20/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift学习笔记-深入理解可选类型
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2015-12-20 15:38:07" itemprop="dateCreated datePublished" datetime="2015-12-20T15:38:07+08:00">2015-12-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="和-是什么"><a href="#和-是什么" class="headerlink" title="? 和 ! 是什么"></a>? 和 ! 是什么</h2><p>接触 Swift 的小伙伴们肯定对 <code>?</code> 和 <code>!</code> 这俩符号不陌生。他们广泛地出现在 iOS SDK 的各个地方。IDE 也会自动补全这两个家伙。但是这两个家伙到底是啥?</p>
+<span id="more"></span>
+<p>这两个符号表达了 Swift 的一个重要的特性，那就是可选类型（Optional Type）。可选类型是 Swift 引入的一个概念，它为那些在编译时不能确定是否有值的变量做了一个包装。</p>
+<h3 id><a href="#" class="headerlink" title="?"></a>?</h3><p>可选类型实际上是这样一个枚举：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public enum Optional&lt;Wrapped&gt; : _Reflectable, NilLiteralConvertible &#123;</span><br><span class="line">    case None</span><br><span class="line">    case Some(Wrapped)</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Construct a &#96;nil&#96; instance.</span><br><span class="line">    public init()</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Construct a non-&#96;nil&#96; instance that stores &#96;some&#96;.</span><br><span class="line">    public init(_ some: Wrapped)</span><br><span class="line">    &#x2F;&#x2F;&#x2F; If &#96;self &#x3D;&#x3D; nil&#96;, returns &#96;nil&#96;.  Otherwise, returns &#96;f(self!)&#96;.</span><br><span class="line">    @warn_unused_result</span><br><span class="line">    public func map&lt;U&gt;(@noescape f: (Wrapped) throws -&gt; U) rethrows -&gt; U?</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Returns &#96;nil&#96; if &#96;self&#96; is nil, &#96;f(self!)&#96; otherwise.</span><br><span class="line">    @warn_unused_result</span><br><span class="line">    public func flatMap&lt;U&gt;(@noescape f: (Wrapped) throws -&gt; U?) rethrows -&gt; U?</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Create an instance initialized with &#96;nil&#96;.</span><br><span class="line">    public init(nilLiteral: ())</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>由于这个枚举需要经常被使用，总是让大家写 <code>var num: Optional&lt;Int&gt;</code> 这样的代码，恐怕没几个人愿意。所以苹果的工程师把它包装成了 <code>?</code> 给大家吃了个糖。</p>
+<p>可见，<code>Optional</code> 枚举有两种状态，<code>None</code> 代表没有值，<code>Some</code> 代表有值。<br>基本类型的变量在使用之前必须被初始化，否则无法通过编译。可选类型可以不经过初始化就直接使用，可选类型会被初始化为 nil。</p>
+<p>也就是说在 Swift 中，所有的非可选类型在使用时都是一定被初始化过的。这保证了非可选变量在使用的时候只有一种状态：有值。这为 Swift 程序提供了极强的安全性。</p>
+<p>但是在实际应用中有些变量的值并不能在编译时确定下来，所以光有非可选类型是不够的，这时候就需要可选类型的支持了。可选类型的作用也就在于提供可空类型的变量。</p>
+<p>对于可选值，我们并不能直接访问被它包装的值。这些值需要我们对可选值解包之后才能访问。</p>
+<p>如以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var a:NSString? &#x3D; &quot;test&quot;</span><br><span class="line">print(a)</span><br><span class="line">&#x2F;&#x2F; output: Optional(test)</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到字符串 test 是被 Optional 泛型枚举包装着的，如果这是直接调用 <code>NSString</code> 的方法是不能编译通过的。</p>
+<h3 id="-1"><a href="#-1" class="headerlink" title="!"></a>!</h3><p><code>!</code> 表示对可选类型的变量强制拆包，和 <code>?</code> 一样，它也是一个语法糖，实际上它是这个枚举：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public enum ImplicitlyUnwrappedOptional&lt;Wrapped&gt; : _Reflectable, NilLiteralConvertible &#123;</span><br><span class="line">    case None</span><br><span class="line">    case Some(Wrapped)</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Construct a &#96;nil&#96; instance.</span><br><span class="line">    public init()</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Construct a non-&#96;nil&#96; instance that stores &#96;some&#96;.</span><br><span class="line">    public init(_ some: Wrapped)</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Construct an instance from an explicitly unwrapped optional</span><br><span class="line">    &#x2F;&#x2F;&#x2F; (&#96;Wrapped?&#96;).</span><br><span class="line">    public init(_ v: Wrapped?)</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Create an instance initialized with &#96;nil&#96;.</span><br><span class="line">    public init(nilLiteral: ())</span><br><span class="line">    &#x2F;&#x2F;&#x2F; If &#96;self &#x3D;&#x3D; nil&#96;, returns &#96;nil&#96;.  Otherwise, returns &#96;f(self!)&#96;.</span><br><span class="line">    @warn_unused_result</span><br><span class="line">    public func map&lt;U&gt;(@noescape f: (Wrapped) throws -&gt; U) rethrows -&gt; U!</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Returns &#96;nil&#96; if &#96;self&#96; is nil, &#96;f(self!)&#96; otherwise.</span><br><span class="line">    @warn_unused_result</span><br><span class="line">    public func flatMap&lt;U&gt;(@noescape f: (Wrapped) throws -&gt; U!) rethrows -&gt; U!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们还可以这样声明变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var label:UILabel!</span><br></pre></td></tr></table></figure>
+
+<p>这个枚举直译过来就是 <strong>隐式拆包 Optional</strong>，其实就是在你每次操作这种类型的值时候都会自动在操作前面补上一个 <code>!</code> 拆包。</p>
+<p><code>!</code> 用于 Optional 类型变量的时候表示对变量进行强制拆包，而不管该变量又没有值。这样一来，当变量没有值的时候（nil）强制拆包将导致程序运行时崩溃。</p>
+<p>可选类型的好处在于在编译时为语言提供了安全性，最大程度上避免了野指针调用使程序崩溃的情况发生。</p>
+<h2 id="调用可选类型变量的属性和方法"><a href="#调用可选类型变量的属性和方法" class="headerlink" title="调用可选类型变量的属性和方法"></a>调用可选类型变量的属性和方法</h2><p>上面说到了，我们不能直接对可选类型变量调用方法和属性。这时我们需要对这个可选类型解包。<br>假设现在有 Person 和 Name 类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Name &#123;</span><br><span class="line">    var firstName: String &#x3D; &quot;&quot;</span><br><span class="line">    var lastName: String &#x3D; &quot;&quot;</span><br><span class="line">    init (firstName:String, lastName:String)</span><br><span class="line">    &#123;</span><br><span class="line">        self.firstName &#x3D; firstName</span><br><span class="line">        self.lastName &#x3D; lastName</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Person &#123;</span><br><span class="line">    var name:Name</span><br><span class="line">    init (name:Name)</span><br><span class="line">    &#123;</span><br><span class="line">        self.name &#x3D; name</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="强制解包"><a href="#强制解包" class="headerlink" title="强制解包"></a>强制解包</h3><p>使用感叹号 <code>!</code> 进行强制解包。顾名思义，强制解包就是不管变量是否有值都对其进行解包。有值的时候，解包成功，程序正常运行。如果没有值(等于 nil)，解包会失败，程序在运行时发生崩溃。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 下面代码正常运行</span><br><span class="line">var p1: Person? &#x3D; Person(name: Name(firstName: &quot;Richard&quot;, lastName: &quot;Lu&quot;))</span><br><span class="line">print(p1!.name.firstName)</span><br><span class="line">&#x2F;&#x2F;output: Richard</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 下面代码会发生错误</span><br><span class="line">var p2: Person?</span><br><span class="line">print(p2!.name.firstName)</span><br><span class="line">&#x2F;&#x2F; error: EXC_BAD_INSTRUCTION</span><br></pre></td></tr></table></figure>
+
+<p>强制解包是一种不安全的做法。很可能导致程序在运行时崩溃。所以不经判断直接解包的方式一般是不推荐使用的。除非用在那些你确定一定会有值的变量上，比如 IBOutlet 等。</p>
+<p>改进一下，添加一些安全代码就可以了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var p4: Person? &#x3D; Person(name: Name(firstName: &quot;Richard&quot;, lastName: &quot;Lu&quot;))</span><br><span class="line">if p4 !&#x3D; nil &#123;</span><br><span class="line">   print(p4!.name.firstName)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Optional-Binding"><a href="#Optional-Binding" class="headerlink" title="Optional Binding"></a>Optional Binding</h3><p>在 if 语句中可以对可选类型变量进行隐式解包，同时判断可选类型是否有值，根据判断的结果进行进一步的操作。这也是推荐的一种做法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var p3: Person? &#x3D; Person(name: Name(firstName: &quot;Richard&quot;, lastName: &quot;Lu&quot;))</span><br><span class="line">if let person &#x3D; p3 &#123;</span><br><span class="line">    print(person.name.firstName)</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; output: Richard</span><br></pre></td></tr></table></figure>
+
+<h3 id="可选链（Optional-Chaining）"><a href="#可选链（Optional-Chaining）" class="headerlink" title="可选链（Optional Chaining）"></a>可选链（Optional Chaining）</h3><p>上面的情况是比较简单的，毕竟只有最外层的对象是可选类型的。如果对象的属性也是可选类型呢？假设我们的 Person 和 Name 类变成了下面的样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class Name &#123;</span><br><span class="line">    var firstName: String ＝ &quot;&quot;</span><br><span class="line">    var lastName: String &#x3D; &quot;&quot;</span><br><span class="line">    init (firstName:String, lastName:String)</span><br><span class="line">    &#123;</span><br><span class="line">        self.firstName &#x3D; firstName</span><br><span class="line">        self.lastName &#x3D; lastName</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Person &#123;</span><br><span class="line">    var name: Name?</span><br><span class="line">    init (name: Name)</span><br><span class="line">    &#123;</span><br><span class="line">        self.name &#x3D; name</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们现在想要取到 <code>firstName</code> 的值，使用 Optional Binding 或者强制拆包的方法要这么写：</p>
+<p>Optional Binding</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var p: Person? &#x3D; Person(name: Name(firstName: &quot;Richard&quot;, lastName: &quot;Lu&quot;))</span><br><span class="line">if let person &#x3D; p &#123;</span><br><span class="line">    if let name &#x3D; person.name &#123;</span><br><span class="line">            print(name.firstName)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>强制拆包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var p: Person? &#x3D; Person(name: Name(firstName: &quot;Richard&quot;, lastName: &quot;Lu&quot;))</span><br><span class="line">if p !&#x3D; nil &#123;</span><br><span class="line">    if p!.name !&#x3D; nil &#123;</span><br><span class="line">       print(p!.name!.firstName)  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可见不是一般的麻烦，一层套一层的判断逻辑搞的人头大。不过 Swift 早就为你设计了可选链（ Optional Chaining ）这种功能来实现方便的调用。</p>
+<p>使用可选链，对于如上的调用我们只要这样写就够了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var p: Person? &#x3D; Person(name: Name(firstName: &quot;Richard&quot;, lastName: &quot;Lu&quot;))</span><br><span class="line">if let firstName &#x3D; p?.name?.firstName</span><br><span class="line">&#123;</span><br><span class="line">    print(firstName)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对可选值直接进行链式操作，使得调用变得很方便。但是这里有个细节需要注意。<strong>可选链表达式中只要有一个 Optional 值，整个表达式的结果就都是 Optional 值，不管最后取到的值是不是 Optional 值，也不管表达式中有多少个 Optional 值。</strong> 所以对于可选链表达式的结果需要按照如上方法来取真实的值。如果我们直接打印 <code>p?.name?.firstName</code> 最终得到的将是一个被 Optional 包装的 firstName 值。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag"># 学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/12/20/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%8A%A8%E6%80%81%E7%89%B9%E6%80%A7/" rel="prev" title="Swift学习笔记-动态特性">
+                  <i class="fa fa-chevron-left"></i> Swift学习笔记-动态特性
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/12/25/Translation/%E3%80%90%E7%83%AD%E6%96%87%E3%80%91iOS%20%E8%B5%84%E6%BA%90%E5%A4%A7%E5%85%A8/" rel="next" title="iOS 资源列表">
+                  iOS 资源列表 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

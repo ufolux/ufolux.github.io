@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="什么是 Lazy LoadLazyLoad 就是懒加载，Angular2 对懒加载提供了很好的支持，只需要在根模块的路由上写一个 1234&#x2F;&#x2F; app.module.tsexport const ROUTES: Routes &#x3D; [  &amp;#123; path: &#39;reports&#39;, loadChildren: &#39;..&#x2F;reports&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ionic3.x LazyLDoad 实现方法的探究">
+<meta property="og:url" content="https://ufolux.github.io/2017/09/28/Front_End/ionic/research-of-ionic3-x-lazy-load-implementation/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="什么是 Lazy LoadLazyLoad 就是懒加载，Angular2 对懒加载提供了很好的支持，只需要在根模块的路由上写一个 1234&#x2F;&#x2F; app.module.tsexport const ROUTES: Routes &#x3D; [  &amp;#123; path: &#39;reports&#39;, loadChildren: &#39;..&#x2F;reports&amp;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-09-28T12:12:38.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.096Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="ionic">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2017/09/28/Front_End/ionic/research-of-ionic3-x-lazy-load-implementation/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>ionic3.x LazyLDoad 实现方法的探究 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Lazy-Load"><span class="nav-number">1.</span> <span class="nav-text">什么是 Lazy Load</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LazyLoad-Page-%E5%9C%A8-ionic3-x-%E4%B8%AD%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">LazyLoad Page 在 ionic3.x 中的用法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#step1%EF%BC%9A"><span class="nav-number">1.1.1.</span> <span class="nav-text">step1：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#step2"><span class="nav-number">1.1.2.</span> <span class="nav-text">step2:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Angular-4-x-Lazy-Load-%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">Angular 4.x Lazy Load 的实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BD%BF%E7%94%A8-SystemJS-%E5%AE%9E%E7%8E%B0%EF%BC%88%E4%B8%8D%E4%BD%BF%E7%94%A8-webpack-%E7%9A%84%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">1. 使用 SystemJS 实现（不使用 webpack 的方式）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8-ngtools-webpack-%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.1.</span> <span class="nav-text">2. 使用 @ngtools&#x2F;webpack 实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ionic-3-x-%E5%9F%BA%E4%BA%8E-ionic-cli-%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">Ionic 3.x 基于 ionic-cli 的实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#deep-link-system"><span class="nav-number">3.1.</span> <span class="nav-text">deep link system</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="nav-number">3.2.</span> <span class="nav-text">构建过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6"><span class="nav-number">3.3.</span> <span class="nav-text">运行时</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Next-Step"><span class="nav-number">4.</span> <span class="nav-text">Next Step</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%A7%81"><span class="nav-number">5.</span> <span class="nav-text">参见</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2017/09/28/Front_End/ionic/research-of-ionic3-x-lazy-load-implementation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ionic3.x LazyLDoad 实现方法的探究
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2017-09-28 20:12:38" itemprop="dateCreated datePublished" datetime="2017-09-28T20:12:38+08:00">2017-09-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="什么是-Lazy-Load"><a href="#什么是-Lazy-Load" class="headerlink" title="什么是 Lazy Load"></a>什么是 Lazy Load</h2><p>LazyLoad 就是懒加载，Angular2 对懒加载提供了很好的支持，只需要在根模块的路由上写一个</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; app.module.ts</span><br><span class="line">export const ROUTES: Routes &#x3D; [</span><br><span class="line">  &#123; path: &#39;reports&#39;, loadChildren: &#39;..&#x2F;reports&#x2F;reports.module#ReportsModule&#39; &#125;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+
+<p>只要提供 loadChildren 字段应用初始化的时候就不会加载 <code>report</code> 这个模块，而是会在用到它的时候才加载它，这会缩减应用初始化时需要加载的文件大小，以此来提升应用的启动速度。</p>
+<span id="more"></span>
+
+<h3 id="LazyLoad-Page-在-ionic3-x-中的用法"><a href="#LazyLoad-Page-在-ionic3-x-中的用法" class="headerlink" title="LazyLoad Page 在 ionic3.x 中的用法"></a>LazyLoad Page 在 ionic3.x 中的用法</h3><h4 id="step1："><a href="#step1：" class="headerlink" title="step1："></a>step1：</h4><p>为需要懒加载的组件添加 <code>IonicPage</code> 装饰器，例如这个 <code>HomePage</code> 组件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; home-page.ts</span><br><span class="line">import &#123; Component &#125; from &#39;@angular&#x2F;core&#39;;</span><br><span class="line">import &#123; IonicPage &#125; from &#39;ionic-angular&#39;;</span><br><span class="line">@IonicPage()</span><br><span class="line">@Component(... )</span><br><span class="line">export class HomePage &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="step2"><a href="#step2" class="headerlink" title="step2:"></a>step2:</h4><p>为这个组件添加一个 <code>IonicPageModule</code> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; home-page.module.ts</span><br><span class="line">import &#123; NgModule &#125; from &#39;@angular&#x2F;core&#39;;</span><br><span class="line">import &#123; IonicPageModule &#125; from &#39;ionic-angular&#39;;</span><br><span class="line">import &#123; HomePage &#125; from &#39;.&#x2F;home&#39;;</span><br><span class="line">@NgModule(&#123;</span><br><span class="line">  declarations: [HomePage],</span><br><span class="line">  imports: [IonicPageModule.forChild(HomePage)],</span><br><span class="line">&#125;)</span><br><span class="line">export class HomePageModule &#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Angular-4-x-Lazy-Load-的实现方式"><a href="#Angular-4-x-Lazy-Load-的实现方式" class="headerlink" title="Angular 4.x Lazy Load 的实现方式"></a>Angular 4.x Lazy Load 的实现方式</h2><h3 id="1-使用-SystemJS-实现（不使用-webpack-的方式）"><a href="#1-使用-SystemJS-实现（不使用-webpack-的方式）" class="headerlink" title="1. 使用 SystemJS 实现（不使用 webpack 的方式）"></a>1. 使用 SystemJS 实现（不使用 webpack 的方式）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; packages&#x2F;core&#x2F;src&#x2F;linker&#x2F;system_js_ng_module_factory_loader.ts</span><br><span class="line">private loadAndCompile(path: string): Promise&lt;NgModuleFactory&lt;any&gt;&gt; &#123;</span><br><span class="line">    &#x2F;&#x2F; ...</span><br><span class="line">  return System.import(module) &#x2F;&#x2F; 采用 System.import 来加载</span><br><span class="line">    .then((module: any) &#x3D;&gt; module[exportName])</span><br><span class="line">    .then((type: any) &#x3D;&gt; checkNotEmpty(type, module, exportName))</span><br><span class="line">    .then((type: any) &#x3D;&gt; this._compiler.compileModuleAsync(type));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果应用是基于 SystemJS 而不是使用 angular-cli 来构建的，这里直接调用 <code>System.import</code> 来异步加载所需要的模块。</p>
+<h4 id="2-使用-ngtools-webpack-实现"><a href="#2-使用-ngtools-webpack-实现" class="headerlink" title="2. 使用 @ngtools/webpack 实现"></a>2. 使用 <code>@ngtools/webpack</code> 实现</h4><p>webpack 其实是支持把 <code>System.import()</code> 作为一个代码切分点，但仅支持某些动态情景（如 <code>System.import(&#39;routes/&#39; + module + &#39;.js&#39;)</code>），webpack会根据 <code>&#39;routes/&#39; + module + &#39;.js&#39;</code> 里的 <code>routes/</code> 和 <code>.js</code> 等静态信息推测所有情景，并生成对应的 context module 负责加载这些动态模块。不过对于纯表达式（如 <code>System.import(module)</code>），没有任何已知信息，webpack 就没有办法切分代码了，而这也就是我们遇到的情况。既然 webpack 自身无法预处理，那就是由开发者来告诉 webpack 如何处理，这就是 <code>@ngtools/webpack</code> 的处理思路，它同过分析 <code>loadChildren</code> 的值，抽取需要懒加载的模块信息，打包这些模块，并生成对应的 context module，建立映射对象，映射对象大概是下面这个样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var map &#x3D; &#123;</span><br><span class="line">	&quot;.&#x2F;lazy&#x2F;lazy.module&quot;: [</span><br><span class="line">		267, &#x2F;&#x2F; module id</span><br><span class="line">		0 &#x2F;&#x2F; index</span><br><span class="line">	]</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>动将这些文件打包成单独的代码块，并用即使执行函数对它们进行包装，<code>System.import</code> 会被webpack 替换为 <code>__webpack_require__</code> 方法。在运行时通过这个方法来加载所需要的模块。</p>
+<h2 id="Ionic-3-x-基于-ionic-cli-的实现方式"><a href="#Ionic-3-x-基于-ionic-cli-的实现方式" class="headerlink" title="Ionic 3.x 基于 ionic-cli 的实现方式"></a>Ionic 3.x 基于 ionic-cli 的实现方式</h2><h3 id="deep-link-system"><a href="#deep-link-system" class="headerlink" title="deep link system"></a>deep link system</h3><p><strong>deep link system</strong> 是一个用于在 ionic App 中进行导航的系统，他会维护 app 内部的页面的名称和组件的对应关系，</p>
+<p>首先创建一个 NgModule</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; my-page.module.ts</span><br><span class="line">@NgModule(&#123;</span><br><span class="line">  declarations: [</span><br><span class="line">    MyPage</span><br><span class="line">  ],</span><br><span class="line">  imports: [</span><br><span class="line">    IonicPageModule.forChild(MyPage)</span><br><span class="line">  ],</span><br><span class="line">  entryComponents: [</span><br><span class="line">    MyPage</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br><span class="line">export class MyPageModule &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>然后为页面组件添加 @ionicPage 装饰器，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; my-page.ts</span><br><span class="line">@IonicPage()</span><br><span class="line">@Component(&#123;</span><br><span class="line">  templateUrl: &#39;main.html&#39;</span><br><span class="line">&#125;)</span><br><span class="line">export class MyPage &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ionic-cli 会自动为这个页面创建一个 deep link，链接的名称默认与组件名称一致，我们在 App 中可以使用 ‘MyPage’ 字符串进行页面导航。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Component(&#123;</span><br><span class="line">  templateUrl: &#39;another-page.html&#39;</span><br><span class="line">&#125;)</span><br><span class="line">export class AnotherPage &#123;</span><br><span class="line">  constructor(public navCtrl: NavController) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  goToMyPage() &#123;</span><br><span class="line">    &#x2F;&#x2F; go to the MyPage component</span><br><span class="line">    this.navCtrl.push(&#39;MyPage&#39;); &#x2F;&#x2F; use a string</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>懒加载正是基于这种方式实现的，下面来说一下过程</p>
+<h3 id="构建过程"><a href="#构建过程" class="headerlink" title="构建过程"></a>构建过程</h3><ol>
+<li><p>遍历所有的 ts 文件</p>
+</li>
+<li><p>解析 ts 文件的语法树，获取语法树中的 class declaration 节点</p>
+</li>
+<li><p>遍历 class declaration 节点上的 decorators 节点取得 IonicPage 节点</p>
+</li>
+<li><p>解析 IonicPage 装饰器的元数据，(一个页面中只允许存在一个 Ionicpage 装饰器)</p>
+</li>
+<li><p>根据被 IonicPage 所在的文件名，按照 ionic-cli 定义的规则获得 Component 对应的 PageModule 文件路径</p>
+</li>
+<li><p>如果是 AOT 模式则将 Module 的文件名修改为 <code>.ngfactory.ts</code></p>
+</li>
+<li><p>将路径信息和 Module 的元数据（<code>DeepLinkDecoratorData</code> 类型）添加到 <code>deepLinkConfigEntries</code> 数组中</p>
+</li>
+<li><p>将这个数组中的信息转换成以下格式的字符串，并缓存</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  links: [</span><br><span class="line">    &#123;</span><br><span class="line">       loadChildren: &#39;..&#x2F;pages&#x2F;xyz&#x2F;xyz-home&#x2F;xyz-home.module#XyzPageModule&#39;,</span><br><span class="line">       name: &#39;XyzPage&#39;,</span><br><span class="line">       segment: &#39;xyz-home&#39;,</span><br><span class="line">       priority: &#39;low&#39;,</span><br><span class="line">       defaultHistory: []</span><br><span class="line">     &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>将这段代码插入到 app.module.ts 中</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">import &#123;NgModule&#125; from &#39;@angular&#x2F;core&#39;;</span><br><span class="line">import &#123;BrowserModule&#125; from &#39;@angular&#x2F;platform-browser&#39;;</span><br><span class="line">import &#123;IonicApp, IonicModule&#125; from &#39;ionic-angular&#39;;</span><br><span class="line"></span><br><span class="line">import &#123;DrifterApp&#125; from &#39;.&#x2F;app.component&#39;;</span><br><span class="line">import &#123;DECLARATIONS&#125; from &#39;.&#x2F;declarations&#39;;</span><br><span class="line">import &#123;ENTRY_COMPONENTS&#125; from &#39;.&#x2F;entry-component&#39;;</span><br><span class="line">import &#123;PROVIDER&#125; from &#39;.&#x2F;providers&#39;;</span><br><span class="line">import &#123;ComponentsModule&#125; from &#39;..&#x2F;components&#x2F;components.module&#39;;</span><br><span class="line">import &#123;PipesModule&#125; from &#39;..&#x2F;pipes&#x2F;pipes.module&#39;;</span><br><span class="line"></span><br><span class="line">@NgModule(&#123;</span><br><span class="line">  declarations: DECLARATIONS,</span><br><span class="line">  imports: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    IonicModule.forRoot(DrifterApp, &#123;</span><br><span class="line">      backButtonText: &#39;&#39;,</span><br><span class="line">      iconMode: &#39;ios&#39;,</span><br><span class="line">      mode: &#39;ios&#39;,</span><br><span class="line">    &#125;,&#x2F;&#x2F; 插入到这个位置后面</span><br><span class="line">    &#123;</span><br><span class="line">		  links: [</span><br><span class="line">	     &#123; </span><br><span class="line">	       loadChildren: &#39;..&#x2F;pages&#x2F;xyz&#x2F;xyz-home&#x2F;xyz-home.module#XyzPageModule&#39;,</span><br><span class="line">	       name: &#39;XyzPage&#39;, </span><br><span class="line">	       segment: &#39;xyz-home&#39;, </span><br><span class="line">	       priority: &#39;low&#39;, </span><br><span class="line">	       defaultHistory: []</span><br><span class="line">	     &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;),</span><br><span class="line">    ComponentsModule,</span><br><span class="line">    PipesModule</span><br><span class="line">  ],</span><br><span class="line">  bootstrap: [IonicApp],</span><br><span class="line">  entryComponents: ENTRY_COMPONENTS,</span><br><span class="line">  providers: PROVIDER</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export class AppModule &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个对象被当做 <code>IonicModule.forRoot</code> 的第三个参数 <code>deepLinkConfig</code> 传入<br>，这个参数在后面会被当做一个 <code>ValueProvider</code> （DeepLinkConfigToken:OpaqueToken） 加入到 <code>IonicModule</code> 中</p>
+<p>10.在 webpack 阶段，猜测：使用了和 <code>@ngtools/webpack</code> 工具类似的方法，讲需要懒加载的代码切分成几个单独的文件，以供运行时动态加载。</p>
+<h3 id="运行时"><a href="#运行时" class="headerlink" title="运行时"></a>运行时</h3><p>Ionic3.x 中页面路由采用了一种全新的方式，使用了一个叫做 DeepLinker 的服务来维护页面的路由信息</p>
+<p>具体的操作如下：<br>当我们调用 <code>NavController.push</code> 方法，并且传入一个字符串（Page 的名称）的时候，ionic 就会加载这个页面组件</p>
+<ol>
+<li><p>push 会触发 <code>NavControllerBase</code> 中 <code>_loadLazyLoading</code> 的调用，调用时会将页面名称以及参数等信息传入该方法</p>
+</li>
+<li><p>在 <code>_loadLazyLoading</code> 方法中会调用一个叫做 <code>convertToViews</code> 的方法，这个方法会将传入的 PageName 转换为一个可以使用的 Component。  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">NavControllerBase.prototype._loadLazyLoading &#x3D; function (ti) &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var &#x2F;** @type &#123;?&#125; *&#x2F; insertViews &#x3D; ti.insertViews;</span><br><span class="line">        if (insertViews) &#123;</span><br><span class="line">            (void 0) &#x2F;* assert *&#x2F;;</span><br><span class="line">            return convertToViews(this._linker, insertViews).then(function (viewControllers) &#123;</span><br><span class="line">	            ...</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        return Promise.resolve();</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果传入的是 PageName 字符串，会调用 <code>getComponent</code> 函数将字符串对应的 Component 所在的 js 文件加载进来。</p>
+</li>
+<li><p><code>getComponent</code> 函数使用 <code>deeplinker</code> 中的 <code>getComponentFromName</code> 方法获取这个页面对应的路径。路径保存在上文提到的 <code>linker</code> 对象的 <code>loadChildren</code> 属性中。</p>
+</li>
+<li><p>使用 SystemJS 提供的 <code>System.import</code> 方法来动态加载这些文件，webpack2.x 支持 <code>System.import</code> 的模块，它会将 <code>System.import</code> 替换为 <code>__webpack_require__</code> (但据说在 Webpack3.x 中已经废弃了对 System.import 的支持），同时被单独打包的模块会被即使执行函数表达式（IIFE）包裹，<code>__webpack_require__</code> 这个方法执行后会创建一个 JSONP 请求，也就是在 Header 中插入一个 script 标签使浏览器请求需要的脚本，并立即执行该脚本，这样就得到了需要的模块。</p>
+</li>
+</ol>
+<h2 id="Next-Step"><a href="#Next-Step" class="headerlink" title="Next Step"></a>Next Step</h2><ol>
+<li>上述内容只研究了页面的懒加载方式，至于 Pipe，Directive 以及其他非页面的  Component 的懒加载实现方式还有待实践和研究。</li>
+<li>构建时代码切分的处理还没有找到，看生成的代码中有着和 <code>@ngtools/webpack</code> 生成的代码中相似的结构  </li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; src lazy 代码块</span><br><span class="line">var map &#x3D; &#123;</span><br><span class="line">	&quot;..&#x2F;pages&#x2F;bottle&#x2F;add-bottle&#x2F;add-bottle.module&quot;: [</span><br><span class="line">		406,</span><br><span class="line">		10</span><br><span class="line">	]</span><br><span class="line">&#125;;</span><br><span class="line">function webpackAsyncContext(req) &#123;</span><br><span class="line">	var ids &#x3D; map[req];</span><br><span class="line">	if(!ids)</span><br><span class="line">		return Promise.reject(new Error(&quot;Cannot find module &#39;&quot; + req + &quot;&#39;.&quot;));</span><br><span class="line">	return __webpack_require__.e(ids[1]).then(function() &#123;</span><br><span class="line">		return __webpack_require__(ids[0]);</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;;</span><br><span class="line">webpackAsyncContext.keys &#x3D; function webpackAsyncContextKeys() &#123;</span><br><span class="line">	return Object.keys(map);</span><br><span class="line">&#125;;</span><br><span class="line">webpackAsyncContext.id &#x3D; 155;</span><br><span class="line">module.exports &#x3D; webpackAsyncContext;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;</span><br><span class="line">&#x2F;&#x2F; WEBPACK FOOTER</span><br><span class="line">&#x2F;&#x2F; .&#x2F;src lazy</span><br><span class="line">&#x2F;&#x2F; module id &#x3D; 155</span><br><span class="line">&#x2F;&#x2F; module chunks &#x3D; 12</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>所以推测ionic-cli 同样是实现了和 <code>@ngtools/webpack</code> 类似的能力。</p>
+<h2 id="参见"><a href="#参见" class="headerlink" title="参见"></a>参见</h2><p><a target="_blank" rel="noopener" href="https://qiutc.me/post/webpack-2-%E7%9A%84%E6%96%B0%E7%89%B9%E6%80%A7-What-s-new-in-webpack-2.html">webpack 2 的新特性</a></p>
+<p><a target="_blank" rel="noopener" href="https://ionicframework.com/docs/api/IonicModule/#forRoot">DOC IonicModule</a></p>
+<p><a target="_blank" rel="noopener" href="https://angular.cn/api/core/Provider">Provider 的种类以及它们的类型定义</a></p>
+<p><a target="_blank" rel="noopener" href="https://ionicframework.com/docs/api/navigation/IonicPage/">Deep link system in Ionic Apps</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ionic/" rel="tag"># ionic</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/09/28/Front_End/vendor/hexoErrorMouduleVerMimatch/" rel="prev" title="【持续更新】hexo 报错系列">
+                  <i class="fa fa-chevron-left"></i> 【持续更新】hexo 报错系列
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/10/11/Front_End/ionic/how-to-settingup-unittest-for-ionic3x/" rel="next" title="为 ionic 3.x（ts）项目配置单元测试框架">
+                  为 ionic 3.x（ts）项目配置单元测试框架 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

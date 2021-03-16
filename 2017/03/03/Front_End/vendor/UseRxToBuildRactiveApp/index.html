@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="简介RxJS is the Reactive-Extensions（ReactiveX） for JS ReactiveX 由微软发起并推动，是一个为用于实现异步和基于事件编程的程序库制定的一个标准，RxJS 是对这个标准的 Javascript 实现。 RP（Reactive Programming）响应式编程的思路是把随时间不断变化的数据、状态、事件等等转成可被观察的序列(Observable">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用RxJS来构建响应式应用">
+<meta property="og:url" content="https://ufolux.github.io/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="简介RxJS is the Reactive-Extensions（ReactiveX） for JS ReactiveX 由微软发起并推动，是一个为用于实现异步和基于事件编程的程序库制定的一个标准，RxJS 是对这个标准的 Javascript 实现。 RP（Reactive Programming）响应式编程的思路是把随时间不断变化的数据、状态、事件等等转成可被观察的序列(Observable">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ufolux.github.io/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/819744a3-a77d-4a9b-b307-d837ef4aae41.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/1d4bddae-83eb-4276-aa74-e73f65ecf7b7.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/3cfa842b-0980-4e1f-86be-250709cfb245.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/5dfa656d-ce41-4127-bfd9-7c6a95b2b294.png">
+<meta property="og:image" content="https://ufolux.github.io/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/041424ca-db06-4f58-9f65-84d5acd44964.png">
+<meta property="article:published_time" content="2017-03-03T06:51:07.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.098Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ufolux.github.io/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/819744a3-a77d-4a9b-b307-d837ef4aae41.png">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>使用RxJS来构建响应式应用 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RxJS-%E6%8F%90%E4%BE%9B%E4%BA%86%E4%BB%80%E4%B9%88"><span class="nav-number">2.</span> <span class="nav-text">RxJS 提供了什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">3.</span> <span class="nav-text">重要的概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Observable-%EF%BC%88%E4%BF%A1%E5%8F%B7%E6%BA%90%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">Observable （信号源）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Observer-Subscriber-reactor-iterator"><span class="nav-number">3.2.</span> <span class="nav-text">Observer(Subscriber, reactor,iterator)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#onNext"><span class="nav-number">3.2.1.</span> <span class="nav-text">onNext</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#onError"><span class="nav-number">3.2.2.</span> <span class="nav-text">onError</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#onCompleted"><span class="nav-number">3.2.3.</span> <span class="nav-text">onCompleted</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Operators-%EF%BC%88%E6%93%8D%E4%BD%9C%E7%AC%A6%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">Operators （操作符）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scheduler-%EF%BC%88%E8%B0%83%E5%BA%A6%E5%99%A8%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">Scheduler （调度器）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Subject"><span class="nav-number">3.5.</span> <span class="nav-text">Subject</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cold-Hot-Connectable-Observable"><span class="nav-number">3.6.</span> <span class="nav-text">Cold&#x2F;Hot&#x2F;Connectable Observable</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Cold-Observable%EF%BC%9A"><span class="nav-number">3.6.1.</span> <span class="nav-text">Cold Observable：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hot-Connectable-Observable"><span class="nav-number">3.6.2.</span> <span class="nav-text">Hot&#x2F;Connectable Observable</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">3.7.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3"><span class="nav-number">3.8.</span> <span class="nav-text">不足</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E-Promise%E5%AF%B9%E6%AF%94%E7%9A%84%E4%BE%8B%E5%AD%90%EF%BC%9A"><span class="nav-number">3.9.</span> <span class="nav-text">与 Promise对比的例子：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82"><span class="nav-number">4.1.</span> <span class="nav-text">网络请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E4%BA%92"><span class="nav-number">4.2.</span> <span class="nav-text">交互</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Angular2-%E4%B8%AD-Rx-js-%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">Angular2 中 Rx.js 的应用;</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用RxJS来构建响应式应用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2017-03-03 14:51:07" itemprop="dateCreated datePublished" datetime="2017-03-03T14:51:07+08:00">2017-03-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>RxJS is the Reactive-Extensions（ReactiveX） for JS</p>
+<p>ReactiveX 由微软发起并推动，是一个为用于实现异步和基于事件编程的程序库制定的一个标准，RxJS 是对这个标准的 Javascript 实现。</p>
+<p>RP（Reactive Programming）响应式编程的思路是把随时间不断变化的数据、状态、事件等等转成可被观察的序列(Observable Sequence)，然后订阅序列中那些Observable对象的变化，一旦变化，就会执行事先安排好的各种转换和操作。</p>
+<hr>
+<p><img src="/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/819744a3-a77d-4a9b-b307-d837ef4aae41.png" alt="ReactiveX"></p>
+<hr>
+<span id="more"></span>
+
+<blockquote>
+<p>OC 实现的 RAC（ReactiveCocoa） 与 RxJS 执行了两个不同的标准，RAC 遵循的 RP 标准与 Rx 在概念上有一些不同（特别体现在冷热信号上）。</p>
+</blockquote>
+<hr>
+<h2 id="RxJS-提供了什么"><a href="#RxJS-提供了什么" class="headerlink" title="RxJS 提供了什么"></a>RxJS 提供了什么</h2><ol>
+<li>事件管理、调度引擎</li>
+<li>十分丰富的操作符</li>
+<li>流式的数据处理方法</li>
+<li>声明式的编程风格</li>
+</ol>
+<hr>
+<h2 id="重要的概念"><a href="#重要的概念" class="headerlink" title="重要的概念"></a>重要的概念</h2><hr>
+<h3 id="Observable-（信号源）"><a href="#Observable-（信号源）" class="headerlink" title="Observable （信号源）"></a>Observable （信号源）</h3><p><img src="/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/1d4bddae-83eb-4276-aa74-e73f65ecf7b7.png" alt="Observable"></p>
+<p>emit 向流（stream）上发射对象（信号）</p>
+<hr>
+<h3 id="Observer-Subscriber-reactor-iterator"><a href="#Observer-Subscriber-reactor-iterator" class="headerlink" title="Observer(Subscriber, reactor,iterator)"></a>Observer(Subscriber, reactor,iterator)</h3><p>Observer 在信号流中是一个观察者（哨兵）的角色，它负责观察任务执行的状态并向流中发射信号</p>
+<h4 id="onNext"><a href="#onNext" class="headerlink" title="onNext"></a>onNext</h4><p>向流中发射一个正常的信号。</p>
+<h4 id="onError"><a href="#onError" class="headerlink" title="onError"></a>onError</h4><p>向流中发射一个错误信号，并终止 Observable 的信号发射。</p>
+<h4 id="onCompleted"><a href="#onCompleted" class="headerlink" title="onCompleted"></a>onCompleted</h4><p>向流中发射一个完成信号，并终止 Observable 的信号发射。</p>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">let responseStream &#x3D; Rx.Observable.create((observer) &#x3D;&gt; &#123;</span><br><span class="line">        fetch(reqUrl).then((data) &#x3D;&gt; &#123;</span><br><span class="line">            observer.onNext(data);</span><br><span class="line">            observer.onCompleted(&#39;completed&#39;);</span><br><span class="line">        &#125;, (err) &#x3D;&gt; &#123;</span><br><span class="line">            observer.onError(err);</span><br><span class="line">        &#125;)</span><br><span class="line">responseStream.subscribe((data)&#x3D;&gt;&#123;...&#125;,</span><br><span class="line">			 (err)&#x3D;&gt;&#123;...&#125;,</span><br><span class="line">			 (completed)&#x3D;&gt;&#123;...&#125;)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="Operators-（操作符）"><a href="#Operators-（操作符）" class="headerlink" title="Operators （操作符）"></a>Operators （操作符）</h3><p>链式的操作符构成了一个容纳信号（数据）流的管道，操作会按照操作符的排列顺序有序执行，RxJS 提供了60多个内置操作符，足以应付数据流处理的绝大部分需求。更为灵活的是，我们还可以在 RxJS 上自定义操作符。</p>
+<hr>
+<ol>
+<li>create 创建 Observable<br>立即创建一个 Observable 对象或者在订阅时才创建 Observable 对象（Lazy load）<br>create</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 创建一个 Observable</span><br><span class="line">Rx.Observable.create((observer)&#x3D;&gt;&#123;observer.onNext()&#125;);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 创建一个空的 Observable</span><br><span class="line">Rx.Observable.empty();</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 从 Interval 创建</span><br><span class="line">Rx.Observable.interval(100);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 从 promise 创建</span><br><span class="line">Rx.Observable.fromPromise(fetch(url));</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 从数组创建</span><br><span class="line">Rx.Observable.fromArray(array)</span><br></pre></td></tr></table></figure>
+<hr>
+<ol start="2">
+<li>subscribe/connect Observable<br>只有当 Observable 被订阅或者 connect 后，Observable 才会发射信号。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 订阅事件</span><br><span class="line">let source &#x3D; Rx.Observable.interval(100);</span><br><span class="line">source.subscribe((event)&#x3D;&gt;&#123;</span><br><span class="line">	&#x2F;&#x2F; do something</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; connect 事件</span><br><span class="line">let source &#x3D; Rx.Observable.interval(100).publish();</span><br><span class="line">source.connect().subscribe((event)&#x3D;&gt;&#123;</span><br><span class="line">	&#x2F;&#x2F; do something</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol start="3">
+<li>transform 变换 Observable 的形式<br>eg: map, pluck, flatmap, publish</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var source &#x3D; Rx.Observable</span><br><span class="line">    .from([</span><br><span class="line">        &#123; value: &#123;index: 0&#125; &#125;,</span><br><span class="line">        &#123; value: &#123;index: 1&#125; &#125;,</span><br><span class="line">        &#123; value: &#123;index: 2&#125; &#125;</span><br><span class="line">    ])</span><br><span class="line">    .pluck(&#39;value&#39;)</span><br><span class="line">    .map(value&#x3D;&gt;&#123;</span><br><span class="line">    	return value.index;</span><br><span class="line">    &#125;)</span><br><span class="line">    .subscribe(index&#x3D;&gt;&#123;</span><br><span class="line">    	console.log(index) &#x2F;&#x2F; Output 0,1,2</span><br><span class="line">    &#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol start="4">
+<li>filter 对 Observable 发射出的对象进行过滤并将对象向管道的后方传递<br><img src="/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/3cfa842b-0980-4e1f-86be-250709cfb245.png" alt="filter"><br>eg: debounce, filter, first,</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; filter</span><br><span class="line">var source &#x3D; Rx.Observable</span><br><span class="line">    .from([</span><br><span class="line">        &#123; value: 0 &#125;,</span><br><span class="line">        &#123; value: 1 &#125;,</span><br><span class="line">        &#123; value: 2 &#125;</span><br><span class="line">    ])</span><br><span class="line">    .filter(data&#x3D;&gt;&#123;</span><br><span class="line">    	return data.value &gt; 1;</span><br><span class="line">    &#125;)</span><br><span class="line">    .subscribe(obj&#x3D;&gt;&#123;</span><br><span class="line">    	console.log(obj) &#x2F;&#x2F; Output &#123; value: 2 &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol start="5">
+<li>combine 将多个 Observable 组合成一个 Observalbe<br><img src="/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/5dfa656d-ce41-4127-bfd9-7c6a95b2b294.png" alt="Combine"><br>eg: merge, combineLatest, join, switch</li>
+</ol>
+<hr>
+<p>多个请求并发：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">let responseStream1 &#x3D; Rx.Observable.fromPromise(fetch(reqUrl1));</span><br><span class="line">let responseStream2 &#x3D; Rx.Observable.fromPromise(fetch(reqUrl2));</span><br><span class="line">Rx.Observable</span><br><span class="line">    .combineLatest(responseStream1, responseStream2)</span><br><span class="line">    .subscribe((tuple) &#x3D;&gt; &#123;</span><br><span class="line">        let data1 &#x3D; tuple[0];</span><br><span class="line">        let data2 &#x3D; tuple[1];</span><br><span class="line">    &#125;, (err) &#x3D;&gt; &#123;... &#125;, (completed) &#x3D;&gt; &#123;&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; or</span><br><span class="line">Rx.Observable</span><br><span class="line">    .combineLatest(responseStream1, responseStream2, (data1, data2) &#x3D;&gt; &#123;</span><br><span class="line">        return processData(data1, data2);</span><br><span class="line">    &#125;)</span><br><span class="line">    .subscribe((result) &#x3D;&gt; &#123;</span><br><span class="line">        &#x2F;&#x2F;do something</span><br><span class="line">    &#125;, (err) &#x3D;&gt; &#123;... &#125;, (completed) &#x3D;&gt; &#123;&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol start="6">
+<li>utilities and the other 工具运算符以及其他运算符</li>
+</ol>
+<blockquote>
+<p>参见 <a target="_blank" rel="noopener" href="http://reactivex.io/documentation/operators.html">ReactiveX 核心操作符</a></p>
+</blockquote>
+<hr>
+<h3 id="Scheduler-（调度器）"><a href="#Scheduler-（调度器）" class="headerlink" title="Scheduler （调度器）"></a>Scheduler （调度器）</h3><p>可以单独调度某个操作以实现更复杂的异步编程，可以实现让某个操作运行在特定的一个事件循环中。</p>
+<blockquote>
+<p>参见 <a target="_blank" rel="noopener" href="http://reactivex.io/documentation/scheduler.html">Scheduler</a></p>
+</blockquote>
+<hr>
+<h3 id="Subject"><a href="#Subject" class="headerlink" title="Subject"></a>Subject</h3><p><img src="/2017/03/03/Front_End/vendor/UseRxToBuildRactiveApp/041424ca-db06-4f58-9f65-84d5acd44964.png" alt="Alt text"><br>它是一个代理对象，既是一个 Observable 又是一个 Observer，它可以同时接受 Observable 发射出的数据，也可以向订阅了它的 observer 发射数据。ReaciveX 标准中有四种 Subject</p>
+<blockquote>
+<p>参见 <a target="_blank" rel="noopener" href="http://reactivex.io/documentation/subject.html">Subject</a></p>
+</blockquote>
+<hr>
+<h3 id="Cold-Hot-Connectable-Observable"><a href="#Cold-Hot-Connectable-Observable" class="headerlink" title="Cold/Hot/Connectable Observable"></a>Cold/Hot/Connectable Observable</h3><hr>
+<h4 id="Cold-Observable："><a href="#Cold-Observable：" class="headerlink" title="Cold Observable："></a>Cold Observable：</h4><p>这种 Observable 创建之后并不会马上开始向事件流中发射对象，只有当它的 subscribe 方法被调用之后，它才会开始向外发送信号，</p>
+<hr>
+<p>以下代码创建了一个 Cold Observable，这时即使 <code>keyup</code> 事件被触发，这个 Observable 对象也不会发出任何信号：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; inputValueStream is a cold Observable</span><br><span class="line">let inputValueStream &#x3D; Rx.Observable.fromEvent(input, &#39;keyup&#39;)</span><br><span class="line">    .pluck(&#39;target&#39;, &#39;value&#39;);</span><br></pre></td></tr></table></figure>
+
+<p>在调用 subscribe 方法之后这个 Observable 才会被真正触发，这时触发 keyup 事件，input 中的 value 将会被发射到流中进而被后续的操作符处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">inputValueStream</span><br><span class="line">.subscribe(data &#x3D;&gt; text.textContent &#x3D; data,</span><br><span class="line">           err&#x3D;&gt;&#123;&#125;,</span><br><span class="line">           complete&#x3D;&gt;&#123;&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Rx 规范中通过创建 Observable 操作符创建出来的对象都是冷信号。</p>
+<hr>
+<h4 id="Hot-Connectable-Observable"><a href="#Hot-Connectable-Observable" class="headerlink" title="Hot/Connectable Observable"></a>Hot/Connectable Observable</h4><p>和 Cold Observable 相反，Hot Observable 在创建出来的那一刻就已经开始向流中发射信号，而 Connectable Observable 在创建时候并不会发射信号，直到 <code>connect</code> 方法被调用。</p>
+<hr>
+<p>在 RxJS 中创建这两种 Observable 的方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Hot and Connectable Observable</span><br><span class="line">let input5 &#x3D; document.querySelector(&#39;#i5&#39;);</span><br><span class="line">let p5 &#x3D; document.querySelector(&#39;#p5&#39;);</span><br><span class="line">let input5Stream &#x3D; Rx.Observable.fromEvent(input5, &#39;keyup&#39;)</span><br><span class="line">    .pluck(&#39;target&#39;, &#39;value&#39;)</span><br><span class="line">    .map(data &#x3D;&gt; &#123;</span><br><span class="line">        console.log(data);</span><br><span class="line">        return data;</span><br><span class="line">    &#125;)</span><br><span class="line">    .publish();&#x2F;&#x2F;调用 publish 之后 input5Stream 是一个 Connectable Observable</span><br><span class="line">    input5Stream.connect();&#x2F;&#x2F; 在调用 connect 方法之后，input5Stream 成为了 Hot Observable</span><br><span class="line">window.setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">    input5Stream.subscribe(data &#x3D;&gt; &#123;</span><br><span class="line">        p5.textContent &#x3D; data</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, 3000);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><hr>
+<ol>
+<li>可以多次发射信号</li>
+</ol>
+<hr>
+<ol start="2">
+<li>信号流可以被取消</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;Cancel a RxJS Observable</span><br><span class="line">const subscription &#x3D; Rx.Observable.create((observer) &#x3D;&gt; &#123;</span><br><span class="line">    let counter &#x3D; 0;</span><br><span class="line">    setInterval(() &#x3D;&gt; &#123;</span><br><span class="line">        counter++;</span><br><span class="line">        if (counter &gt; 10) &#123;</span><br><span class="line">            observer.onCompleted();</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            observer.onNext(counter);&#x2F;&#x2F;can be called many times</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, 500);</span><br><span class="line">&#125;).subscribe(counter &#x3D;&gt; p2.textContent &#x3D; counter,</span><br><span class="line">    (err) &#x3D;&gt; &#123;&#125;,</span><br><span class="line">    (completed) &#x3D;&gt; &#123;&#125;)</span><br><span class="line"></span><br><span class="line">Rx.Observable.fromEvent(stopBtn, &#39;click&#39;)</span><br><span class="line">    .subscribe((event) &#x3D;&gt; &#123;</span><br><span class="line">        &#x2F;&#x2F; cancel Observable</span><br><span class="line">        subscription.dispose();&#x2F;&#x2F; AutoDetachObserver-&gt;AbstractObserver-&gt;Observer</span><br><span class="line">    &#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol start="3">
+<li>提供了极其丰富的操作符来对异步数据流进行操作</li>
+<li>可以精确控制事件的进行过程</li>
+</ol>
+<ul>
+<li>可以在需要的时候才触发过程的执行和信号的发射</li>
+<li>可以在执行失败的时候重试等等</li>
+</ul>
+<ol start="5">
+<li>有序的流式操作符合人类的思维模式</li>
+<li>提供了很多类似数组方法（<a target="_blank" rel="noopener" href="https://www.google.com.tw/url?sa=t&rct=j&q=&esrc=s&source=web&cd=6&ved=0ahUKEwil7JCoh67SAhUIspQKHfJcCOIQFghJMAU&url=https%3a%2f%2fblogs%2emsdn%2emicrosoft%2ecom%2fie%2f2010%2f12%2f13%2fecmascript-5-part-2-array-extras%2f&usg=AFQjCNGT0T6C9tvVNhNo0_P3Ajy1Nu99JA">Array Extras</a>）的操作符，类比数组的方式对信号（数据）流进行处理。</li>
+<li>操作符具有比较清晰的语义（相比 Promise 的 then）</li>
+<li>无任何依赖，可以和多种框架良好的配合</li>
+</ol>
+<hr>
+<h3 id="不足"><a href="#不足" class="headerlink" title="不足"></a>不足</h3><ol>
+<li>内容和概念较多，学习成本较高</li>
+<li>链式操作很长，代码提示不好（Rx 很适合在强类型语境下使用）</li>
+<li>需要引入额外的库 （相比原生 Promise）</li>
+</ol>
+<hr>
+<h3 id="与-Promise对比的例子："><a href="#与-Promise对比的例子：" class="headerlink" title="与 Promise对比的例子："></a>与 Promise对比的例子：</h3><p>网络请求的实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; example promise net work</span><br><span class="line">let requestPromise &#x3D; function() &#123;</span><br><span class="line">    return new Promise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">        requestUrl(url).then(data &#x3D;&gt; resolve(data), err &#x3D;&gt; reject(failed));</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line">requestPromise().then(data &#x3D;&gt; &#123;</span><br><span class="line">    let temp &#x3D; data.ret_data;</span><br><span class="line">    &#x2F;&#x2F; 过滤数据</span><br><span class="line">    if (temp &amp;&amp; temp.length) &#123;</span><br><span class="line">        &#x2F;&#x2F;处理数据</span><br><span class="line">        let result &#x3D; processRtnData(temp);</span><br><span class="line">        displayData(result);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, err &#x3D;&gt; &#123;</span><br><span class="line">    console.log(err);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>Promise 实现<br>更关注控制流<br>描述怎么做的命令式编程风格</p>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; example rxjs net work</span><br><span class="line">Rx.Observable.fromPromise(requestUrl(url))</span><br><span class="line">    .filter(data &#x3D;&gt; data.ret_data &amp;&amp; data.ret_data.length &gt; 0)</span><br><span class="line">    .map(data &#x3D;&gt; processRtnData(data.ret_data))</span><br><span class="line">    .subscribe(data &#x3D;&gt; displayData(data));</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>RxJS 实现<br>更关注数据本身的流动，且流动是有序的<br>描述做什么的声明式代码<br>简洁直观，符合人的自然思维</p>
+<hr>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><hr>
+<h3 id="网络请求"><a href="#网络请求" class="headerlink" title="网络请求"></a>网络请求</h3><ol>
+<li>多个网络请求并发</li>
+<li>取消对进行中的网络请求</li>
+<li>实时搜索的节流功能</li>
+</ol>
+<hr>
+<h3 id="交互"><a href="#交互" class="headerlink" title="交互"></a>交互</h3><ol>
+<li>允许在一<br>个过程中多次发出信号（密码框）</li>
+<li>将 UI 事件直接转换为信号进行流式处理</li>
+</ol>
+<hr>
+<h2 id="Angular2-中-Rx-js-的应用"><a href="#Angular2-中-Rx-js-的应用" class="headerlink" title="Angular2 中 Rx.js 的应用;"></a>Angular2 中 Rx.js 的应用;</h2><p>Angular2 在框架级别集成了 RxJS</p>
+<ol>
+<li>facade 模块中的 async.js<br> |EventEmitter 用于为 components 提供自定义事件的支持</li>
+<li>forms 模块</li>
+<li>Http 模块</li>
+</ol>
+<hr>
+<p>参考：<br><a target="_blank" rel="noopener" href="http://reactivex.io/">ReactiveX</a><br><a target="_blank" rel="noopener" href="https://github.com/Reactive-Extensions/RxJS">RxJS</a><br><a target="_blank" rel="noopener" href="http://reactivex.io/documentation/operators.html">ReactiveX 核心操作符</a><br><a target="_blank" rel="noopener" href="https://yuyang041060120.github.io/2016/05/16/observable-vs-promise/">Promise vs Observable</a><br><a target="_blank" rel="noopener" href="http://www.jianshu.com/p/07266f30ce5f">Subject详解</a><br><a target="_blank" rel="noopener" href="http://reactivex.io/documentation/scheduler.html">Scheduler</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+              <a href="/tags/%E5%BA%93/" rel="tag"># 库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/02/05/Front_End/js-fondation/notice-of-memory-cache/" rel="prev" title="使用内存缓存需要注意的一个问题">
+                  <i class="fa fa-chevron-left"></i> 使用内存缓存需要注意的一个问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/07/04/Front_End/Angular/AngularChangeDetection/" rel="next" title="详解 Angular2 的变更检查原理">
+                  详解 Angular2 的变更检查原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

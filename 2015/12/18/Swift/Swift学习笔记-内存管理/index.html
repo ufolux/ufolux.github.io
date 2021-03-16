@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="避免循环引用Swift 和 Objective-C 一样使用了自动引用计数来进行内存管理。引用计数的内存管理就无可避慢的会产生循环引用这种问题。Swift 针对这个问题也给出了 weak 和 unowned 两种声明非持有所有权的引用修饰符。二者的区别在于 weak 和 Obj-C 中的 weak 完全相同，声明一个弱引用，不会增加被引用内存的引用计数，在所指向的内存被释放时指针会自动被置为 ni">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift学习笔记-内存管理">
+<meta property="og:url" content="https://ufolux.github.io/2015/12/18/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="避免循环引用Swift 和 Objective-C 一样使用了自动引用计数来进行内存管理。引用计数的内存管理就无可避慢的会产生循环引用这种问题。Swift 针对这个问题也给出了 weak 和 unowned 两种声明非持有所有权的引用修饰符。二者的区别在于 weak 和 Obj-C 中的 weak 完全相同，声明一个弱引用，不会增加被引用内存的引用计数，在所指向的内存被释放时指针会自动被置为 ni">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-12-18T14:12:49.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.108Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="学习">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2015/12/18/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Swift学习笔记-内存管理 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">避免循环引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#autoreleasepool"><span class="nav-number">2.</span> <span class="nav-text">@autoreleasepool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%80%BC%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">值类型和引用类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E6%8C%87%E9%92%88%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">C 指针的内存管理</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2015/12/18/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift学习笔记-内存管理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2015-12-18 22:12:49" itemprop="dateCreated datePublished" datetime="2015-12-18T22:12:49+08:00">2015-12-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="避免循环引用"><a href="#避免循环引用" class="headerlink" title="避免循环引用"></a>避免循环引用</h2><p>Swift 和 Objective-C 一样使用了自动引用计数来进行内存管理。引用计数的内存管理就无可避慢的会产生循环引用这种问题。Swift 针对这个问题也给出了 <code>weak</code> 和 <code>unowned</code> 两种声明非持有所有权的引用修饰符。二者的区别在于 <code>weak</code> 和 Obj-C 中的 <code>weak</code> 完全相同，声明一个弱引用，不会增加被引用内存的引用计数，在所指向的内存被释放时指针会自动被置为 <code>nil</code>。<code>unowned</code> 则类似于 Obj-C 中的 <code>unsafe_unretain</code> 修饰符，作用和 <code>weak</code> 相同，但在所致内存被释放后不会被自动置为 <code>nil</code>，而是<strong>保留指向原来内存空间的引用</strong>，若对象已经被释放后对其发生了方法调用则会造成崩溃。</p>
+<p>苹果的推荐使用方法是：<strong>在能够确定在访问时对象一定没有被释放的情况下使用 <code>unowned</code>，在不能够确定时使用 <code>weak</code></strong>，这么做的原因我想是因为使用 <code>weak</code> 时由于在内存释放时需要对指针进行置空操作，耗费了一定的性能，所以能够确定的情况下使用 <code>unowned</code> 比较好。</p>
+<p>使用弱引用的情况：</p>
+<ol>
+<li>设置 delegate 时</li>
+<li>在 self 持有的闭包中引用 self 时</li>
+</ol>
+<p>可以这样标注闭包中的元素，指定它们的内存管理语义：</p>
+<span id="more"></span>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">getaclosure(&quot;as&quot;) &#123;[weak self] (name) -&gt; Int in</span><br><span class="line">            </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如需要标注多个元素则需要使用逗号将它们分开：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">getaclosure(&quot;as&quot;) &#123;[weak self, unowned someObject] (name) -&gt; Int in</span><br><span class="line">            </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="autoreleasepool"><a href="#autoreleasepool" class="headerlink" title="@autoreleasepool"></a>@autoreleasepool</h2><p>Swift 同样采用 ARC 管理内存，所以 autoreleasepool 这个东西也照旧被搬了过来。自动释放池的作用是将所有需要<strong>稍后释放</strong>的对象放进去，在使用之后进行统一的释放。避免对象在尚未被使用之前就已经被释放。是一种延迟释放的方式。在 Swift 项目中不再需要像 Objective-C 那样在 main 函数手动为整个程序包一个 @autoreleasepool 了，编译器已经帮你完成了这些操作。但是有一种情况还是需要自动释放，当一个代码块生成了大量的 autorelease 对象的时候，需要使用 autoreleasepool 来包裹这部分代码。</p>
+<p>在循环中，使用工厂方法创建对象的时候，往往创建出的都是 autorelease 对象，这是需要使用 autorelease 闭包来进行包装。防止内存突增。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for _ in 1...1000 &#123;</span><br><span class="line">   let date &#x3D; NSData.dataWithContentsOfMappedFile(&quot;filename&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上代码会造成内存的暴涨，因为在循环过程中产生了大量的 autorelease 变量，这些变量并不会立即被释放，而是在 runloop 周期执行结束时才会被释放。正确的做法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for _ in 1...1000 &#123;</span><br><span class="line">    autoreleasepool &#123;</span><br><span class="line">       let date &#x3D; NSData.dataWithContentsOfMappedFile(&quot;filename&quot;)</span><br><span class="line">                </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样做就不会有问题了。</p>
+<p>但是需要注意的是，在 Swift 1.1 之后，以上的工厂方法生成对象已经不是 Swift 推荐的做法，推荐的做法是使用可以返回 nil 的初始化方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let date &#x3D; Data(contentsOfFile: path)</span><br></pre></td></tr></table></figure>
+<p>这样就不会存在自动释放的问题了，每次循环结束的时候 ARC 会自动为我们处理好内存管理的事情。</p>
+<h2 id="值类型和引用类型"><a href="#值类型和引用类型" class="headerlink" title="值类型和引用类型"></a>值类型和引用类型</h2><p>和大多数语言一样，Swift 的数据类型分为值类型和引用类型两种，值类型在传递和复制的时候将会进行复制，引用类型则只会使用引用对象的一个<code>指向</code>。</p>
+<blockquote>
+<p>Swift 中的 <em>struct 和 enum</em> 定义的类型都是值类型，<em>class</em> 定义的类型都是引用类型。</p>
+</blockquote>
+<p>这样一来我们就知道一个问题，Swift 的所有内建类型全部都是值类型的。甚至连集合类型都是值类型的数据。这也是 Swift 和其他主流语言的一个比较大的区别。清一色的值类型数据给 Swift 带来了较好的性能，因为相对于使用引用类型而言，使用值类型的数据可以有效的减少堆上内存的分配和回收，这无疑会有很大的性能提升。值类型的复制肯定也会产生开销，但是在 Swift 的精心设计下，应将这种复制的开销降到了最低。为什么这么说呢，看代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">func test(arr:[Int])&#123;</span><br><span class="line">    print(arr.first!)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var a &#x3D; [1,2,3]</span><br><span class="line">var b &#x3D; a</span><br><span class="line">let c &#x3D; b</span><br><span class="line">test(c)</span><br></pre></td></tr></table></figure>
+<p>以上代码中的 <code>a,b,c</code> 和方法中的 <code>arr</code> 事实上指向的是同一块内存，这样的代码并没有改变 <code>a</code> 的内部数据，Swift 对此进行了优化，在没有必要复制的情况下不会对值类型进行复制操作。这样的值类型操作完全是在栈内存上进行的，这里我个人觉得可以理解为是对栈内存的“引用”，并没有产生任何的堆内存分配和释放操作，运行效率很高。</p>
+<p>以下代码会产生复制的动作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">func test(arr:[Int])&#123;</span><br><span class="line">    print(arr.first!)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var a &#x3D; [1,2,3]</span><br><span class="line">var b &#x3D; a</span><br><span class="line">b.append(4)</span><br></pre></td></tr></table></figure>
+<p>由于改变了数组的内容，为了遵守值类型语义，所以会对其进行复制操作。</p>
+<p>对于集合类型，在复制的时候会将集合类型内部的值类型元素进行复制，集合类型内部的引用类型元素则会被复制一份引用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class testobj &#123;</span><br><span class="line">    var num &#x3D; 0</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var obj &#x3D; testobj()</span><br><span class="line">var arr &#x3D; [obj]</span><br><span class="line">var b &#x3D; arr</span><br><span class="line">b.append(obj)</span><br><span class="line"></span><br><span class="line">obj.num &#x3D; 100</span><br><span class="line">print(b[0].num) &#x2F;&#x2F;100</span><br><span class="line">print(b[1].num) &#x2F;&#x2F;100 </span><br><span class="line">&#x2F;&#x2F;数组中复制的是obj的引用，对obj的操作使得b[0],b[1]同时受到了影响</span><br></pre></td></tr></table></figure>
+<p>通过以上可以看出，对于容器内容数据量小变化少，容器个数多，对内容变化不频繁的情况，使用 Swift 值类型集合会显著的提高性能，降低开销。对于容器内容数据量大，且需要频繁对容器进行内容的增减操作的情况，使用 Cocoa 提供的引用类型集合会更好，这样可以避免在改变内容的时候进行大量的复制操作。具体的使用需要根据实际情况来考虑。</p>
+<h2 id="C-指针的内存管理"><a href="#C-指针的内存管理" class="headerlink" title="C 指针的内存管理"></a>C 指针的内存管理</h2><p>在 Swift 中直接对指针进行操作是不提倡的，但是为了和 C 语言接口进行交互，Swift 还是提供了操作指针的方法。那就是 <code>UnsafePointer</code> 系列类型。这个系列目前（Swift 2.2）包括以下几种类型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">UnsafePointer</span><br><span class="line">UnsafeMutablePointer</span><br><span class="line">UnsafeBufferPointer</span><br><span class="line">UnsafeMutableBufferPointer</span><br><span class="line">COpaquePointer</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>UnsafePointer </p>
+<p> 是对 C 语言指针的包装类型，在 Swift 中需要遵守统一的命名规则，对于 C 语言的基础类型在 Swift 中都有着以大写 C 开头的对应类型。如果我们 C API 接收的是一个 <code>int*</code> 类型的指针参数，这时对应的应该是用一个 <code>UnsafePointer&lt;CInt&gt;</code> 类型作为 Swift 的参数类型。 这里 UnsafePointer 对应的是不可变的版本的<code>const int *</code> <strong>常量指针</strong></p>
+</li>
+<li><p>UnsafeMutablePointer</p>
+<p> 是 UnsafePointer 的可变版本。</p>
+</li>
+<li><p>UnsafeBufferPointer</p>
+<p> 是不可变数组指针的包装类型，使用 <code>baseAddress</code> 取得 <code>UnsafePointer</code> 来对数组元素使用 <code>memory</code> 进行访问。</p>
+</li>
+<li><p>UnsafeMutableBufferPointer</p>
+<p> 是可变数组的包装类型，使用 <code>baseAddress</code> 取得 <code>UnsafeMutablePointer</code> 来对数组元素使用 <code>memory</code> 进行访问。</p>
+</li>
+<li><p>COpaquePointer</p>
+<p> 这是一类比较特殊的指针，用于包装 C 语言中那些在头文件中无法找到具体定义，只能拿到类型和名字的指针，即<code>不透明指针</code>。</p>
+</li>
+<li><p>CFunctionPointer</p>
+<p> 顾名思义，函数指针。形式如：<code>CFunctionPointer&lt;()-&gt;CInt&gt;</code></p>
+</li>
+</ol>
+<p>Swift 自动引用计数无法直接管理指针类型对象的内存。这部分的内存需要我们手动来管理。对于 <code>UnsafePointer</code> 在 Swift 中我们无法直接创建这个类型的实例，只能创建 <code>UnsafeMutablePointer</code> 的实例。一般的步骤是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">通过 alloc 向系统申请一块内存；</span><br><span class="line">使用 initialize 方法初始化这块内存；</span><br><span class="line">然后使用这块内存；</span><br><span class="line">调用 destroy 方法销毁内存；</span><br><span class="line">使用 dealloc 方法销毁指针本身；</span><br><span class="line">将指针置为 nil 。</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>需要把握的原则是，内存由谁创建就要由谁销毁。除非 API 文档明确告知需要用户来负责销毁内存。alloc 和 destroy dealloc 要成对的出现。</p>
+</blockquote>
+<p>需要说明的是，这里也可以使用 malloc 和 calloc 申请内存，Swift 提供了这两个方法均返回 UnsafeMutablePointer 类型的对象，这时需要使用 free 方法来释放内存。</p>
+<p>对于这些直接操作内存的方法，Swift 中是十分不提倡的，因为会带来未知的错误和难以调试的 bug ，在使用这些方法之前，最好搞清楚自己在做什么，是不是真的别无他法。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag"># 学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/12/18/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%8F%AF%E9%80%89%E5%8D%8F%E8%AE%AE/" rel="prev" title="Swift学习笔记-可选协议">
+                  <i class="fa fa-chevron-left"></i> Swift学习笔记-可选协议
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/12/20/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%8A%A8%E6%80%81%E7%89%B9%E6%80%A7/" rel="next" title="Swift学习笔记-动态特性">
+                  Swift学习笔记-动态特性 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

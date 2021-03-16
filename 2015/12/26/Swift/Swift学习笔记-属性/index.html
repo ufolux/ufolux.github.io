@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="属性class 可以拥有属性。属性分为两种，存储属性和计算属性。 存储属性最简单的情形，作为特定类或结构实例的一部分，存储属性存储着常量或者变量的值。存储属性可分为变量存储属性（关键字var描述）和常量存储属性（关键字let描述）。 当定义存储属性时，你可以提供一个默认值，这些在“默认属性值”描述。在初始化过程中你也可以设置或改变存储属性的初值。这个准则对常量存储属性也同样适用（在“初始化过程中改">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift学习笔记-属性">
+<meta property="og:url" content="https://ufolux.github.io/2015/12/26/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%B1%9E%E6%80%A7/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="属性class 可以拥有属性。属性分为两种，存储属性和计算属性。 存储属性最简单的情形，作为特定类或结构实例的一部分，存储属性存储着常量或者变量的值。存储属性可分为变量存储属性（关键字var描述）和常量存储属性（关键字let描述）。 当定义存储属性时，你可以提供一个默认值，这些在“默认属性值”描述。在初始化过程中你也可以设置或改变存储属性的初值。这个准则对常量存储属性也同样适用（在“初始化过程中改">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-12-26T05:11:52.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.109Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="学习">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2015/12/26/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%B1%9E%E6%80%A7/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Swift学习笔记-属性 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7"><span class="nav-number">1.</span> <span class="nav-text">属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%B1%9E%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">存储属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%B1%9E%E6%80%A7%E4%B8%8E%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F"><span class="nav-number">1.1.1.</span> <span class="nav-text">存储属性与实例变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7"><span class="nav-number">1.2.</span> <span class="nav-text">计算属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#setter%E5%A3%B0%E6%98%8E%E7%9A%84%E7%AE%80%E7%95%A5%E5%86%99%E6%B3%95"><span class="nav-number">1.2.1.</span> <span class="nav-text">setter声明的简略写法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AA%E8%AF%BB%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7"><span class="nav-number">1.2.2.</span> <span class="nav-text">只读计算属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E5%B1%9E%E6%80%A7"><span class="nav-number">1.3.</span> <span class="nav-text">类型属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E5%B1%9E%E6%80%A7%E5%8F%A5%E6%B3%95"><span class="nav-number">1.3.1.</span> <span class="nav-text">类型属性句法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%AE%BE%E7%BD%AE%E7%B1%BB%E5%9E%8B%E5%B1%9E%E6%80%A7"><span class="nav-number">1.3.2.</span> <span class="nav-text">查询与设置类型属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E8%A7%82%E5%AF%9F%E8%80%85"><span class="nav-number">1.4.</span> <span class="nav-text">属性观察者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-number">1.5.</span> <span class="nav-text">注意</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2015/12/26/Swift/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%B1%9E%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift学习笔记-属性
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2015-12-26 13:11:52" itemprop="dateCreated datePublished" datetime="2015-12-26T13:11:52+08:00">2015-12-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h1><p>class 可以拥有属性。属性分为两种，存储属性和计算属性。</p>
+<h2 id="存储属性"><a href="#存储属性" class="headerlink" title="存储属性"></a>存储属性</h2><p>最简单的情形，作为特定类或结构实例的一部分，存储属性存储着常量或者变量的值。存储属性可分为变量存储属性（关键字var描述）和常量存储属性（关键字let描述）。</p>
+<p>当定义存储属性时，你可以提供一个默认值，这些在“默认属性值”描述。在初始化过程中你也可以设置或改变存储属性的初值。这个准则对常量存储属性也同样适用（在“初始化过程中改变常量属性”描述）</p>
+<span id="more"></span>
+<p>下面的例子定义了一个叫FixedLengthRange的结构，它描述了一个一定范围内的整数值，当创建这个结构时，范围长度是不可以被改变的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">struct FixedLengthRange &#123;</span><br><span class="line">var firstValue: Int</span><br><span class="line">let length: Int</span><br><span class="line">&#125;</span><br><span class="line">var rangeOfThreeItems &#x3D; FixedLengthRange(firstValue: 0, length: 3)</span><br><span class="line">&#x2F;&#x2F; the range represents integer values 0, 1, and 2</span><br><span class="line">rangeOfThreeItems.firstValue &#x3D; 6</span><br><span class="line">&#x2F;&#x2F; the range now represents integer values 6, 7, and 8</span><br></pre></td></tr></table></figure>
+<p>因为rangeOfFourItems是一个常量（let），即便firstValue是一个变量属性，它的值也是不可以被改变的</p>
+<p>这样的特性是因为结构是值类型。当一个值类型实例作为常量而存在，它的所有属性也作为常量而存在。</p>
+<p>而这个特性对类并不适用，因为类是引用类型。如果你将引用类型的实例赋值给常量，依然能够改变实例的变量属性。</p>
+<p>Lazy Stored Properties（懒惰存储属性？）<br>懒惰存储属性是当它第一次被使用时才进行初值计算。通过在属性声明前加上@lazy来标识一个懒惰存储属性。</p>
+<p>注意<br>必须声明懒惰存储属性为变量属性（通过var），因为它的初始值直到实例初始化完成之后才被检索。常量属性在实例初始化完成之前就应该被赋值，因此常量属性不能够被声明为懒惰存储属性。</p>
+<p>当属性初始值因为外部原因，在实例初始化完成之前不能够确定时，就要定义成懒惰存储属性。当属性初始值需要复杂或高代价的设置，在它需要时才被赋值时，懒惰存储属性就派上用场了。</p>
+<p>下面的例子使用懒惰存储属性来防止类中不必要的初始化操作。它定义了类DataImporter和类DataManager：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class DataImporter &#123;</span><br><span class="line">&#x2F;*DataImporter is a class to import data from an external file.     The class is assumed to take a non-trivial amount of time to initialize.*&#x2F;</span><br><span class="line">var fileName &#x3D; &quot;data.txt&quot;</span><br><span class="line">&#x2F;&#x2F; the DataImporter class would provide data importing functionality here</span><br><span class="line">&#125;</span><br><span class="line">class DataManager &#123;</span><br><span class="line">@lazy var importer &#x3D; DataImporter()</span><br><span class="line">var data &#x3D; String[]()</span><br><span class="line">&#x2F;&#x2F; the DataManager class would provide data management functionality here</span><br><span class="line">&#125;</span><br><span class="line">let manager &#x3D; DataManager()</span><br><span class="line">manager.data +&#x3D; &quot;Some data&quot;</span><br><span class="line">manager.data +&#x3D; &quot;Some more data&quot;</span><br><span class="line">&#x2F;&#x2F; the DataImporter instance for the importer property has not yet been created</span><br></pre></td></tr></table></figure>
+<p>DataImporter的实例importer只有在当它在第一次被访问时才被创建。</p>
+<h3 id="存储属性与实例变量"><a href="#存储属性与实例变量" class="headerlink" title="存储属性与实例变量"></a>存储属性与实例变量</h3><p>如果你使用过Objective－C，你应该知道它提供两种方式来存储作为类实例一部分的值与引用。除了属性，你可以使用实例变量作为属性值的后备存储</p>
+<p>Swift使用一个单一属性声明来统一这些概念。一个Swift属性没有与之相符的实例变量，并且属性的后备存储也不能直接访问。这防止了在不通上下文中访问值的混淆，并且简化属性声明成为一个单一的、最终的语句。关于属性的所有信息－包含名称、类型和内存管理等－作为类型定义的一部分而定义。</p>
+<h2 id="计算属性"><a href="#计算属性" class="headerlink" title="计算属性"></a>计算属性</h2><p>除了存储属性，类、结构和枚举能够定义计算属性。计算属性并不存储值，它提供getter和可选的setter来间接地获取和设置其它的属性和值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">struct Point &#123;</span><br><span class="line">    var x &#x3D; 0.0, y &#x3D; 0.0</span><br><span class="line">&#125;</span><br><span class="line">struct Size &#123;</span><br><span class="line">    var width &#x3D; 0.0, height &#x3D; 0.0</span><br><span class="line">&#125;</span><br><span class="line">struct Rect &#123;</span><br><span class="line">    var origin &#x3D; Point()</span><br><span class="line">    var size &#x3D; Size()</span><br><span class="line">    var center: Point &#123;</span><br><span class="line">        get &#123;</span><br><span class="line">            let centerX &#x3D; origin.x + (size.width &#x2F; 2)</span><br><span class="line">            let centerY &#x3D; origin.y + (size.height &#x2F; 2)</span><br><span class="line">            return Point(x: centerX, y: centerY)</span><br><span class="line">        &#125;</span><br><span class="line">        set(newCenter) &#123;</span><br><span class="line">            origin.x &#x3D; newCenter.x - (size.width &#x2F; 2)</span><br><span class="line">            origin.y &#x3D; newCenter.y - (size.height &#x2F; 2)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">var square &#x3D; Rect(origin: Point(x: 0.0, y: 0.0),size: Size(width: 10.0, height: 10.0))</span><br><span class="line">let initialSquareCenter &#x3D; square.center</span><br><span class="line">square.center &#x3D; Point(x: 15.0, y: 15.0)</span><br><span class="line">print(&quot;square.origin is now at (\(square.origin.x), \(square.origin.y))&quot;)</span><br><span class="line">&#x2F;&#x2F; prints &quot;square.origin is now at (10.0, 10.0)&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="setter声明的简略写法"><a href="#setter声明的简略写法" class="headerlink" title="setter声明的简略写法"></a>setter声明的简略写法</h3><p>如果计算属性的setter方法没有将被设置的值定义一个名称，将会默认地使用newValue这个名称来代替。下面的例子采用了这样一种特性，定义了Rect结构的新版本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">struct AlternativeRect &#123;</span><br><span class="line">    var origin &#x3D; Point()</span><br><span class="line">    var size &#x3D; Size()</span><br><span class="line">    var center: Point &#123;</span><br><span class="line">        get &#123;</span><br><span class="line">            let centerX &#x3D; origin.x + (size.width &#x2F; 2)</span><br><span class="line">            let centerY &#x3D; origin.y + (size.height &#x2F; 2)</span><br><span class="line">            return Point(x: centerX, y: centerY)</span><br><span class="line">        &#125;</span><br><span class="line">        set &#123;</span><br><span class="line">            origin.x &#x3D; newValue.x - (size.width &#x2F; 2)</span><br><span class="line">            origin.y &#x3D; newValue.y - (size.height &#x2F; 2)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="只读计算属性"><a href="#只读计算属性" class="headerlink" title="只读计算属性"></a>只读计算属性</h3><p>只读计算属性只带有一个getter方法，通过点操作符，可以放回属性值，但是不能修改它的值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">struct Cuboid &#123;</span><br><span class="line">    var width &#x3D; 0.0, height &#x3D; 0.0, depth &#x3D; 0.0</span><br><span class="line">    var volume: Double &#123;</span><br><span class="line">        return width * height * depth</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">let fourByFiveByTwo &#x3D; Cuboid(width: 4.0, height: 5.0, depth: 2.0)</span><br><span class="line">print(&quot;the volume of fourByFiveByTwo is \(fourByFiveByTwo.volume)&quot;)</span><br><span class="line">&#x2F;&#x2F; prints &quot;the volume of fourByFiveByTwo is 40.0</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong></p>
+<p>应该使用var关键字将计算属性(包含只读计算属性)定义成变量属性，因为它们的值并不是固定的。let关键字只被常量属性说使用，以表明一旦被设置它们的值就是不可改变的了</p>
+<h2 id="类型属性"><a href="#类型属性" class="headerlink" title="类型属性"></a>类型属性</h2><h3 id="类型属性句法"><a href="#类型属性句法" class="headerlink" title="类型属性句法"></a>类型属性句法</h3><p>在C和Objective－C中，定义静态常量、变量和全局静态变量一样。但是在swift中，类型属性的定义要放在类型定义中进行，在类型定义的大括号中，显示地声明它在类型中的作用域。</p>
+<p>对值类型而言，定义类型属性使用static关键字，而定义类类型的类型属性使用class关键字。下面的例子展示了存储和计算类型属性的用法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">struct SomeStructure &#123;</span><br><span class="line">    static var storedTypeProperty &#x3D; &quot;Some value.&quot;</span><br><span class="line">    static var computedTypeProperty: Int &#123;</span><br><span class="line">        &#x2F;&#x2F; return an Int value here</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">enum SomeEnumeration &#123;</span><br><span class="line">    static var storedTypeProperty &#x3D; &quot;Some value.&quot;     static var computedTypeProperty: Int &#123;     &#x2F;&#x2F; return an Int value here</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class SomeClass &#123;</span><br><span class="line">    class var computedTypeProperty: Int &#123;</span><br><span class="line">        &#x2F;&#x2F; return an Int value here</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注意:</strong></p>
+<p>上面的例子是针对只读计算类型属性而言的，不过你也可以像计算实例属性一样定义可读可写的计算类型属性</p>
+<h3 id="查询与设置类型属性"><a href="#查询与设置类型属性" class="headerlink" title="查询与设置类型属性"></a>查询与设置类型属性</h3><p>像实例属性一样，类型属性通过点操作符来查询与设置。但是类型属性的查询与设置是针对类型而言的，并不是针对类型的实例。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">println(SomeClass.computedTypeProperty)</span><br><span class="line">&#x2F;&#x2F; prints &quot;42&quot;</span><br><span class="line">print(SomeStructure.storedTypeProperty)</span><br><span class="line">&#x2F;&#x2F; prints &quot;Some value.&quot;</span><br><span class="line">SomeStructure.storedTypeProperty &#x3D; &quot;Another value.&quot;</span><br><span class="line">print(SomeStructure.storedTypeProperty)</span><br><span class="line">&#x2F;&#x2F; prints &quot;Another value.</span><br></pre></td></tr></table></figure>
+
+<h2 id="属性观察者"><a href="#属性观察者" class="headerlink" title="属性观察者"></a>属性观察者</h2><p>属性观察者观察属性值的改变并对此做出响应。当设置属性的值时，属性观察者就被调用，即使当新值同原值相同时也会被调用。</p>
+<p>除了懒惰存储属性，你可以为任何存储属性加上属性观察者定义。另外，通过重写子类属性，也可以继承属性（存储或计算）加上属性观察者定义。属性重写在“重写”章节定义。</p>
+<p><strong>注意</strong></p>
+<p>不必为未重写的计算属性定义属性观察者，因为可以通过它的setter方法直接对值的改变做出响应</p>
+<p>定义属性的观察者时，你可以单独或同时使用下面的方法：</p>
+<p>willSet：设置值前被调用</p>
+<p>didSet：设置值后立刻被调用</p>
+<p>当实现willSet观察者时，新的属性值作为常量参数被传递。你可以为这个参数起一个名字，如果不的话，这个参数就默认地被命名成newValue。</p>
+<p>在实现didSet观察者时也是一样，只不过传递的产量参数表示的是旧的属性值。</p>
+<p><strong>注意</strong></p>
+<p>属性初始化时，willset和didSet并不会被调用。只有在初始化上下文之外，当设置属性值时才被调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">class StepCounter &#123;</span><br><span class="line">    var totalSteps: Int &#x3D; 0 &#123;</span><br><span class="line">        willSet(newTotalSteps) &#123;</span><br><span class="line">            print(&quot;About to set totalSteps to \(newTotalSteps)&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">        didSet &#123;</span><br><span class="line">            if totalSteps &gt; oldValue  &#123;</span><br><span class="line">                print(&quot;Added \(totalSteps - oldValue) steps&quot;)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">let stepCounter &#x3D; StepCounter()</span><br><span class="line">stepCounter.totalSteps &#x3D; 200</span><br><span class="line">&#x2F;&#x2F; About to set totalSteps to 200</span><br><span class="line">&#x2F;&#x2F; Added 200 steps</span><br><span class="line">stepCounter.totalSteps &#x3D; 360</span><br><span class="line">&#x2F;&#x2F; About to set totalSteps to 360</span><br><span class="line">&#x2F;&#x2F; Added 160 steps</span><br><span class="line">stepCounter.totalSteps &#x3D; 896</span><br><span class="line">&#x2F;&#x2F; About to set totalSteps to 896</span><br><span class="line">&#x2F;&#x2F; Added 536 steps</span><br></pre></td></tr></table></figure>
+
+<p>类StepCounter声明了一个Int类型的、含有willSet和didSet观察者的存储属性totalSteps。当这个属性被赋予新值时，willSet和didSet将会被调用，即使新值和旧值是相同的。</p>
+<p>例子中的willSet观察者为参数起了个新的名字newTotalSteps，它简单地打印了即将被设置的值。</p>
+<p>当totalSteps值被更新时，didSet观察者被调用，它比较totalSteps的新值和旧值，如果新值比旧值大，就打印所增加的步数。didSet并没有为旧值参数命名，在本例中，将会使用默认的名字oldValue来表示旧的值。</p>
+<p><strong>注意</strong></p>
+<p>如果通过didSet来设置属性的值，即使属性值刚刚被设置过，起作用的也将会是didSet，即新值是didSet设置的值，在 didSet 中不要设置属性的值，否则程序将陷入死循环。</p>
+<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>值类型（结构体，枚举）中既可以定义存储属性也可以定义计算属性；引用类型（类）</p>
+<p>参见：<a target="_blank" rel="noopener" href="http://letsswift.com/2014/06/properties/">http://letsswift.com/2014/06/properties/</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag"># 学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/12/25/Translation/%E3%80%90%E7%83%AD%E6%96%87%E3%80%91iOS%20%E8%B5%84%E6%BA%90%E5%A4%A7%E5%85%A8/" rel="prev" title="iOS 资源列表">
+                  <i class="fa fa-chevron-left"></i> iOS 资源列表
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/01/23/Compiler/%E6%B1%87%E7%BC%96%E7%9F%A5%E8%AF%86%E8%A1%A5%E5%85%85/" rel="next" title="x86 汇编知识补充">
+                  x86 汇编知识补充 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

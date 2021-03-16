@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="如何使用 Webpack 首先安装 Webpack 和 webpack-dev-server$ npm i -g webpack webpack-dev-server（webpack-dev-server 是用来在本地启动服务器方便本地调试而安装的） 运行 $ webpack -h 命令可以显示帮助信息，说明 webpack 已经安装完成。   在常规项目开发中，更好的做法是将 webpack 直">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Webpack入门">
+<meta property="og:url" content="https://ufolux.github.io/2016/08/26/Front_End/tools/introduce-webpack/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="如何使用 Webpack 首先安装 Webpack 和 webpack-dev-server$ npm i -g webpack webpack-dev-server（webpack-dev-server 是用来在本地启动服务器方便本地调试而安装的） 运行 $ webpack -h 命令可以显示帮助信息，说明 webpack 已经安装完成。   在常规项目开发中，更好的做法是将 webpack 直">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-08-26T09:49:57.000Z">
+<meta property="article:modified_time" content="2021-03-11T07:20:00.098Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="工具">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2016/08/26/Front_End/tools/introduce-webpack/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Webpack入门 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-Webpack"><span class="nav-number">1.</span> <span class="nav-text">如何使用 Webpack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Webpack%E6%98%AF%E4%B8%AA%E5%95%A5%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">Webpack是个啥？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">5.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2016/08/26/Front_End/tools/introduce-webpack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Webpack入门
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-08-26 17:49:57" itemprop="dateCreated datePublished" datetime="2016-08-26T17:49:57+08:00">2016-08-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 15:20:00" itemprop="dateModified" datetime="2021-03-11T15:20:00+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E9%92%B1%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">大钱端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="如何使用-Webpack"><a href="#如何使用-Webpack" class="headerlink" title="如何使用 Webpack"></a>如何使用 Webpack</h2><ol>
+<li>首先安装 Webpack 和 webpack-dev-server<br><code>$ npm i -g webpack webpack-dev-server</code>（webpack-dev-server 是用来在本地启动服务器方便本地调试而安装的）</li>
+<li>运行 <code>$ webpack -h</code> 命令可以显示帮助信息，说明 webpack 已经安装完成。</li>
+</ol>
+<blockquote>
+<p>在常规项目开发中，更好的做法是将 webpack 直接写入 package.json 中方便维护<br><code>$ npm init
+$ npm i webpack --save-dev</code></p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="Webpack是个啥？"><a href="#Webpack是个啥？" class="headerlink" title="Webpack是个啥？"></a>Webpack是个啥？</h2><p>webpack 是一个类似 Gulp 和 Grunt 的前端构建工具，它可以用来进行代码和资源的模块化，使用者可以使用它对项目方便地进行依赖管理；可以使用 <a target="_blank" rel="noopener" href="http://madscript.com/html5/datauri-best-practice/">Data URI</a> 来替换体积较小的图片文件，来提升图片的加载速度。除此之外，还可以使用自定义的插件对项目进行自动化构建操作。</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>每个项目下都必须配置有一个 webpack.config.js，它的作用如同 gulpfile.js/Gruntfile.js ，告诉 webpack 它需要做什么。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">var webpack &#x3D; require(&#39;webpack&#39;);</span><br><span class="line">var commonsPlugin &#x3D; new webpack.optimize.CommonsChunkPlugin(&#39;common.js&#39;);</span><br><span class="line"></span><br><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">    &#x2F;&#x2F;插件项</span><br><span class="line">    plugins: [commonsPlugin],</span><br><span class="line">    &#x2F;&#x2F;页面入口文件配置</span><br><span class="line">    entry: &#123;</span><br><span class="line">        page1 : &#39;.&#x2F;src&#x2F;js&#x2F;page&#x2F;page1.js&#39;,&#x2F;&#x2F;支持数组类型</span><br><span class="line">        page2 : [&#39;.&#x2F;src&#x2F;js&#x2F;page&#x2F;page2.js&#39;,&#39;.&#x2F;src&#x2F;js&#x2F;page&#x2F;page3.js&#39;]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F;入口文件输出配置</span><br><span class="line">    output: &#123;</span><br><span class="line">        path: &#39;dist&#x2F;js&#x2F;page&#39;,&#x2F;&#x2F;可以省略，默认输出在配置文件的目录下</span><br><span class="line">        filename: &#39;[name].js&#39;&#x2F;&#x2F;name就是entry中的key</span><br><span class="line">    &#125;,</span><br><span class="line">    module: &#123;</span><br><span class="line">        &#x2F;&#x2F;加载器配置</span><br><span class="line">        loaders: [</span><br><span class="line">            &#x2F;&#x2F;test配置要匹配的文件后缀，loader配置要是用的加载器（用!来分割多个加载器，以下代码中的-loader可以不写，?来为加载器传入参数）</span><br><span class="line">            &#123; test: &#x2F;\.css$&#x2F;, loader: &#39;style-loader!css-loader&#39; &#125;,</span><br><span class="line">            &#x2F;&#x2F;.js 文件使用 jsx-loader 来编译处理</span><br><span class="line">            &#123; test: &#x2F;\.js$&#x2F;, loader: &#39;jsx-loader?harmony&#39; &#125;,</span><br><span class="line">            &#x2F;&#x2F;.scss 文件使用 style-loader、css-loader 和 sass-loader 来编译处理</span><br><span class="line">            &#123; test: &#x2F;\.scss$&#x2F;, loader: &#39;style!css!sass?sourceMap&#39;&#125;,</span><br><span class="line">            &#x2F;&#x2F;图片文件使用 url-loader 来处理，小于8kb的直接转为base64</span><br><span class="line">            &#123; test: &#x2F;\.(png|jpg)$&#x2F;, loader: &#39;url-loader?limit&#x3D;8192&#39;&#125;</span><br><span class="line">            </span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F;其它解决方案配置</span><br><span class="line">    resolve: &#123;</span><br><span class="line">        &#x2F;&#x2F;配置查找 module 的根路径</span><br><span class="line">        root: &#39;&#x2F;User&#x2F;github&#x2F;example&#x2F;src&#39;, &#x2F;&#x2F;绝对路径</span><br><span class="line">        &#x2F;&#x2F;配置支持自动扩展的文件名后缀，require 的时候就不需要写这些文件的后缀名了</span><br><span class="line">        extensions: [&#39;&#39;, &#39;.js&#39;, &#39;.json&#39;, &#39;.scss&#39;],</span><br><span class="line">        &#x2F;&#x2F;配置模块的别名，方便直接进行加载,</span><br><span class="line">        &#x2F;&#x2F;eg: require(&#39;AppStore&#39;) &#x3D; require(&#39;js&#x2F;stores&#x2F;AppStores.js&#39;)</span><br><span class="line">        alias: &#123;</span><br><span class="line">            AppStore : &#39;js&#x2F;stores&#x2F;AppStores.js&#39;,</span><br><span class="line">            ActionType : &#39;js&#x2F;actions&#x2F;ActionType.js&#39;,</span><br><span class="line">            AppAction : &#39;js&#x2F;actions&#x2F;AppAction.js&#39;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F;如果需要使用外部资源的时候，先在HTML里面加入script标签引入外部资源，然后在externals里面进行配置</span><br><span class="line">    externals: &#123;</span><br><span class="line">        &#x2F;&#x2F; jquery 引用自外部模块的，在这里配置了之后就可以直接在代码里面使用 require(&#39;jquery&#39;) 了</span><br><span class="line">        &#x2F;&#x2F; 但是要注意使用外部资源的 js 需要放在外部资源加载之后再进行加载</span><br><span class="line">        &#x2F;&#x2F; 对应全局变量 jQuery</span><br><span class="line">        &quot;jquery&quot;: &quot;jQuery&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>用到加载器的时候需要先进行安装，比如我们用到的 <code>url-loader</code> 需要使用<br><code>$ npm i url-loader --save-dev</code> 来安装之后再可以在 webpack 中使用。</p>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><p>直接执行 <code>$ webpack --display-error-details</code> 命令就可以运行 webpack 了，后面的参数是用来显示错误信息而添加的，方便 debug 的时候查找错误的来源。</p>
+<p>其他主要的参数有：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ webpack --config XXX.js   &#x2F;&#x2F;使用另一份配置文件（比如webpack.config2.js）来打包</span><br><span class="line"></span><br><span class="line">$ webpack --watch   &#x2F;&#x2F;监听变动并自动打包</span><br><span class="line"></span><br><span class="line">$ webpack -p    &#x2F;&#x2F;生产版本构建，压缩混淆脚本</span><br><span class="line"></span><br><span class="line">$ webpack -d    &#x2F;&#x2F;生成map映射文件，告知哪些模块被最终打包到哪里了</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>github 上有一个外国人做的 webpack demo，栗子很多，适合入门学习<br>地址：<a target="_blank" rel="noopener" href="https://github.com/ruanyf/webpack-demos">https://github.com/ruanyf/webpack-demos</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://madscript.com/html5/datauri-best-practice/">Data URI</a> 一种加快图片加载的方式（基于 base64 编码数据和 cpu 实时演算）</li>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/vajoy/p/4650467.html">一小时包教会 —— webpack 入门指南</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/sunshq/p/5073301.html">Webpack打包进阶</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag"># 工具</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/05/19/Front_End/js-fondation/four-memory-leak-situation-in-js-code/" rel="prev" title="JavaScript 中4种常见的内存泄露陷阱">
+                  <i class="fa fa-chevron-left"></i> JavaScript 中4种常见的内存泄露陷阱
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/09/21/Front_End/js-fondation/aop-make-a-better-js-code/" rel="next" title="使用AOP来改善JavaScript代码">
+                  使用AOP来改善JavaScript代码 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

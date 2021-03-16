@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ufolux.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="按照我司的现实情况来讲，app 团队基本上维持着一个 10 人以上的移动研发团队，团队里面有项目经理、开发和测试同学，在研发过程中基本上都是多个项目同时进行。在项目的发展中，其中有些项目会参与到各种运营活动之中，需要和其它团队进行协作。所有的代码都耦合在一个客户端里面，每个月至少要发布 2 个版本，大家开发周各自开发暂时相安无事，一旦到了测试周要合代码到一起就出现各种诡异问题导致构建不成功、功能不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从无到有，开发一个 App（三）--- 多人协助开发APP快速交付">
+<meta property="og:url" content="https://ufolux.github.io/2019/07/15/Experiences/zeroToOneDevApp-3/index.html">
+<meta property="og:site_name" content="SkyFly">
+<meta property="og:description" content="按照我司的现实情况来讲，app 团队基本上维持着一个 10 人以上的移动研发团队，团队里面有项目经理、开发和测试同学，在研发过程中基本上都是多个项目同时进行。在项目的发展中，其中有些项目会参与到各种运营活动之中，需要和其它团队进行协作。所有的代码都耦合在一个客户端里面，每个月至少要发布 2 个版本，大家开发周各自开发暂时相安无事，一旦到了测试周要合代码到一起就出现各种诡异问题导致构建不成功、功能不">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ufolux.github.io/2019/07/15/Experiences/zeroToOneDevApp-3/af4d8275-6aa5-4afd-b402-60887a7d229a.png">
+<meta property="og:image" content="https://ufolux.github.io/2019/07/15/Experiences/zeroToOneDevApp-3/b3a5e411-8de6-43b1-8117-6ef8ea4dc0be.png">
+<meta property="article:published_time" content="2019-07-15T12:32:06.000Z">
+<meta property="article:modified_time" content="2021-03-16T10:38:51.439Z">
+<meta property="article:author" content="Sines">
+<meta property="article:tag" content="从无到有，开发一个 App">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ufolux.github.io/2019/07/15/Experiences/zeroToOneDevApp-3/af4d8275-6aa5-4afd-b402-60887a7d229a.png">
+
+
+<link rel="canonical" href="https://ufolux.github.io/2019/07/15/Experiences/zeroToOneDevApp-3/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>从无到有，开发一个 App（三）--- 多人协助开发APP快速交付 | SkyFly</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">SkyFly</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E7%9A%84%E5%85%B8%E5%9E%8B%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">迭代的典型流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%84%E5%88%92"><span class="nav-number">1.1.</span> <span class="nav-text">规划</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%8F%91"><span class="nav-number">1.2.</span> <span class="nav-text">开发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-number">1.3.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E5%92%8C%E8%BF%90%E7%BB%B4"><span class="nav-number">1.4.</span> <span class="nav-text">发布和运维</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E8%BF%AD%E4%BB%A3%E7%9A%84%E8%8A%82%E5%A5%8F"><span class="nav-number">2.</span> <span class="nav-text">控制迭代的节奏</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E5%91%A8"><span class="nav-number">2.1.</span> <span class="nav-text">开发周</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%8F%91%E5%B8%83%E5%91%A8"><span class="nav-number">2.2.</span> <span class="nav-text">测试发布周</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E7%9A%84%E8%AF%9D"><span class="nav-number">3.</span> <span class="nav-text">最后的话</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sines</p>
+  <div class="site-description" itemprop="description">My Personal Blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ufolux.github.io/2019/07/15/Experiences/zeroToOneDevApp-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sines">
+      <meta itemprop="description" content="My Personal Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SkyFly">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从无到有，开发一个 App（三）--- 多人协助开发APP快速交付
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2019-07-15 20:32:06" itemprop="dateCreated datePublished" datetime="2019-07-15T20:32:06+08:00">2019-07-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-16 18:38:51" itemprop="dateModified" datetime="2021-03-16T18:38:51+08:00">2021-03-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%8F%E9%AA%8C/" itemprop="url" rel="index"><span itemprop="name">经验</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>按照我司的现实情况来讲，app 团队基本上维持着一个 10 人以上的移动研发团队，团队里面有项目经理、开发和测试同学，在研发过程中基本上都是多个项目同时进行。在项目的发展中，其中有些项目会参与到各种运营活动之中，需要和其它团队进行协作。所有的代码都耦合在一个客户端里面，每个月至少要发布 2 个版本，大家开发周各自开发暂时相安无事，一旦到了测试周要合代码到一起就出现各种诡异问题导致构建不成功、功能不可用、测试需要反复无数次验证依然惴惴不安。如何才能更好地协作开发，以较高的效率完成 App 开发工作呢？</p>
+<span id="more"></span>
+
+<h2 id="迭代的典型流程"><a href="#迭代的典型流程" class="headerlink" title="迭代的典型流程"></a>迭代的典型流程</h2><p><img src="/2019/07/15/Experiences/zeroToOneDevApp-3/af4d8275-6aa5-4afd-b402-60887a7d229a.png" alt="Alt text"></p>
+<p>上面是一个应用开发的典型流程图，下面来对流程进行详细的分析。</p>
+<h3 id="规划"><a href="#规划" class="headerlink" title="规划"></a>规划</h3><ul>
+<li><p>工程解耦<br>对于 10 人以上的研发团队，非常需要提高研发协同效率，首先工程需要解耦，各自独立，减少相互依赖和影响，尽量做到每个模块可以独立构建独立发布。在开发中我们也采用了这样的方式，将客户端代码，基础库（网络库等），App 内 使用到的 Web 页面代码分别建立成独立的仓库，在未来应该也会将运营活动的页面和代码建立独立的工程来管理。         </p>
+</li>
+<li><p>PMO(Project Management Office)：定义项目规范和版本计划<br>PMO 作为统筹整个项目的关键环节，先根据团队人员配比等制定适合当前团队的项目管理方案和项目规约，同时定义清楚客户端版本发布计划，例如每周五发布一个灰度版本，每个月底发布一个正式版本，计划清晰后同步到所有人员，方便大家安排工作。</p>
+</li>
+<li><p>产品经理：设计需求<br>产品经理通过分析用户反馈、分析市场诉求，从而抽象出业务需求，研发人员也会自行添加技术升级类需求，统一沉淀到平台做需求管理。当然，在实践中研发人员自行提出的技术需求需要和项目经理以及测试人员进行会商，评估影响面积，风险敞口，测试工作量和测试资源的安排。</p>
+</li>
+<li><p>项目经理：排期分工<br>根据需求和版本计划，PM 应将需求拆分成多个并行项目，如技术改造项目、迭代需求项目、长线需求项目，运营活动项目，项目经理或者资深研发会把这些需求细化拆分成任务，分派给不同的具体开发人员。</p>
+</li>
+</ul>
+<h3 id="开发"><a href="#开发" class="headerlink" title="开发"></a>开发</h3><ul>
+<li><p>研发：代码变更<br>研发实现需求后，在各自研发项目和代码分支中添加变更，测试自己的变更，当然最好是能对公共部分代码添加或者补充单元测试用例以保障项目的质量。</p>
+</li>
+<li><p>研发：持续集成（CI）<br>使用 CI 解决方案配合构建脚本在开发过程中持续进行构建集成和单元测试，及时发现问题，尽可能将能发现的问题在开发阶段解决。</p>
+</li>
+<li><p>研发：版本集成<br>研发在项目空间中完成代码变更和测试后，按照约定的发版计划，再约定好的时间自行提交版本集成生成最终提供测试冒烟的版本。</p>
+</li>
+</ul>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><ul>
+<li>测试：功能、验收测试<br>参加集成后，测试会对最终集成完成准备发布的包进行功能回归和验收测试，只有测试通过后的包，才能发布到用户手中。</li>
+</ul>
+<h3 id="发布和运维"><a href="#发布和运维" class="headerlink" title="发布和运维"></a>发布和运维</h3><ul>
+<li><p>研发：版本发布<br>版本发布过程，支持丰富的灰度策略，需要支持多批次缓慢放量，发布过程中实时监控 Crash、用户反馈，发生问题可及时止血。在我们的实践中，灰度策略基于 3 个维度，分别是具体客户、客户端版本、ReactNative 版本。客户维度基于客户号实现，客户端和 ReactNative 版本都基于客户端上报的请求头来实现。更复杂的维度甚至可以包含系统版本，手机型号等等。对于一些功能发布出现问题时可以及时将灰度关闭，停止功能的发布上线，将影响降低。<br>在 ReactNative 版本发布的过程中，由于我们的发布窗口在周五，我们采用先对占用户比重较小的新近原生版本放量发布，如果在周末没有大面积的异常情况出现，则在周一对其余的存量旧版本进行发布升级。出现问题的话，可以及时进行版本的回滚，减少问题的影响面积。</p>
+</li>
+<li><p>研发：运维监控<br>线上监控运维，除了实时 Crash 分析之外，还应提供线上问题快速定位分析的解决方案，用户日志跟踪等服务，方便及时发现问题。成熟的解决方案有 MTA，Bugly 和友盟等等开发商提供的 SDK。</p>
+</li>
+</ul>
+<h2 id="控制迭代的节奏"><a href="#控制迭代的节奏" class="headerlink" title="控制迭代的节奏"></a>控制迭代的节奏</h2><p>在我们的具体实践中，迭代的具体步骤大致如下图所示。</p>
+<p><img src="/2019/07/15/Experiences/zeroToOneDevApp-3/b3a5e411-8de6-43b1-8117-6ef8ea4dc0be.png" alt="Alt text"></p>
+<h3 id="开发周"><a href="#开发周" class="headerlink" title="开发周"></a>开发周</h3><ol>
+<li>周一对上一个迭代周期的发布进行全量发布配置。</li>
+<li>开发人员对本迭代需求进行开发，测试人员进行本迭代测试用例的编写</li>
+<li>周五进行本迭代发布需求的测试用例评审</li>
+</ol>
+<h3 id="测试发布周"><a href="#测试发布周" class="headerlink" title="测试发布周"></a>测试发布周</h3><ol>
+<li>周一上午开发将需在本迭代发布需求的代码分支进行合并，并通过构建。</li>
+<li>周一下午测试人员将开始对开发成果进行冒烟测试。</li>
+<li>冒烟测试通过后，开始为期四天的迭代测试。</li>
+<li>在周四，PM召集产品经理和开发负责人讨论并定稿下一迭代需求。</li>
+<li>周五中午锁定开发分支，后续任何提交均需要进行审批。（防止有无限多的修改导致版本质量不可控）</li>
+<li>下午进行回归测试和最小检查点测试。</li>
+<li>晚上进行新版本的发布并对发布代码版本打 tag，发布完成之后进行新近版本的升级配置。</li>
+</ol>
+<h2 id="最后的话"><a href="#最后的话" class="headerlink" title="最后的话"></a>最后的话</h2><p>以上三篇，算是对这几年客户端工作的梳理，也是对经验的一个总结。真正的移动应用开发大潮始于 2007 年 Apple 发布 iPhone 到现在已经过去了 12 个年头。这 12 年里设备在不断创新进步，移动应用开发的技术也在一步步向着成本更低，更可维护的方向发展着。我们也看到前端技术和客户端技术的大融合催生的一系列创新的技术方案，这些技术创新也在一定程度上推动着业务和开发流程的演进和发展。希望通过这几篇文章的分享能够给予刚进入移动应用开发领域的参与者一些有建设性的观点，以更好的方式，开发出更好的应用。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BB%8E%E6%97%A0%E5%88%B0%E6%9C%89%EF%BC%8C%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA-App/" rel="tag"># 从无到有，开发一个 App</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/02/Server/LetsHttps/" rel="prev" title="让网站支持Https">
+                  <i class="fa fa-chevron-left"></i> 让网站支持Https
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/23/iOS/ios-app-signature-theory/" rel="next" title="iOS App 签名的原理">
+                  iOS App 签名的原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sines</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
