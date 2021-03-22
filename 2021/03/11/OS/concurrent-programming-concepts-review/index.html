@@ -31,7 +31,7 @@
 <meta property="og:description" content="BackgroundAs a Chinese old saying goes: Review the old and know the new (温故而知新). I learnt a lot from the OS class, recently, despite that I have taken this class 5 years ago during my undergraduate st">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-03-11T07:31:17.000Z">
-<meta property="article:modified_time" content="2021-03-16T10:34:59.672Z">
+<meta property="article:modified_time" content="2021-03-22T12:08:04.579Z">
 <meta property="article:author" content="Sines">
 <meta property="article:tag" content="OS">
 <meta name="twitter:card" content="summary">
@@ -242,7 +242,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-03-16 18:34:59" itemprop="dateModified" datetime="2021-03-16T18:34:59+08:00">2021-03-16</time>
+        <time title="Modified: 2021-03-22 20:08:04" itemprop="dateModified" datetime="2021-03-22T20:08:04+08:00">2021-03-22</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +296,7 @@
 
 
 <h4 id="Mutex"><a href="#Mutex" class="headerlink" title="Mutex"></a>Mutex</h4><p>As we see in the code sniplet before, when the value of semaphore are only 0 or 1, it is called a binary-semaphore, or a mutex which could be used for mutual exclusion and synchornization.</p>
-<h4 id="Futex"><a href="#Futex" class="headerlink" title="Futex"></a>Futex</h4><p>Every <em>lock</em> and <em>unlock</em> operation will first trap into kernel by sycalls to check if the lock variable is owned by others. But, in reality, most of time the lock variable does not belongs to anyone.It is usually free for processes to enter the critical section, but the test lock procedure still cost a lot by doing a syscall. To make this more efficiency, futex were created.</p>
+<h4 id="Futex"><a href="#Futex" class="headerlink" title="Futex"></a>Futex</h4><p>Every <em>lock</em> and <em>unlock</em> operation will first trap into kernel by sycalls to check if the lock variable is owned by others. But, in reality, most of time the lock variable does not belongs to anyone.It is usually free for processes to enter the critical section, but the test lock procedure still cost a lot by doing a syscall. To make this more efficient, futex were created.</p>
 <p>Futex stands for “Fast Userspace muTexes”, which, basically, does the lock test procedure in user space. Only when the lock is not free, it performs a syscall. That’s why futex improves performance a lot.</p>
 <h4 id="Condition-Variables"><a href="#Condition-Variables" class="headerlink" title="Condition Variables"></a>Condition Variables</h4><p>Condition Variables is a synchornization mechanism. Synchornization needs more than just mutual exclusion; also need a way to wait for another thread to do something (e.g., wait for a character to be added to the buffer). So, it provides a way to make process wait util the specific condition is fullfilled.</p>
 <h2 id="Which-Lock-Should-I-Use"><a href="#Which-Lock-Should-I-Use" class="headerlink" title="Which Lock Should I Use"></a>Which Lock Should I Use</h2><p>Which Lock should I use, busy waiting or semaphores? There are two simple principles:</p>
@@ -353,8 +353,8 @@
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/03/16/llvm/learning-llvm-11-01/" rel="next" title="macOS 11 环境下 LLVM 11.0 构建和安装">
-                  macOS 11 环境下 LLVM 11.0 构建和安装 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/03/16/llvm/learning-llvm-11-01/" rel="next" title="学学 llvm （一）-- macOS 11 环境下 LLVM 11.0 构建和安装">
+                  学学 llvm （一）-- macOS 11 环境下 LLVM 11.0 构建和安装 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
